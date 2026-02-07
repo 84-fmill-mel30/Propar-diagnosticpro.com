@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProPart Diagnostic Pro - Sistema Profesional</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header .tagline {
+            font-size: 1.2em;
+            opacity: 0.95;
+            margin-top: 5px;
+        }
+        
+        .subscription-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(255,215,0,0.3);
+            border: 2px solid gold;
+            border-radius: 25px;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        
+        /* LANDING PAGE / LOGIN */
+        .landing {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 800px;
+            margin: 40px auto;
+        }
+        
+        .landing h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .price-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 30px 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+        
+        .price-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        
+        .price-card.recommended {
+            border-color: gold;
+            background: linear-gradient(135deg, #fff4e6 0%, #ffe6cc 100%);
+        }
+        
+        .price-card h3 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .price {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+        }
+        
+        .price-card ul {
+            list-style: none;
+            text-align: left;
+            margin: 20px 0;
+        }
+        
+        .price-card li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .price-card li:before {
+            content: "✓ ";
+            color: #4CAF50;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .price-card.locked li:before {
+            content: "🔒 ";
+        }
+        
+        .btn-subscribe {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+        
+        .btn-subscribe:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .login-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            margin: 30px auto;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin: 20px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        
+        .form-group input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        
+        /* TABS */
+        .tabs {
+            display: flex;
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px 15px 0 0;
+            overflow-x: auto;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 18px;
+            text-align: center;
+            cursor: pointer;
+            background: white;
+            border: none;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s;
+            color: #666;
+            position: relative;
+        }
+        
+        .tab.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .tab.locked:after {
+            content: "🔒";
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 0.8em;
+        }
+        
+        .tab:hover:not(.locked) {
+            background: #f5f5f5;
+        }
+        
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .tab-content {
+            background: white;
+            border-radius: 0 0 15px 15px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* SENSORES */
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .sensor-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #667eea;
+        }
+        
+        .sensor-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .sensor-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+        }
+        
+        .sensor-unit {
+            color: #666;
+            font-size: 1em;
+        }
+        
+        .sensor-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .status-ok { background: #4CAF50; color: white; }
+        .status-warning { background: #ff9800; color: white; }
+        .status-error { background: #f44336; color: white; }
+        
+        /* GRÁFICAS */
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .multi-chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        /* DIAGRAMAS */
+        .diagram-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .diagram-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .diagram-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        
+        .diagram-preview {
+            width: 100%;
+            height: 200px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            font-size: 3em;
+        }
+        
+        /* PINOUTS */
+        .pinout-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .pinout-image {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            display: block;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .pin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .pin-table th,
+        .pin-table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        
+        .pin-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+        }
+        
+        .pin-table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        /* CONEXIÓN */
+        .connection-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            color: white;
+        }
+        
+        .status {
+            padding: 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        
+        .status.connected {
+            background: rgba(76, 175, 80, 0.4);
+        }
+        
+        /* BOTONES */
+        button {
+            padding: 12px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary { background: #4CAF50; color: white; }
+        .btn-secondary { background: #2196F3; color: white; }
+        .btn-danger { background: #f44336; color: white; }
+        .btn-warning { background: #ff9800; color: white; }
+        .btn-info { background: #00bcd4; color: white; }
+        .btn-purple { background: #9c27b0; color: white; }
+        
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        /* UPGRADE PROMPT */
+        .upgrade-prompt {
+            background: linear-gradient(135deg, #fff4e6 0%, #ffe6cc 100%);
+            border: 3px solid gold;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .upgrade-prompt h2 {
+            color: #ff9800;
+            margin-bottom: 15px;
+        }
+        
+        /* LOG */
+        .log {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .log-entry {
+            margin: 5px 0;
+        }
+        
+        .log-entry.error { color: #ff5555; }
+        .log-entry.success { color: #50fa7b; }
+        .log-entry.info { color: #8be9fd; }
+        .log-entry.warning { color: #ffb86c; }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sensor-grid,
+            .diagram-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .multi-chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .pricing-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚡ PROPART DIAGNOSTIC PRO</h1>
+        <div class="tagline">Sistema Profesional de Diagnóstico Automotriz</div>
+        <div class="subscription-badge" id="user-plan">VERSIÓN GRATUITA - 7 DÍAS RESTANTES</div>
+    </div>
+
+    <!-- LANDING PAGE / PRICING -->
+    <div id="landing-page" class="container">
+        <div class="landing">
+            <h2>🚀 Bienvenido al Sistema Profesional</h2>
+            <p style="font-size: 1.2em; color: #666; margin: 20px 0;">
+                Diagnóstico automotriz de nivel profesional con sensores en tiempo real, 
+                diagramas eléctricos, pinouts y herramientas avanzadas.
+            </p>
+            
+            <div class="pricing-cards">
+                <div class="price-card" onclick="selectPlan('basic')">
+                    <h3>🆓 BÁSICO</h3>
+                    <div class="price">GRATIS</div>
+                    <p><strong>7 días de prueba</strong></p>
+                    <ul>
+                        <li>Scanner OBD2 básico</li>
+                        <li>Lectura de códigos DTC</li>
+                        <li>10 sensores principales</li>
+                        <li>Catálogo de refacciones</li>
+                    </ul>
+                    <button class="btn-subscribe">PROBAR GRATIS</button>
+                </div>
+                
+                <div class="price-card recommended" onclick="selectPlan('premium')">
+                    <h3>⭐ PREMIUM</h3>
+                    <div class="price">$299<small>/mes</small></div>
+                    <p><strong>⭐ RECOMENDADO</strong></p>
+                    <ul>
+                        <li>Todo lo de Básico +</li>
+                        <li>16+ sensores en vivo</li>
+                        <li>Gráficas en tiempo real</li>
+                        <li>Diagramas eléctricos</li>
+                        <li>Pinout de ECU</li>
+                        <li>Guías de reparación</li>
+                    </ul>
+                    <button class="btn-subscribe">SUSCRIBIRSE</button>
+                </div>
+                
+                <div class="price-card locked" onclick="selectPlan('pro')">
+                    <h3>💼 PRO</h3>
+                    <div class="price">$799<small>/mes</small></div>
+                    <p><strong>NIVEL EXPERTO</strong></p>
+                    <ul>
+                        <li>Todo lo de Premium +</li>
+                        <li>Ancho de pulso inyectores</li>
+                        <li>Análisis de bobinas (dwell)</li>
+                        <li>Programación de llaves</li>
+                        <li>Flasheo/Reprog. ECU</li>
+                        <li>HP Tuners integrado</li>
+                        <li>Soporte prioritario 24/7</li>
+                    </ul>
+                    <button class="btn-subscribe">CONTRATAR</button>
+                </div>
+            </div>
+            
+            <div class="login-section">
+                <h3 style="color: #667eea; margin-bottom: 20px;">¿Ya tienes cuenta?</h3>
+                <div class="form-group">
+                    <label>Código de Activación</label>
+                    <input type="text" id="activation-code" placeholder="XXXX-XXXX-XXXX-XXXX">
+                </div>
+                <button class="btn-subscribe" onclick="activateLicense()">ACTIVAR LICENCIA</button>
+            </div>
+            
+            <div style="margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 10px;">
+                <h3 style="color: #667eea;">📞 Información de Contacto</h3>
+                <p><strong>Refaccionaria Millán</strong> - Fernando Millán</p>
+                <p>📧 refaelectricamillan@gmail.com</p>
+                <p>📧 propartdiagnostic@gmail.com (Soporte)</p>
+                <p>📧 lineapropart@gmail.com (Atención)</p>
+                <p>📱 WhatsApp: 777 683 8196</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="main-app" class="container hidden">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('conexion')">📡 CONEXIÓN</button>
+            <button class="tab" onclick="switchTab('sensores')">📊 SENSORES</button>
+            <button class="tab" onclick="switchTab('graficas')" id="tab-graficas">📈 GRÁFICAS</button>
+            <button class="tab locked" onclick="switchTab('diagramas')" id="tab-diagramas">🔧 DIAGRAMAS 🔒</button>
+            <button class="tab locked" onclick="switchTab('pinouts')" id="tab-pinouts">📍 PINOUTS 🔒</button>
+            <button class="tab locked" onclick="switchTab('avanzado')" id="tab-avanzado">⚡ AVANZADO 🔒</button>
+            <button class="tab" onclick="switchTab('cuenta')">👤 MI CUENTA</button>
+        </div>
+
+        <!-- TAB: CONEXIÓN -->
+        <div id="tab-conexion" class="tab-content active">
+            <div class="connection-box">
+                <h2>📡 Conexión ELM327 / IOS-Vlink</h2>
+                <div style="background: rgba(255,255,255,0.2); padding: 10px; border-radius: 8px; margin: 10px 0;">
+                    <strong>UUID:</strong> 00001ff0-0000-1000-8000-00805f9b34fb
+                </div>
+                <div id="status" class="status">🔴 DESCONECTADO</div>
+                <div class="btn-group">
+                    <button class="btn-primary" onclick="connectOBD()">🔍 Buscar Dispositivo</button>
+                    <button class="btn-secondary" onclick="connectOBD()">🔌 Conectar</button>
+                    <button class="btn-danger" onclick="disconnectOBD()">❌ Desconectar</button>
+                </div>
+                <div class="log" id="log"></div>
+            </div>
+        </div>
+
+        <!-- TAB: SENSORES -->
+        <div id="tab-sensores" class="tab-content">
+            <h2 style="color: #667eea; margin-bottom: 20px;">📊 Sensores en Tiempo Real</h2>
+            
+            <div class="btn-group">
+                <button class="btn-primary" onclick="startMonitoring()">▶️ Iniciar Monitoreo</button>
+                <button class="btn-warning" onclick="stopMonitoring()">⏸️ Detener</button>
+                <button class="btn-info" onclick="readAllSensors()">🔄 Actualizar</button>
+            </div>
+            
+            <div class="sensor-grid" id="sensor-grid">
+                <!-- Sensores básicos (disponibles en todos los planes) -->
+                <div class="sensor-card">
+                    <h3>🔄 RPM del Motor</h3>
+                    <div class="sensor-value" id="rpm-value">----</div>
+                    <span class="sensor-unit">rpm</span>
+                    <div class="sensor-status status-ok">Normal</div>
+                </div>
+                
+                <div class="sensor-card">
+                    <h3>🚗 Velocidad</h3>
+                    <div class="sensor-value" id="speed-value">----</div>
+                    <span class="sensor-unit">km/h</span>
+                    <div class="sensor-status status-ok">Normal</div>
+                </div>
+                
+                <div class="sensor-card">
+                    <h3>🌡️ Temperatura Motor</h3>
+                    <div class="sensor-value" id="temp-value">----</div>
+                    <span class="sensor-unit">°C</span>
+                    <div class="sensor-status status-ok">Normal</div>
+                </div>
+                
+                <div class="sensor-card">
+                    <h3>⚡ Voltaje Batería</h3>
+                    <div class="sensor-value" id="voltage-value">----</div>
+                    <span class="sensor-unit">V</span>
+                    <div class="sensor-status status-ok">Normal</div>
+                </div>
+                
+                <div class="sensor-card">
+                    <h3>💪 Carga del Motor</h3>
+                    <div class="sensor-value" id="load-value">----</div>
+                    <span class="sensor-unit">%</span>
+                    <div class="sensor-status status-ok">Normal</div>
+                </div>
+                
+                <!-- Sensores Premium -->
+                <div class="sensor-card premium-sensor">
+                    <h3>💨 MAF (Flujo Aire)</h3>
+                    <div class="sensor-value" id="maf-value">----</div>
+                    <span class="sensor-unit">g/s</span>
+                    <div class="sensor-status status-ok">Normal</div>
+                </div>
+                
+                <div class="sensor-card premium-sensor">
+                    <h3>📊 MAP (Presión)</h3>
+                    <div class="sensor-value" id="map-value">----</div>
+                    <span class="sensor-unit">kPa</span>
+                    <div class="sensor-status status-ok">Normal</div>
+                </div>
+                
+                <div class="sensor-card premium-sensor">
+                    <h3>🎯 TPS (Acelerador)</h3>
+                    <div class="sensor-value" id="tps-value">----</div>
+                    <span class="sensor-unit">%</span>
+                    <div class="sensor-status status-ok">Normal</div>
+                </div>
+                
+                <div class="sensor-card premium-sensor">
+                    <h3>⏱️ Avance Encendido</h3>
+                    <div class="sensor-value" id="timing-value">----</div>
+                    <span class="sensor-unit">°</span>
+                    <div class="sensor-status status-ok">Normal</div>
+                </div>
+                
+                <div class="sensor-card premium-sensor">
+                    <h3>🔧 Fuel Trim Corto</h3>
+                    <div class="sensor-value" id="stft-value">----</div>
+                    <span class="sensor-unit">%</span>
+                    <div class="sensor-status status-ok">Normal</div>
+                </div>
+                
+                <div class="sensor-card premium-sensor">
+                    <h3>🔧 Fuel Trim Largo</h3>
+                    <div class="sensor-value" id="ltft-value">----</div>
+                    <span class="sensor-unit">%</span>
+                    <div class="sensor-status status-ok">Normal</div>
+                </div>
+                
+                <div class="sensor-card premium-sensor">
+                    <h3>🌊 O2 Sensor 1</h3>
+                    <div class="sensor-value" id="o2-1-value">----</div>
+                    <span class="sensor-unit">V</span>
+                    <div class="sensor-status status-ok">Normal</div>
+                </div>
+                
+                <!-- Sensores PRO -->
+                <div class="sensor-card pro-sensor">
+                    <h3>💉 Ancho Pulso Iny. 1 🔒</h3>
+                    <div class="sensor-value" id="inj1-value">----</div>
+                    <span class="sensor-unit">ms</span>
+                    <div class="sensor-status status-ok">Normal</div>
+                </div>
+                
+                <div class="sensor-card pro-sensor">
+                    <h3>⚡ Dwell Bobina 1 🔒</h3>
+                    <div class="sensor-value" id="dwell1-value">----</div>
+                    <span class="sensor-unit">°</span>
+                    <div class="sensor-status status-ok">Normal</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: GRÁFICAS -->
+        <div id="tab-graficas" class="tab-content">
+            <h2 style="color: #667eea; margin-bottom: 20px;">📈 Gráficas en Tiempo Real</h2>
+            
+            <div class="btn-group">
+                <button class="btn-primary" onclick="startGraphing()">▶️ Iniciar Gráficas</button>
+                <button class="btn-warning" onclick="stopGraphing()">⏸️ Detener</button>
+                <button class="btn-danger" onclick="clearGraphs()">🗑️ Limpiar</button>
+            </div>
+            
+            <div class="multi-chart-grid">
+                <div class="chart-container">
+                    <h3>🔄 RPM del Motor</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="chart-rpm"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>💨 MAF (Flujo de Aire)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="chart-maf"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>📊 MAP (Presión)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="chart-map"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>🎯 TPS (Acelerador)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="chart-tps"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: DIAGRAMAS -->
+        <div id="tab-diagramas" class="tab-content">
+            <h2 style="color: #667eea; margin-bottom: 20px;">🔧 Diagramas Eléctricos</h2>
+            
+            <div id="diagrams-locked" class="upgrade-prompt">
+                <h2>🔒 Contenido Premium</h2>
+                <p style="font-size: 1.2em; margin: 20px 0;">
+                    Los diagramas eléctricos están disponibles en el plan <strong>PREMIUM</strong>
+                </p>
+                <ul style="text-align: left; max-width: 400px; margin: 20px auto;">
+                    <li>500+ diagramas a color</li>
+                    <li>Todas las marcas y modelos</li>
+                    <li>Códigos de color de cables</li>
+                    <li>Zoom HD interactivo</li>
+                    <li>Descargar en PDF</li>
+                </ul>
+                <button class="btn-subscribe" onclick="showUpgrade()">⭐ ACTUALIZAR A PREMIUM</button>
+            </div>
+            
+            <div id="diagrams-content" class="hidden">
+                <input type="text" class="form-group" style="width: 100%; padding: 15px; border: 2px solid #667eea; border-radius: 10px; margin: 20px 0;" 
+                       placeholder="🔍 Buscar por marca, modelo, año o sistema...">
+                
+                <div class="diagram-grid">
+                    <div class="diagram-card">
+                        <div class="diagram-preview">📋</div>
+                        <h3>Nissan Tsuru 2010</h3>
+                        <p>Sistema de inyección</p>
+                    </div>
+                    <div class="diagram-card">
+                        <div class="diagram-preview">📋</div>
+                        <h3>VW Jetta A4 2005</h3>
+                        <p>Sistema eléctrico completo</p>
+                    </div>
+                    <div class="diagram-card">
+                        <div class="diagram-preview">📋</div>
+                        <h3>Chevy 2008</h3>
+                        <p>Sistema de encendido</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: PINOUTS -->
+        <div id="tab-pinouts" class="tab-content">
+            <h2 style="color: #667eea; margin-bottom: 20px;">📍 Pinouts de ECU</h2>
+            
+            <div id="pinouts-locked" class="upgrade-prompt">
+                <h2>🔒 Contenido Premium</h2>
+                <p style="font-size: 1.2em; margin: 20px 0;">
+                    Los pinouts de computadoras están disponibles en el plan <strong>PREMIUM</strong>
+                </p>
+                <ul style="text-align: left; max-width: 400px; margin: 20px auto;">
+                    <li>Pinouts de todas las ECU</li>
+                    <li>Imágenes reales de conectores</li>
+                    <li>Función de cada pin</li>
+                    <li>Voltajes normales</li>
+                    <li>Procedimientos de prueba</li>
+                </ul>
+                <button class="btn-subscribe" onclick="showUpgrade()">⭐ ACTUALIZAR A PREMIUM</button>
+            </div>
+            
+            <div id="pinouts-content" class="hidden">
+                <input type="text" class="form-group" style="width: 100%; padding: 15px; border: 2px solid #667eea; border-radius: 10px; margin: 20px 0;" 
+                       placeholder="🔍 Buscar ECU por marca, modelo...">
+                
+                <div class="pinout-container">
+                    <h3>📍 ECU Nissan Tsuru 16V (2004-2012)</h3>
+                    <div style="background: #f5f5f5; padding: 20px; border-radius: 10px; text-align: center;">
+                        <p style="font-size: 3em;">🔌</p>
+                        <p>Conector de 55 pines</p>
+                    </div>
+                    
+                    <table class="pin-table">
+                        <thead>
+                            <tr>
+                                <th>Pin</th>
+                                <th>Color</th>
+                                <th>Función</th>
+                                <th>Voltaje Normal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td style="background: red; color: white;">Rojo</td>
+                                <td>Alimentación 12V</td>
+                                <td>12-14V</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td style="background: black; color: white;">Negro</td>
+                                <td>Tierra (GND)</td>
+                                <td>0V</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td style="background: blue; color: white;">Azul</td>
+                                <td>Señal MAF</td>
+                                <td>0.5-4.5V</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: AVANZADO (PRO) -->
+        <div id="tab-avanzado" class="tab-content">
+            <h2 style="color: #667eea; margin-bottom: 20px;">⚡ Herramientas Avanzadas</h2>
+            
+            <div id="advanced-locked" class="upgrade-prompt">
+                <h2>🔒 Contenido PRO</h2>
+                <p style="font-size: 1.2em; margin: 20px 0;">
+                    Las herramientas avanzadas están disponibles en el plan <strong>PRO</strong>
+                </p>
+                <ul style="text-align: left; max-width: 500px; margin: 20px auto;">
+                    <li>🔐 Programación de llaves transponder</li>
+                    <li>⚡ Flasheo y reprogramación de ECU</li>
+                    <li>🎛️ HP Tuners integrado</li>
+                    <li>📡 New TrasData access</li>
+                    <li>💉 Análisis de ancho de pulso inyectores</li>
+                    <li>⚡ Análisis de dwell de bobinas</li>
+                    <li>🔬 Formas de onda básicas</li>
+                    <li>📞 Soporte prioritario 24/7</li>
+                </ul>
+                <button class="btn-subscribe" onclick="showUpgrade()">💼 ACTUALIZAR A PRO</button>
+            </div>
+            
+            <div id="advanced-content" class="hidden">
+                <div class="btn-group">
+                    <button class="btn-primary">🔐 Programar Llave</button>
+                    <button class="btn-secondary">⚡ Flasheo ECU</button>
+                    <button class="btn-info">🎛️ HP Tuners</button>
+                    <button class="btn-warning">📡 TrasData</button>
+                </div>
+                
+                <div style="margin-top: 30px; padding: 30px; background: white; border-radius: 15px;">
+                    <h3>💉 Análisis de Inyectores en Tiempo Real</h3>
+                    <div class="sensor-grid">
+                        <div class="sensor-card">
+                            <h3>Inyector 1</h3>
+                            <div class="sensor-value">2.5</div>
+                            <span class="sensor-unit">ms</span>
+                        </div>
+                        <div class="sensor-card">
+                            <h3>Inyector 2</h3>
+                            <div class="sensor-value">2.4</div>
+                            <span class="sensor-unit">ms</span>
+                        </div>
+                        <div class="sensor-card">
+                            <h3>Inyector 3</h3>
+                            <div class="sensor-value">2.5</div>
+                            <span class="sensor-unit">ms</span>
+                        </div>
+                        <div class="sensor-card">
+                            <h3>Inyector 4</h3>
+                            <div class="sensor-value">2.6</div>
+                            <span class="sensor-unit">ms</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: MI CUENTA -->
+        <div id="tab-cuenta" class="tab-content">
+            <h2 style="color: #667eea; margin-bottom: 20px;">👤 Mi Cuenta</h2>
+            
+            <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <h3>Información de Suscripción</h3>
+                <div style="margin: 20px 0;">
+                    <p><strong>Plan actual:</strong> <span id="current-plan">BÁSICO (Prueba)</span></p>
+                    <p><strong>Estado:</strong> <span id="subscription-status">Activo</span></p>
+                    <p><strong>Días restantes:</strong> <span id="days-remaining">7</span></p>
+                    <p><strong>Código de licencia:</strong> <span id="license-code">BASIC-XXXX-XXXX-XXXX</span></p>
+                </div>
+                
+                <div class="btn-group">
+                    <button class="btn-primary" onclick="showUpgrade()">⭐ Actualizar Plan</button>
+                    <button class="btn-secondary" onclick="renewSubscription()">🔄 Renovar Suscripción</button>
+                    <button class="btn-info" onclick="contactSupport()">📞 Contactar Soporte</button>
+                </div>
+                
+                <div style="margin-top: 30px; padding: 20px; background: #f5f5f5; border-radius: 10px;">
+                    <h3>📞 Información de Contacto</h3>
+                    <p><strong>Email soporte:</strong> propartdiagnostic@gmail.com</p>
+                    <p><strong>Email atención:</strong> lineapropart@gmail.com</p>
+                    <p><strong>WhatsApp:</strong> 777 683 8196</p>
+                    <p><strong>Refacciones:</strong> refaelectricamillan@gmail.com</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== CONFIGURACIÓN ==========
+        let userPlan = 'basic'; // basic, premium, pro
+        let trialDaysRemaining = 7;
+        let isConnected = false;
+        let monitoringInterval = null;
+        let graphingInterval = null;
+        
+        const SERVICE_UUID = '00001ff0-0000-1000-8000-00805f9b34fb';
+        const CHARACTERISTIC_UUID = '00002af1-0000-1000-8000-00805f9b34fb';
+        
+        let bluetoothDevice = null;
+        let bluetoothServer = null;
+        let elm327Characteristic = null;
+        
+        // Gráficas
+        let charts = {};
+        const sensorData = {
+            labels: [],
+            rpm: [],
+            maf: [],
+            map: [],
+            tps: []
+        };
+        const MAX_DATA_POINTS = 60;
+        
+        // ========== INICIALIZACIÓN ==========
+        function init() {
+            // Simular datos guardados
+            const saved = localStorage.getItem('propart-user');
+            if (saved) {
+                const data = JSON.parse(saved);
+                userPlan = data.plan || 'basic';
+                trialDaysRemaining = data.daysRemaining || 7;
+                
+                // Cargar app principal
+                document.getElementById('landing-page').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                updateUI();
+            }
+            
+            initCharts();
+            addLog('✅ Sistema ProPart Diagnostic Pro iniciado', 'success');
+        }
+        
+        function selectPlan(plan) {
+            if (plan === 'basic') {
+                // Activar prueba gratuita
+                userPlan = 'basic';
+                trialDaysRemaining = 7;
+                saveUserData();
+                
+                document.getElementById('landing-page').classList.add('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
+                updateUI();
+                
+                alert('✅ Prueba gratuita activada\n7 días para probar todas las funciones básicas');
+            } else {
+                alert(`💰 Plan ${plan.toUpperCase()}\n\nPara activar este plan, contacta:\n📱 WhatsApp: 777 683 8196\n📧 propartdiagnostic@gmail.com`);
+            }
+        }
+        
+        function activateLicense() {
+            const code = document.getElementById('activation-code').value;
+            
+            if (!code) {
+                alert('⚠️ Ingresa un código de activación');
+                return;
+            }
+            
+            // Validar código (simulado)
+            if (code.startsWith('PREMIUM-')) {
+                userPlan = 'premium';
+                trialDaysRemaining = 30;
+            } else if (code.startsWith('PRO-')) {
+                userPlan = 'pro';
+                trialDaysRemaining = 30;
+            } else {
+                alert('❌ Código de activación inválido\n\nContacta a soporte:\n📱 777 683 8196');
+                return;
+            }
+            
+            saveUserData();
+            document.getElementById('landing-page').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            updateUI();
+            
+            alert(`✅ Licencia ${userPlan.toUpperCase()} activada\n30 días de acceso completo`);
+        }
+        
+        function saveUserData() {
+            localStorage.setItem('propart-user', JSON.stringify({
+                plan: userPlan,
+                daysRemaining: trialDaysRemaining,
+                activatedDate: new Date().toISOString()
+            }));
+        }
+        
+        function updateUI() {
+            // Actualizar badge
+            const badge = document.getElementById('user-plan');
+            if (userPlan === 'basic') {
+                badge.textContent = `BÁSICO - ${trialDaysRemaining} DÍAS RESTANTES`;
+                badge.style.background = 'rgba(200,200,200,0.3)';
+            } else if (userPlan === 'premium') {
+                badge.textContent = `⭐ PREMIUM ACTIVO`;
+                badge.style.background = 'rgba(255,215,0,0.3)';
+            } else if (userPlan === 'pro') {
+                badge.textContent = `💼 PRO ACTIVO`;
+                badge.style.background = 'rgba(138,43,226,0.3)';
+            }
+            
+            // Actualizar tabs
+            const tabs = {
+                'tab-graficas': ['premium', 'pro'],
+                'tab-diagramas': ['premium', 'pro'],
+                'tab-pinouts': ['premium', 'pro'],
+                'tab-avanzado': ['pro']
+            };
+            
+            Object.keys(tabs).forEach(tabId => {
+                const tab = document.getElementById(tabId);
+                if (tabs[tabId].includes(userPlan)) {
+                    tab.classList.remove('locked');
+                    tab.textContent = tab.textContent.replace(' 🔒', '');
+                } else {
+                    tab.classList.add('locked');
+                }
+            });
+            
+            // Mostrar/ocultar sensores según plan
+            document.querySelectorAll('.premium-sensor').forEach(el => {
+                if (userPlan === 'premium' || userPlan === 'pro') {
+                    el.style.display = 'block';
+                } else {
+                    el.style.opacity = '0.5';
+                    el.style.pointerEvents = 'none';
+                }
+            });
+            
+            document.querySelectorAll('.pro-sensor').forEach(el => {
+                if (userPlan === 'pro') {
+                    el.style.display = 'block';
+                } else {
+                    el.style.opacity = '0.5';
+                    el.style.pointerEvents = 'none';
+                }
+            });
+            
+            // Actualizar contenido de tabs
+            if (userPlan === 'premium' || userPlan === 'pro') {
+                document.getElementById('diagrams-locked')?.classList.add('hidden');
+                document.getElementById('diagrams-content')?.classList.remove('hidden');
+                document.getElementById('pinouts-locked')?.classList.add('hidden');
+                document.getElementById('pinouts-content')?.classList.remove('hidden');
+            }
+            
+            if (userPlan === 'pro') {
+                document.getElementById('advanced-locked')?.classList.add('hidden');
+                document.getElementById('advanced-content')?.classList.remove('hidden');
+            }
+            
+            // Actualizar info de cuenta
+            document.getElementById('current-plan').textContent = userPlan.toUpperCase();
+            document.getElementById('days-remaining').textContent = trialDaysRemaining;
+            document.getElementById('license-code').textContent = `${userPlan.toUpperCase()}-XXXX-XXXX-XXXX`;
+        }
+        
+        function showUpgrade() {
+            alert('💰 Planes disponibles:\n\n⭐ PREMIUM - $299/mes\n💼 PRO - $799/mes\n\nContacta para activar:\n📱 WhatsApp: 777 683 8196\n📧 propartdiagnostic@gmail.com');
+        }
+        
+        // ========== NAVEGACIÓN ==========
+        function switchTab(tabName) {
+            // Verificar permisos
+            const lockedTabs = {
+                'graficas': ['premium', 'pro'],
+                'diagramas': ['premium', 'pro'],
+                'pinouts': ['premium', 'pro'],
+                'avanzado': ['pro']
+            };
+            
+            if (lockedTabs[tabName] && !lockedTabs[tabName].includes(userPlan)) {
+                showUpgrade();
+                return;
+            }
+            
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // ========== BLUETOOTH OBD2 ==========
+        async function connectOBD() {
+            try {
+                addLog('🔍 Buscando dispositivo IOS-Vlink...', 'info');
+                
+                bluetoothDevice = await navigator.bluetooth.requestDevice({
+                    filters: [
+                        { name: 'IOS-Vlink' },
+                        { name: 'iOS V link' },
+                        { namePrefix: 'IOS' }
+                    ],
+                    optionalServices: [SERVICE_UUID]
+                });
+                
+                addLog(`✅ Dispositivo encontrado: ${bluetoothDevice.name}`, 'success');
+                
+                bluetoothServer = await bluetoothDevice.gatt.connect();
+                addLog('✅ Conectado al servidor GATT', 'success');
+                
+                const service = await bluetoothServer.getPrimaryService(SERVICE_UUID);
+                elm327Characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+                
+                addLog('✅ Servicio ELM327 encontrado', 'success');
+                
+                // Inicializar
+                await sendCommand('ATZ');
+                await delay(1500);
+                await sendCommand('ATE0');
+                await sendCommand('ATL0');
+                await sendCommand('ATSP0');
+                
+                isConnected = true;
+                document.getElementById('status').textContent = '🟢 CONECTADO Y OPERATIVO';
+                document.getElementById('status').classList.add('connected');
+                
+                addLog('🎉 Sistema listo para diagnóstico', 'success');
+                
+            } catch (error) {
+                addLog(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        function disconnectOBD() {
+            if (bluetoothDevice && bluetoothDevice.gatt.connected) {
+                bluetoothDevice.gatt.disconnect();
+                isConnected = false;
+                document.getElementById('status').textContent = '🔴 DESCONECTADO';
+                document.getElementById('status').classList.remove('connected');
+                addLog('🔌 Dispositivo desconectado', 'info');
+            }
+        }
+        
+        async function sendCommand(command) {
+            if (!elm327Characteristic) return null;
+            
+            const encoder = new TextEncoder();
+            await elm327Characteristic.writeValue(encoder.encode(command + '\r'));
+            
+            await delay(100);
+            
+            const response = await elm327Characteristic.readValue();
+            const decoder = new TextDecoder();
+            return decoder.decode(response).trim();
+        }
+        
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        // ========== SENSORES ==========
+        async function readAllSensors() {
+            if (!isConnected) {
+                alert('⚠️ Primero conecta el dispositivo OBD2');
+                return;
+            }
+            
+            try {
+                // Simulación de lectura (en producción usar comandos reales)
+                updateSensorValue('rpm', Math.floor(Math.random() * 3000 + 800));
+                updateSensorValue('speed', Math.floor(Math.random() * 120));
+                updateSensorValue('temp', Math.floor(Math.random() * 40 + 80));
+                updateSensorValue('voltage', (Math.random() * 2 + 12).toFixed(1));
+                updateSensorValue('load', Math.floor(Math.random() * 80 + 20));
+                
+                if (userPlan === 'premium' || userPlan === 'pro') {
+                    updateSensorValue('maf', (Math.random() * 50 + 10).toFixed(2));
+                    updateSensorValue('map', Math.floor(Math.random() * 60 + 30));
+                    updateSensorValue('tps', Math.floor(Math.random() * 100));
+                    updateSensorValue('timing', (Math.random() * 20 + 10).toFixed(1));
+                    updateSensorValue('stft', (Math.random() * 10 - 5).toFixed(2));
+                    updateSensorValue('ltft', (Math.random() * 10 - 5).toFixed(2));
+                    updateSensorValue('o2-1', (Math.random() * 0.9).toFixed(2));
+                }
+                
+                if (userPlan === 'pro') {
+                    updateSensorValue('inj1', (Math.random() * 2 + 1.5).toFixed(2));
+                    updateSensorValue('dwell1', (Math.random() * 30 + 20).toFixed(1));
+                }
+                
+                addLog('✅ Sensores actualizados', 'success');
+                
+            } catch (error) {
+                addLog(`❌ Error leyendo sensores: ${error.message}`, 'error');
+            }
+        }
+        
+        function updateSensorValue(sensorId, value) {
+            const element = document.getElementById(`${sensorId}-value`);
+            if (element) {
+                element.textContent = value;
+            }
+        }
+        
+        function startMonitoring() {
+            if (monitoringInterval) return;
+            monitoringInterval = setInterval(readAllSensors, 1000);
+            addLog('▶️ Monitoreo iniciado', 'success');
+        }
+        
+        function stopMonitoring() {
+            if (monitoringInterval) {
+                clearInterval(monitoringInterval);
+                monitoringInterval = null;
+                addLog('⏸️ Monitoreo detenido', 'info');
+            }
+        }
+        
+        // ========== GRÁFICAS ==========
+        function initCharts() {
+            const chartConfig = {
+                type: 'line',
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 0 },
+                    scales: {
+                        x: { display: true },
+                        y: { beginAtZero: false }
+                    }
+                }
+            };
+            
+            charts.rpm = new Chart(document.getElementById('chart-rpm'), {
+                ...chartConfig,
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'RPM',
+                        data: [],
+                        borderColor: '#f44336',
+                        backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                        tension: 0.4
+                    }]
+                }
+            });
+            
+            charts.maf = new Chart(document.getElementById('chart-maf'), {
+                ...chartConfig,
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'MAF (g/s)',
+                        data: [],
+                        borderColor: '#2196F3',
+                        backgroundColor: 'rgba(33, 150, 243, 0.1)',
+                        tension: 0.4
+                    }]
+                }
+            });
+            
+            charts.map = new Chart(document.getElementById('chart-map'), {
+                ...chartConfig,
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'MAP (kPa)',
+                        data: [],
+                        borderColor: '#4CAF50',
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        tension: 0.4
+                    }]
+                }
+            });
+            
+            charts.tps = new Chart(document.getElementById('chart-tps'), {
+                ...chartConfig,
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'TPS (%)',
+                        data: [],
+                        borderColor: '#ff9800',
+                        backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                        tension: 0.4
+                    }]
+                }
+            });
+        }
+        
+        function startGraphing() {
+            if (graphingInterval) return;
+            graphingInterval = setInterval(updateGraphs, 1000);
+            addLog('📈 Gráficas iniciadas', 'success');
+        }
+        
+        function stopGraphing() {
+            if (graphingInterval) {
+                clearInterval(graphingInterval);
+                graphingInterval = null;
+                addLog('⏸️ Gráficas detenidas', 'info');
+            }
+        }
+        
+        function updateGraphs() {
+            const timestamp = new Date().toLocaleTimeString();
+            
+            // Datos simulados
+            const rpm = Math.floor(Math.random() * 3000 + 800);
+            const maf = (Math.random() * 50 + 10).toFixed(2);
+            const map = Math.floor(Math.random() * 60 + 30);
+            const tps = Math.floor(Math.random() * 100);
+            
+            sensorData.labels.push(timestamp);
+            sensorData.rpm.push(rpm);
+            sensorData.maf.push(maf);
+            sensorData.map.push(map);
+            sensorData.tps.push(tps);
+            
+            if (sensorData.labels.length > MAX_DATA_POINTS) {
+                sensorData.labels.shift();
+                sensorData.rpm.shift();
+                sensorData.maf.shift();
+                sensorData.map.shift();
+                sensorData.tps.shift();
+            }
+            
+            charts.rpm.data.labels = sensorData.labels;
+            charts.rpm.data.datasets[0].data = sensorData.rpm;
+            charts.rpm.update();
+            
+            charts.maf.data.labels = sensorData.labels;
+            charts.maf.data.datasets[0].data = sensorData.maf;
+            charts.maf.update();
+            
+            charts.map.data.labels = sensorData.labels;
+            charts.map.data.datasets[0].data = sensorData.map;
+            charts.map.update();
+            
+            charts.tps.data.labels = sensorData.labels;
+            charts.tps.data.datasets[0].data = sensorData.tps;
+            charts.tps.update();
+        }
+        
+        function clearGraphs() {
+            sensorData.labels = [];
+            sensorData.rpm = [];
+            sensorData.maf = [];
+            sensorData.map = [];
+            sensorData.tps = [];
+            
+            Object.values(charts).forEach(chart => {
+                chart.data.labels = [];
+                chart.data.datasets.forEach(dataset => dataset.data = []);
+                chart.update();
+            });
+            
+            addLog('🗑️ Gráficas limpiadas', 'info');
+        }
+        
+        // ========== SOPORTE ==========
+        function contactSupport() {
+            const message = `Hola, necesito soporte con ProPart Diagnostic Pro.\n\nPlan: ${userPlan.toUpperCase()}\nCódigo: ${document.getElementById('license-code').textContent}`;
+            window.open(`https://wa.me/527776838196?text=${encodeURIComponent(message)}`, '_blank');
+        }
+        
+        function renewSubscription() {
+            alert('💰 Renovar Suscripción\n\nContacta para renovar:\n📱 WhatsApp: 777 683 8196\n📧 propartdiagnostic@gmail.com\n\nMétodos de pago disponibles:\n• Transferencia bancaria\n• Depósito en OXXO\n• Tarjeta de crédito');
+        }
+        
+        // ========== LOG ==========
+        function addLog(message, type = 'info') {
+            const log = document.getElementById('log');
+            if (!log) return;
+            
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            const timestamp = new Date().toLocaleTimeString();
+            entry.textContent = `[${timestamp}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        // ========== INICIAR ==========
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
