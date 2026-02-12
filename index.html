@@ -3,71 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProPart Diagnostic Pro - Sistema Completo V3</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <meta http-equiv="Permissions-Policy" content="bluetooth=*">
+    <title>ProPart Diagnostic Pro - Sistema Completo</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
+            min-height: 100vh;
+            padding: 10px;
         }
         .header {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
             padding: 20px;
             text-align: center;
-            position: relative;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
-        .header h1 { font-size: 2em; margin-bottom: 10px; }
-        .admin-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: gold;
-            color: #333;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            border: none;
-            font-size: 0.9em;
-        }
-        .container {
-            max-width: 1400px;
-            margin: 20px auto;
-            padding: 0 15px;
-        }
-        .tabs {
-            display: flex;
+        .header h1 { font-size: 1.8em; margin-bottom: 8px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card {
             background: white;
-            border-radius: 15px 15px 0 0;
-            overflow-x: auto;
-        }
-        .tab {
-            flex: 1;
-            min-width: 100px;
-            padding: 15px 10px;
-            text-align: center;
-            cursor: pointer;
-            background: white;
-            border: none;
-            font-size: 0.9em;
-            font-weight: bold;
-            color: #666;
-        }
-        .tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        .tab-content {
-            background: white;
-            border-radius: 0 0 15px 15px;
+            border-radius: 12px;
             padding: 25px;
-            display: none;
-            min-height: 500px;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
-        .tab-content.active { display: block; }
+        .card h2 { color: #667eea; margin-bottom: 20px; }
         .status-box {
             background: #f5f5f5;
             padding: 20px;
@@ -76,514 +40,503 @@
             font-size: 1.3em;
             font-weight: bold;
             margin: 20px 0;
-            border-left: 5px solid #667eea;
+            border-left: 6px solid #667eea;
         }
         .status-box.connected {
             background: #d4edda;
             border-left-color: #28a745;
             color: #155724;
         }
+        button {
+            padding: 16px;
+            font-size: 1.05em;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            margin: 8px 0;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; }
+        .btn-danger { background: linear-gradient(135deg, #f44336, #da190b); color: white; }
+        .btn-warning { background: linear-gradient(135deg, #ff9800, #fb8c00); color: white; }
+        
         .sensor-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 10px;
             margin: 20px 0;
         }
         .sensor-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            padding: 15px;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            padding: 12px;
             border-radius: 10px;
             text-align: center;
-            border-left: 5px solid #667eea;
+            border-left: 4px solid #667eea;
         }
         .sensor-card h3 {
-            font-size: 0.9em;
+            font-size: 0.7em;
             color: #667eea;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
         }
         .sensor-value {
-            font-size: 2em;
+            font-size: 1.6em;
             font-weight: bold;
             color: #333;
-            margin: 8px 0;
+            min-height: 35px;
         }
         .sensor-unit {
-            font-size: 0.85em;
+            font-size: 0.65em;
             color: #666;
+            margin-top: 3px;
         }
-        .dtc-box {
-            background: #fff4e6;
-            border: 3px solid #ff9800;
-            border-radius: 15px;
+        
+        .graph-section {
+            margin: 25px 0;
             padding: 20px;
-            margin: 20px 0;
-            display: none;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+        .graph-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .graph-controls label {
+            font-weight: bold;
+            color: #667eea;
+            min-width: 80px;
+        }
+        .graph-controls select {
+            flex: 1;
+            padding: 10px;
+            font-size: 1em;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+        }
+        .graph {
+            width: 100%;
+            height: 180px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .dtc-item {
+            background: #fff4e6;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border-left: 5px solid #f44336;
         }
         .dtc-code {
-            background: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #f44336;
+        }
+        .log-box {
+            background: #1e1e1e;
+            color: #00ff00;
             padding: 15px;
-            margin: 10px 0;
             border-radius: 8px;
-            border-left: 5px solid #f44336;
-            font-size: 1.1em;
-            font-weight: bold;
-        }
-        button {
-            padding: 12px 20px;
-            font-size: 1em;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin: 5px;
-            transition: all 0.3s;
-        }
-        .btn-primary { background: #4CAF50; color: white; }
-        .btn-danger { background: #f44336; color: white; }
-        .btn-warning { background: #ff9800; color: white; }
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        canvas {
-            max-width: 100%;
-            height: 300px !important;
-            margin: 20px 0;
-        }
-        .form-group {
-            margin: 15px 0;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1em;
-        }
-        .diagram-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-        .diagram-card {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: transform 0.3s;
-            border-left: 5px solid #667eea;
-        }
-        .diagram-card:hover {
-            transform: translateY(-5px);
-        }
-        .diagram-preview {
-            width: 100%;
-            height: 150px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-            overflow: hidden;
-        }
-        .diagram-preview img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
+            font-family: monospace;
+            font-size: 0.75em;
+            max-height: 180px;
             overflow-y: auto;
-            padding: 20px;
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 900px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-        }
-        .modal-close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 2em;
-            cursor: pointer;
-            color: #666;
         }
         .hidden { display: none !important; }
-        @media (max-width: 768px) {
-            .sensor-grid, .diagram-list {
-                grid-template-columns: 1fr;
-            }
-        }
     </style>
 </head>
 <body>
     <div class="header">
-        <button class="admin-btn" onclick="showAdminLogin()">🔐 ADMIN</button>
         <h1>⚡ PROPART DIAGNOSTIC PRO</h1>
-        <p style="font-size: 0.9em;">Fernando Millán - 777 683 8196 | 221 956 7392</p>
+        <p>Fernando Millán | 777 683 8196 | 221 956 7392</p>
     </div>
 
     <div class="container">
-        <div class="tabs">
-            <button class="tab active" onclick="switchTab('conexion')">📡 CONEXIÓN</button>
-            <button class="tab" onclick="switchTab('sensores')">📊 SENSORES</button>
-            <button class="tab" onclick="switchTab('graficas')">📈 GRÁFICAS</button>
-            <button class="tab" onclick="switchTab('diagramas')">🔧 DIAGRAMAS</button>
-            <button class="tab hidden" id="tab-admin" onclick="switchTab('admin')">⚙️ ADMIN</button>
-        </div>
-
-        <!-- TAB: CONEXIÓN -->
-        <div id="tab-conexion" class="tab-content active">
-            <h2 style="color: #667eea; margin-bottom: 20px;">📡 Conexión OBD2</h2>
-            
+        <!-- CONEXIÓN -->
+        <div class="card">
+            <h2>📡 Conexión Bluetooth OBD2</h2>
             <div class="status-box" id="status">🔴 DESCONECTADO</div>
             
-            <div class="btn-group">
-                <button class="btn-primary" id="btnConnect" style="font-size: 1.2em; padding: 15px 30px;">
-                    🔍 BUSCAR Y CONECTAR
-                </button>
-                <button class="btn-danger" id="btnDisconnect" style="display: none;">
-                    ❌ DESCONECTAR
-                </button>
-            </div>
+            <button class="btn-primary" id="btnConnect">🔍 CONECTAR BLUETOOTH</button>
+            <button class="btn-danger hidden" id="btnDisconnect">❌ DESCONECTAR</button>
+            <button class="btn-warning hidden" id="btnDTC">📋 LEER CÓDIGOS DTC</button>
+            <button class="btn-danger hidden" id="btnClear">🗑️ BORRAR CÓDIGOS</button>
             
-            <div class="btn-group">
-                <button class="btn-warning" id="btnDTC" style="display: none;">📋 LEER CÓDIGOS DTC</button>
-                <button class="btn-warning" id="btnClearDTC" style="display: none;">🗑️ BORRAR CÓDIGOS</button>
-            </div>
-            
-            <div class="dtc-box" id="dtcResult">
-                <h3 style="color: #ff9800; margin-bottom: 15px;">📋 Códigos de Falla Detectados</h3>
+            <div id="dtcResults" class="hidden">
+                <h3 style="color: #ff9800; margin: 20px 0;">Códigos de Falla:</h3>
                 <div id="dtcList"></div>
             </div>
         </div>
 
-        <!-- TAB: SENSORES -->
-        <div id="tab-sensores" class="tab-content">
-            <h2 style="color: #667eea; margin-bottom: 20px;">📊 Sensores en Tiempo Real</h2>
+        <!-- SENSORES (12 TOTALES) -->
+        <div class="card">
+            <h2>📊 Sensores en Tiempo Real (12 Sensores)</h2>
+            <p style="color: #666; margin-bottom: 15px;">Todos los sensores actualizándose cada 2 segundos</p>
             
             <div class="sensor-grid">
-                <div class="sensor-card"><h3>🔄 RPM</h3><div class="sensor-value" id="rpm">----</div><span class="sensor-unit">rpm</span></div>
-                <div class="sensor-card"><h3>🚗 Velocidad</h3><div class="sensor-value" id="speed">----</div><span class="sensor-unit">km/h</span></div>
-                <div class="sensor-card"><h3>🌡️ Temp Motor</h3><div class="sensor-value" id="temp">----</div><span class="sensor-unit">°C</span></div>
-                <div class="sensor-card"><h3>❄️ Temp Aire</h3><div class="sensor-value" id="iat">----</div><span class="sensor-unit">°C</span></div>
-                <div class="sensor-card"><h3>⚡ Voltaje</h3><div class="sensor-value" id="voltage">----</div><span class="sensor-unit">V</span></div>
-                <div class="sensor-card"><h3>💪 Carga</h3><div class="sensor-value" id="load">----</div><span class="sensor-unit">%</span></div>
-                <div class="sensor-card"><h3>🎯 TPS</h3><div class="sensor-value" id="tps">----</div><span class="sensor-unit">%</span></div>
-                <div class="sensor-card"><h3>📊 MAP</h3><div class="sensor-value" id="map">----</div><span class="sensor-unit">kPa</span></div>
-                <div class="sensor-card"><h3>💨 MAF</h3><div class="sensor-value" id="maf">----</div><span class="sensor-unit">g/s</span></div>
-                <div class="sensor-card"><h3>🔧 STFT</h3><div class="sensor-value" id="stft">----</div><span class="sensor-unit">%</span></div>
-                <div class="sensor-card"><h3>🔧 LTFT</h3><div class="sensor-value" id="ltft">----</div><span class="sensor-unit">%</span></div>
-                <div class="sensor-card"><h3>🌊 O2</h3><div class="sensor-value" id="o2">----</div><span class="sensor-unit">V</span></div>
+                <div class="sensor-card"><h3>RPM</h3><div class="sensor-value" id="rpm">----</div></div>
+                <div class="sensor-card"><h3>Velocidad</h3><div class="sensor-value" id="speed">----</div><div class="sensor-unit">km/h</div></div>
+                <div class="sensor-card"><h3>Temp Motor</h3><div class="sensor-value" id="temp">----</div><div class="sensor-unit">°C</div></div>
+                <div class="sensor-card"><h3>Temp Aire</h3><div class="sensor-value" id="iat">----</div><div class="sensor-unit">°C</div></div>
+                <div class="sensor-card"><h3>Voltaje</h3><div class="sensor-value" id="voltage">----</div><div class="sensor-unit">V</div></div>
+                <div class="sensor-card"><h3>Carga</h3><div class="sensor-value" id="load">----</div><div class="sensor-unit">%</div></div>
+                <div class="sensor-card"><h3>TPS</h3><div class="sensor-value" id="tps">----</div><div class="sensor-unit">%</div></div>
+                <div class="sensor-card"><h3>MAP</h3><div class="sensor-value" id="map">----</div><div class="sensor-unit">kPa</div></div>
+                <div class="sensor-card"><h3>MAF</h3><div class="sensor-value" id="maf">----</div><div class="sensor-unit">g/s</div></div>
+                <div class="sensor-card"><h3>O2 Sensor</h3><div class="sensor-value" id="o2">----</div><div class="sensor-unit">V</div></div>
+                <div class="sensor-card"><h3>STFT</h3><div class="sensor-value" id="stft">----</div><div class="sensor-unit">%</div></div>
+                <div class="sensor-card"><h3>LTFT</h3><div class="sensor-value" id="ltft">----</div><div class="sensor-unit">%</div></div>
             </div>
         </div>
 
-        <!-- TAB: GRÁFICAS -->
-        <div id="tab-graficas" class="tab-content">
-            <h2 style="color: #667eea; margin-bottom: 20px;">📈 Gráficas en Tiempo Real</h2>
-            <canvas id="rpmChart"></canvas>
-            <canvas id="tempChart"></canvas>
-            <canvas id="loadChart"></canvas>
-        </div>
-
-        <!-- TAB: DIAGRAMAS -->
-        <div id="tab-diagramas" class="tab-content">
-            <h2 style="color: #667eea; margin-bottom: 20px;">🔧 Diagramas Eléctricos</h2>
-            <input type="text" id="search-diagrams" 
-                   style="width: 100%; padding: 12px; border: 2px solid #667eea; border-radius: 8px; font-size: 1em; margin: 15px 0;"
-                   placeholder="🔍 Buscar diagrama..."
-                   oninput="searchDiagrams()">
-            <div class="diagram-list" id="diagram-list"></div>
-        </div>
-
-        <!-- TAB: ADMIN -->
-        <div id="tab-admin" class="tab-content">
-            <h2 style="color: #667eea; margin-bottom: 20px;">⚙️ Admin - Subir Diagramas</h2>
+        <!-- GRÁFICAS PERSONALIZABLES -->
+        <div class="card">
+            <h2>📈 Gráficas Personalizables</h2>
+            <p style="color: #666; margin-bottom: 15px;">
+                Selecciona qué sensor quieres ver en cada gráfica. Cambias en tiempo real sin pausar.
+            </p>
             
-            <div style="background: #f9f9f9; padding: 20px; border-radius: 10px;">
-                <div class="form-group">
-                    <label>Marca</label>
-                    <select id="admin-brand">
-                        <option value="nissan">Nissan</option>
-                        <option value="vw">Volkswagen</option>
-                        <option value="chevrolet">Chevrolet</option>
-                        <option value="ford">Ford</option>
+            <!-- GRÁFICA 1 -->
+            <div class="graph-section">
+                <div class="graph-controls">
+                    <label>Gráfica 1:</label>
+                    <select id="select1" onchange="updateGraphSelection()">
+                        <option value="rpm" selected>RPM</option>
+                        <option value="speed">Velocidad</option>
+                        <option value="temp">Temperatura Motor</option>
+                        <option value="iat">Temperatura Aire</option>
+                        <option value="load">Carga Motor</option>
+                        <option value="tps">TPS</option>
+                        <option value="map">MAP</option>
+                        <option value="maf">MAF</option>
+                        <option value="o2">O2 Sensor</option>
+                        <option value="stft">STFT</option>
+                        <option value="ltft">LTFT</option>
+                        <option value="voltage">Voltaje</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Modelo</label>
-                    <input type="text" id="admin-model" placeholder="Ej: Tsuru III">
-                </div>
-                <div class="form-group">
-                    <label>Año</label>
-                    <input type="text" id="admin-year" placeholder="Ej: 2004-2012">
-                </div>
-                <div class="form-group">
-                    <label>Sistema</label>
-                    <input type="text" id="admin-system" placeholder="Ej: Inyección GA16DE">
-                </div>
-                <div class="form-group">
-                    <label>Archivo (PDF/Imagen)</label>
-                    <input type="file" id="admin-file" accept=".pdf,.jpg,.jpeg,.png">
-                </div>
-                <button class="btn-primary" onclick="uploadDiagram()" style="width: 100%; padding: 15px; font-size: 1.1em;">
-                    📤 GUARDAR DIAGRAMA
-                </button>
+                <canvas class="graph" id="graph1"></canvas>
             </div>
             
-            <div style="margin-top: 30px;">
-                <h3>📋 Diagramas Guardados</h3>
-                <div class="diagram-list" id="admin-diagram-list"></div>
+            <!-- GRÁFICA 2 -->
+            <div class="graph-section">
+                <div class="graph-controls">
+                    <label>Gráfica 2:</label>
+                    <select id="select2" onchange="updateGraphSelection()">
+                        <option value="rpm">RPM</option>
+                        <option value="speed">Velocidad</option>
+                        <option value="temp" selected>Temperatura Motor</option>
+                        <option value="iat">Temperatura Aire</option>
+                        <option value="load">Carga Motor</option>
+                        <option value="tps">TPS</option>
+                        <option value="map">MAP</option>
+                        <option value="maf">MAF</option>
+                        <option value="o2">O2 Sensor</option>
+                        <option value="stft">STFT</option>
+                        <option value="ltft">LTFT</option>
+                        <option value="voltage">Voltaje</option>
+                    </select>
+                </div>
+                <canvas class="graph" id="graph2"></canvas>
+            </div>
+            
+            <!-- GRÁFICA 3 -->
+            <div class="graph-section">
+                <div class="graph-controls">
+                    <label>Gráfica 3:</label>
+                    <select id="select3" onchange="updateGraphSelection()">
+                        <option value="rpm">RPM</option>
+                        <option value="speed">Velocidad</option>
+                        <option value="temp">Temperatura Motor</option>
+                        <option value="iat">Temperatura Aire</option>
+                        <option value="load" selected>Carga Motor</option>
+                        <option value="tps">TPS</option>
+                        <option value="map">MAP</option>
+                        <option value="maf">MAF</option>
+                        <option value="o2">O2 Sensor</option>
+                        <option value="stft">STFT</option>
+                        <option value="ltft">LTFT</option>
+                        <option value="voltage">Voltaje</option>
+                    </select>
+                </div>
+                <canvas class="graph" id="graph3"></canvas>
             </div>
         </div>
-    </div>
 
-    <!-- MODALS -->
-    <div class="modal" id="modal-admin">
-        <div class="modal-content" style="max-width: 400px;">
-            <span class="modal-close" onclick="closeModal()">×</span>
-            <h2 style="color: #667eea; margin-bottom: 20px;">🔐 Admin</h2>
-            <div class="form-group">
-                <input type="password" id="admin-password" placeholder="Contraseña">
-            </div>
-            <button class="btn-primary" onclick="verifyAdmin()" style="width: 100%; padding: 15px;">ENTRAR</button>
+        <!-- LOG -->
+        <div class="card">
+            <h2>📝 Log de Comunicación</h2>
+            <div class="log-box" id="logBox"></div>
         </div>
     </div>
 
     <script>
-        // ===== BLUETOOTH =====
         const UUIDS = ['000018f0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb'];
-        let service, writeChar, notifyChar, loop;
-        let receivedData = '';
-        let waitingForDTC = false;
-        let chartData = { rpm: [], temp: [], load: [] };
-        let charts = {};
+        let device, server, service, writeChar, notifyChar, loop;
+        let allData = '', waitingDTC = false;
+        
+        // Datos de TODOS los sensores
+        const sensorData = {
+            rpm: [], speed: [], temp: [], iat: [], voltage: [], load: [],
+            tps: [], map: [], maf: [], o2: [], stft: [], ltft: []
+        };
+        
+        // Config de gráficas (max values)
+        const graphConfig = {
+            rpm: { max: 7000, color: '#667eea', label: 'RPM' },
+            speed: { max: 200, color: '#2196F3', label: 'Velocidad (km/h)' },
+            temp: { max: 120, color: '#f44336', label: 'Temp Motor (°C)' },
+            iat: { max: 60, color: '#FF5722', label: 'Temp Aire (°C)' },
+            voltage: { max: 16, color: '#FFC107', label: 'Voltaje (V)' },
+            load: { max: 100, color: '#4CAF50', label: 'Carga (%)' },
+            tps: { max: 100, color: '#9C27B0', label: 'TPS (%)' },
+            map: { max: 255, color: '#3F51B5', label: 'MAP (kPa)' },
+            maf: { max: 100, color: '#00BCD4', label: 'MAF (g/s)' },
+            o2: { max: 1, color: '#009688', label: 'O2 (V)' },
+            stft: { max: 50, color: '#8BC34A', label: 'STFT (%)' },
+            ltft: { max: 50, color: '#CDDC39', label: 'LTFT (%)' }
+        };
+        
+        const DTC = {
+            'P0036':'O2 calentador B1S2 circuito | Verificar cables, medir 5-20Ω',
+            'P0141':'O2 calentador B1S2 falla | Verificar 12V, reemplazar',
+            'P0501':'VSS rango | Verificar sensor, cables',
+            'P0606':'ECM error | Verificar batería, tierras',
+            'P0100':'MAF circuito | Cables, limpiar',
+            'P0171':'Sistema pobre | Fugas, MAF, inyectores',
+            'P0300':'Fallas encendido | Bujías, bobinas',
+            'P0420':'Catalizador | Verificar O2'
+        };
 
-        // GRÁFICAS
-        function initCharts() {
-            const commonOptions = {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: { y: { beginAtZero: true } }
-            };
-            
-            charts.rpm = new Chart(document.getElementById('rpmChart'), {
-                type: 'line',
-                data: {
-                    labels: Array(50).fill(''),
-                    datasets: [{ label: 'RPM', data: chartData.rpm, borderColor: '#667eea', tension: 0.4 }]
-                },
-                options: { ...commonOptions, scales: { y: { max: 7000 } } }
-            });
-            
-            charts.temp = new Chart(document.getElementById('tempChart'), {
-                type: 'line',
-                data: {
-                    labels: Array(50).fill(''),
-                    datasets: [{ label: 'Temperatura °C', data: chartData.temp, borderColor: '#f44336', tension: 0.4 }]
-                },
-                options: { ...commonOptions, scales: { y: { max: 120 } } }
-            });
-            
-            charts.load = new Chart(document.getElementById('loadChart'), {
-                type: 'line',
-                data: {
-                    labels: Array(50).fill(''),
-                    datasets: [{ label: 'Carga %', data: chartData.load, borderColor: '#4CAF50', tension: 0.4 }]
-                },
-                options: { ...commonOptions, scales: { y: { max: 100 } } }
-            });
+        function log(msg, color='#00ff00') {
+            const box = document.getElementById('logBox');
+            const time = new Date().toLocaleTimeString();
+            box.innerHTML += `<div style="color:${color}">[${time}] ${msg}</div>`;
+            box.scrollTop = box.scrollHeight;
         }
 
-        function updateChart(chart, value) {
-            chartData[chart].push(value);
-            if (chartData[chart].length > 50) chartData[chart].shift();
-            if (charts[chart]) charts[chart].update('none');
+        function drawGraph(canvasId, sensorKey) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            
+            const data = sensorData[sensorKey];
+            const config = graphConfig[sensorKey];
+            
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width = canvas.offsetWidth;
+            const h = canvas.height = canvas.offsetHeight;
+            
+            // Limpiar
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(0, 0, w, h);
+            
+            // Grid
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = (h/4)*i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(w, y);
+                ctx.stroke();
+            }
+            
+            // Datos
+            if (data.length < 2) return;
+            
+            ctx.strokeStyle = config.color;
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            
+            const points = Math.min(data.length, 50);
+            const stepX = w / (points - 1);
+            
+            for (let i = 0; i < points; i++) {
+                const value = data[data.length - points + i] || 0;
+                const x = i * stepX;
+                const y = h - (value / config.max) * h;
+                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.stroke();
         }
 
-        // CONECTAR
+        function updateGraphSelection() {
+            const sensor1 = document.getElementById('select1').value;
+            const sensor2 = document.getElementById('select2').value;
+            const sensor3 = document.getElementById('select3').value;
+            
+            drawGraph('graph1', sensor1);
+            drawGraph('graph2', sensor2);
+            drawGraph('graph3', sensor3);
+        }
+
+        function updateAllGraphs() {
+            updateGraphSelection();
+        }
+
         document.getElementById('btnConnect').addEventListener('click', async () => {
             try {
-                document.getElementById('status').innerText = "🔍 Buscando...";
+                log('Buscando dispositivo...', '#8be9fd');
+                document.getElementById('status').textContent = "🔍 Buscando...";
                 
-                const device = await navigator.bluetooth.requestDevice({
+                device = await navigator.bluetooth.requestDevice({
                     acceptAllDevices: true,
                     optionalServices: UUIDS
                 });
                 
-                const server = await device.gatt.connect();
+                log('Conectando: ' + device.name, '#50fa7b');
+                server = await device.gatt.connect();
                 
                 for (let uuid of UUIDS) {
                     try {
                         service = await server.getPrimaryService(uuid);
+                        log('Servicio OK', '#50fa7b');
                         break;
                     } catch(e) {}
                 }
                 
-                const characteristics = await service.getCharacteristics();
-                for (let char of characteristics) {
+                const chars = await service.getCharacteristics();
+                for (let char of chars) {
                     if (char.properties.write) writeChar = char;
                     if (char.properties.notify) notifyChar = char;
                 }
                 
                 await notifyChar.startNotifications();
                 notifyChar.addEventListener('characteristicvaluechanged', handleData);
+                log('Listo!', '#50fa7b');
                 
-                document.getElementById('status').innerText = "✅ CONECTADO";
+                document.getElementById('status').textContent = "✅ CONECTADO";
                 document.getElementById('status').classList.add('connected');
-                document.getElementById('btnConnect').style.display = 'none';
-                document.getElementById('btnDisconnect').style.display = 'inline-block';
-                document.getElementById('btnDTC').style.display = 'inline-block';
-                document.getElementById('btnClearDTC').style.display = 'inline-block';
+                document.getElementById('btnConnect').classList.add('hidden');
+                document.getElementById('btnDisconnect').classList.remove('hidden');
+                document.getElementById('btnDTC').classList.remove('hidden');
+                document.getElementById('btnClear').classList.remove('hidden');
                 
-                await send("AT Z");
-                await wait(1500);
-                await send("AT E0");
-                await wait(300);
-                await send("AT SP0");
-                await wait(500);
+                await send("AT Z"); await wait(1500);
+                await send("AT E0"); await wait(300);
+                await send("AT SP0"); await wait(500);
                 
                 startLoop();
                 
             } catch(error) {
+                log('ERROR: ' + error.message, '#ff5555');
                 alert('Error: ' + error.message);
             }
         });
 
-        // DESCONECTAR
         document.getElementById('btnDisconnect').addEventListener('click', () => {
             if (loop) clearInterval(loop);
-            document.getElementById('status').innerText = "🔴 DESCONECTADO";
+            if (device && device.gatt.connected) device.gatt.disconnect();
+            document.getElementById('status').textContent = "🔴 DESCONECTADO";
             document.getElementById('status').classList.remove('connected');
-            document.getElementById('btnConnect').style.display = 'inline-block';
-            document.getElementById('btnDisconnect').style.display = 'none';
-            document.getElementById('btnDTC').style.display = 'none';
-            document.getElementById('btnClearDTC').style.display = 'none';
+            document.getElementById('btnConnect').classList.remove('hidden');
+            document.getElementById('btnDisconnect').classList.add('hidden');
+            document.getElementById('btnDTC').classList.add('hidden');
+            document.getElementById('btnClear').classList.add('hidden');
         });
 
-        // LEER DTC (ARREGLADO PARA MÚLTIPLES CÓDIGOS)
         document.getElementById('btnDTC').addEventListener('click', async () => {
             if (loop) clearInterval(loop);
+            allData = '';
+            waitingDTC = true;
             
-            receivedData = '';
-            waitingForDTC = true;
-            
-            document.getElementById('dtcResult').style.display = 'block';
+            document.getElementById('dtcResults').classList.remove('hidden');
             document.getElementById('dtcList').innerHTML = '<p style="text-align:center; padding:20px;">⏳ ESCANEANDO...</p>';
             
-            await send("03");
+            log('Leyendo DTC...', '#8be9fd');
+            await send("03"); await wait(1500);
+            await send("03 01"); await wait(1500);
+            await send("03 02"); await wait(1500);
             
             setTimeout(() => {
-                waitingForDTC = false;
+                waitingDTC = false;
                 displayDTC();
                 setTimeout(() => startLoop(), 2000);
-            }, 3000);
+            }, 1000);
         });
 
         function displayDTC() {
-            console.log('Datos recibidos:', receivedData);
+            log('Data: ' + allData, '#f1fa8c');
             
-            const codes = [];
+            const codes = new Set();
+            const direct = allData.match(/[PCBU][0-9A-F]{4}/gi);
+            if (direct) direct.forEach(c => codes.add(c.toUpperCase()));
             
-            // Método 1: Buscar códigos directos P0XXX, C0XXX, etc.
-            const matches = receivedData.match(/[PCBU][0-9A-F]{4}/gi);
-            if (matches) {
-                codes.push(...matches);
-            }
-            
-            // Método 2: Parsear formato hex "43 XX XX XX XX"
             const hexPattern = /43[\s]+((?:[0-9A-F]{2}[\s]*)+)/gi;
-            const hexMatches = [...receivedData.matchAll(hexPattern)];
-            
-            for (let match of hexMatches) {
+            [...allData.matchAll(hexPattern)].forEach(match => {
                 const hex = match[1].replace(/\s/g, '');
                 for (let i = 0; i < hex.length; i += 4) {
                     const chunk = hex.substring(i, i + 4);
                     if (chunk !== '0000' && chunk.length === 4) {
                         const dtc = hexToDTC(chunk);
-                        if (dtc && !codes.includes(dtc)) codes.push(dtc);
+                        if (dtc) codes.add(dtc);
                     }
                 }
-            }
+            });
             
-            // Mostrar resultados
             const listEl = document.getElementById('dtcList');
             
-            if (codes.length === 0) {
-                listEl.innerHTML = '<p style="text-align:center; padding:20px; font-size:1.2em;">✅ SIN CÓDIGOS DE FALLA</p>';
+            if (codes.size === 0) {
+                listEl.innerHTML = '<p style="text-align:center; padding:30px;">✅ SIN CÓDIGOS</p>';
+                log('Sin códigos', '#50fa7b');
             } else {
-                listEl.innerHTML = codes.map(code => 
-                    `<div class="dtc-code">❌ ${code}</div>`
-                ).join('');
+                log('Códigos: ' + Array.from(codes).join(', '), '#50fa7b');
+                listEl.innerHTML = Array.from(codes).map(code => {
+                    const info = DTC[code] || 'Código genérico';
+                    return `<div class="dtc-item"><div class="dtc-code">❌ ${code}</div><div style="margin-top:10px;">${info}</div></div>`;
+                }).join('');
             }
         }
 
         function hexToDTC(hex) {
-            const firstDigit = parseInt(hex[0], 16);
-            const prefixes = ['P0', 'P1', 'P2', 'P3', 'C0', 'C1', 'C2', 'C3', 
-                             'B0', 'B1', 'B2', 'B3', 'U0', 'U1', 'U2', 'U3'];
-            return prefixes[firstDigit] + hex.substring(1);
+            const d = parseInt(hex[0], 16);
+            const p = ['P0','P1','P2','P3','C0','C1','C2','C3','B0','B1','B2','B3','U0','U1','U2','U3'];
+            return p[d] + hex.substring(1);
         }
 
-        // BORRAR
-        document.getElementById('btnClearDTC').addEventListener('click', async () => {
+        document.getElementById('btnClear').addEventListener('click', async () => {
             if (confirm('¿Borrar códigos?')) {
                 if (loop) clearInterval(loop);
                 await send("04");
-                document.getElementById('dtcResult').style.display = 'none';
+                document.getElementById('dtcResults').classList.add('hidden');
+                log('Códigos borrados', '#50fa7b');
                 alert('✅ Códigos borrados');
                 await wait(500);
                 startLoop();
             }
         });
 
-        // ENVIAR
         async function send(cmd) {
             if (!writeChar) return;
             await writeChar.writeValue(new TextEncoder().encode(cmd + "\r"));
+            log('TX: ' + cmd, '#bd93f9');
         }
 
         function wait(ms) {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        // RECIBIR DATOS
         function handleData(event) {
             const value = new TextDecoder().decode(event.target.value).trim();
             if (!value || value === '>') return;
             
-            console.log('RX:', value);
+            log('RX: ' + value, '#f1fa8c');
             
-            if (waitingForDTC) {
-                receivedData += value + ' ';
+            if (waitingDTC) {
+                allData += value + ' ';
                 return;
             }
             
@@ -593,7 +546,9 @@
                 if (hex.length === 4) {
                     const rpm = Math.round(parseInt(hex, 16) / 4);
                     document.getElementById('rpm').textContent = rpm;
-                    updateChart('rpm', rpm);
+                    sensorData.rpm.push(rpm);
+                    if (sensorData.rpm.length > 50) sensorData.rpm.shift();
+                    updateAllGraphs();
                 }
             }
             
@@ -601,25 +556,35 @@
             if (value.includes('41 0D')) {
                 const hex = value.replace(/\s/g, '').substring(4, 6);
                 if (hex.length === 2) {
-                    document.getElementById('speed').textContent = parseInt(hex, 16);
+                    const speed = parseInt(hex, 16);
+                    document.getElementById('speed').textContent = speed;
+                    sensorData.speed.push(speed);
+                    if (sensorData.speed.length > 50) sensorData.speed.shift();
+                    updateAllGraphs();
                 }
             }
             
-            // Temperatura motor
+            // Temp Motor
             if (value.includes('41 05')) {
                 const hex = value.replace(/\s/g, '').substring(4, 6);
                 if (hex.length === 2) {
                     const temp = parseInt(hex, 16) - 40;
                     document.getElementById('temp').textContent = temp;
-                    updateChart('temp', temp);
+                    sensorData.temp.push(temp);
+                    if (sensorData.temp.length > 50) sensorData.temp.shift();
+                    updateAllGraphs();
                 }
             }
             
-            // Temperatura aire (IAT)
+            // Temp Aire (IAT)
             if (value.includes('41 0F')) {
                 const hex = value.replace(/\s/g, '').substring(4, 6);
                 if (hex.length === 2) {
-                    document.getElementById('iat').textContent = parseInt(hex, 16) - 40;
+                    const iat = parseInt(hex, 16) - 40;
+                    document.getElementById('iat').textContent = iat;
+                    sensorData.iat.push(iat);
+                    if (sensorData.iat.length > 50) sensorData.iat.shift();
+                    updateAllGraphs();
                 }
             }
             
@@ -627,7 +592,11 @@
             if (value.includes('V')) {
                 const match = value.match(/(\d+\.?\d*)/);
                 if (match) {
-                    document.getElementById('voltage').textContent = parseFloat(match[1]).toFixed(1);
+                    const voltage = parseFloat(match[1]);
+                    document.getElementById('voltage').textContent = voltage.toFixed(1);
+                    sensorData.voltage.push(voltage);
+                    if (sensorData.voltage.length > 50) sensorData.voltage.shift();
+                    updateAllGraphs();
                 }
             }
             
@@ -637,7 +606,9 @@
                 if (hex.length === 2) {
                     const load = Math.round((parseInt(hex, 16) * 100) / 255);
                     document.getElementById('load').textContent = load;
-                    updateChart('load', load);
+                    sensorData.load.push(load);
+                    if (sensorData.load.length > 50) sensorData.load.shift();
+                    updateAllGraphs();
                 }
             }
             
@@ -645,7 +616,11 @@
             if (value.includes('41 11')) {
                 const hex = value.replace(/\s/g, '').substring(4, 6);
                 if (hex.length === 2) {
-                    document.getElementById('tps').textContent = Math.round((parseInt(hex, 16) * 100) / 255);
+                    const tps = Math.round((parseInt(hex, 16) * 100) / 255);
+                    document.getElementById('tps').textContent = tps;
+                    sensorData.tps.push(tps);
+                    if (sensorData.tps.length > 50) sensorData.tps.shift();
+                    updateAllGraphs();
                 }
             }
             
@@ -653,7 +628,11 @@
             if (value.includes('41 0B')) {
                 const hex = value.replace(/\s/g, '').substring(4, 6);
                 if (hex.length === 2) {
-                    document.getElementById('map').textContent = parseInt(hex, 16);
+                    const map = parseInt(hex, 16);
+                    document.getElementById('map').textContent = map;
+                    sensorData.map.push(map);
+                    if (sensorData.map.length > 50) sensorData.map.shift();
+                    updateAllGraphs();
                 }
             }
             
@@ -661,23 +640,11 @@
             if (value.includes('41 10')) {
                 const hex = value.replace(/\s/g, '').substring(4, 8);
                 if (hex.length === 4) {
-                    document.getElementById('maf').textContent = (parseInt(hex, 16) / 100).toFixed(1);
-                }
-            }
-            
-            // STFT
-            if (value.includes('41 06')) {
-                const hex = value.replace(/\s/g, '').substring(4, 6);
-                if (hex.length === 2) {
-                    document.getElementById('stft').textContent = ((parseInt(hex, 16) - 128) * 100 / 128).toFixed(1);
-                }
-            }
-            
-            // LTFT
-            if (value.includes('41 07')) {
-                const hex = value.replace(/\s/g, '').substring(4, 6);
-                if (hex.length === 2) {
-                    document.getElementById('ltft').textContent = ((parseInt(hex, 16) - 128) * 100 / 128).toFixed(1);
+                    const maf = parseInt(hex, 16) / 100;
+                    document.getElementById('maf').textContent = maf.toFixed(1);
+                    sensorData.maf.push(maf);
+                    if (sensorData.maf.length > 50) sensorData.maf.shift();
+                    updateAllGraphs();
                 }
             }
             
@@ -685,12 +652,39 @@
             if (value.includes('41 14')) {
                 const hex = value.replace(/\s/g, '').substring(4, 6);
                 if (hex.length === 2) {
-                    document.getElementById('o2').textContent = (parseInt(hex, 16) / 200).toFixed(2);
+                    const o2 = parseInt(hex, 16) / 200;
+                    document.getElementById('o2').textContent = o2.toFixed(2);
+                    sensorData.o2.push(o2);
+                    if (sensorData.o2.length > 50) sensorData.o2.shift();
+                    updateAllGraphs();
+                }
+            }
+            
+            // STFT
+            if (value.includes('41 06')) {
+                const hex = value.replace(/\s/g, '').substring(4, 6);
+                if (hex.length === 2) {
+                    const stft = ((parseInt(hex, 16) - 128) * 100 / 128).toFixed(1);
+                    document.getElementById('stft').textContent = stft;
+                    sensorData.stft.push(parseFloat(stft));
+                    if (sensorData.stft.length > 50) sensorData.stft.shift();
+                    updateAllGraphs();
+                }
+            }
+            
+            // LTFT
+            if (value.includes('41 07')) {
+                const hex = value.replace(/\s/g, '').substring(4, 6);
+                if (hex.length === 2) {
+                    const ltft = ((parseInt(hex, 16) - 128) * 100 / 128).toFixed(1);
+                    document.getElementById('ltft').textContent = ltft;
+                    sensorData.ltft.push(parseFloat(ltft));
+                    if (sensorData.ltft.length > 50) sensorData.ltft.shift();
+                    updateAllGraphs();
                 }
             }
         }
 
-        // LOOP
         function startLoop() {
             loop = setInterval(async () => {
                 await send("010C"); await wait(80);
@@ -701,154 +695,14 @@
                 await send("0111"); await wait(80);
                 await send("010B"); await wait(80);
                 await send("0110"); await wait(80);
+                await send("0114"); await wait(80);
                 await send("0106"); await wait(80);
                 await send("0107"); await wait(80);
-                await send("0114"); await wait(80);
                 await send("ATRV");
             }, 2000);
         }
 
-        // BASE DE DATOS
-        let db = null;
-        
-        function initDB() {
-            const request = indexedDB.open('ProPartDB', 1);
-            request.onsuccess = (e) => {
-                db = e.target.result;
-                loadDiagrams();
-            };
-            request.onupgradeneeded = (e) => {
-                db = e.target.result;
-                if (!db.objectStoreNames.contains('diagrams')) {
-                    db.createObjectStore('diagrams', { keyPath: 'id', autoIncrement: true });
-                }
-            };
-        }
-
-        // ADMIN
-        function showAdminLogin() {
-            document.getElementById('modal-admin').classList.add('active');
-        }
-
-        function verifyAdmin() {
-            const password = document.getElementById('admin-password').value;
-            if (password === 'millan2026' || password === 'admin' || password === 'fernando') {
-                document.getElementById('tab-admin').classList.remove('hidden');
-                closeModal();
-                switchTab('admin');
-                loadAdminDiagrams();
-                alert('✅ Admin');
-            } else {
-                alert('❌ Contraseña incorrecta');
-            }
-        }
-
-        function uploadDiagram() {
-            const brand = document.getElementById('admin-brand').value;
-            const model = document.getElementById('admin-model').value;
-            const year = document.getElementById('admin-year').value;
-            const system = document.getElementById('admin-system').value;
-            const file = document.getElementById('admin-file').files[0];
-            
-            if (!model || !file) {
-                alert('⚠️ Completa modelo y archivo');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const transaction = db.transaction(['diagrams'], 'readwrite');
-                transaction.objectStore('diagrams').add({
-                    brand, model, year, system,
-                    fileData: e.target.result,
-                    fileName: file.name,
-                    fileType: file.type
-                });
-                alert('✅ Guardado');
-                document.getElementById('admin-model').value = '';
-                document.getElementById('admin-file').value = '';
-                loadDiagrams();
-                loadAdminDiagrams();
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function loadDiagrams() {
-            if (!db) return;
-            const transaction = db.transaction(['diagrams'], 'readonly');
-            const request = transaction.objectStore('diagrams').getAll();
-            
-            request.onsuccess = (e) => {
-                const diagrams = e.target.result;
-                const container = document.getElementById('diagram-list');
-                container.innerHTML = '';
-                
-                diagrams.forEach(d => {
-                    const card = document.createElement('div');
-                    card.className = 'diagram-card';
-                    card.innerHTML = `
-                        <div class="diagram-preview">
-                            ${d.fileType.includes('image') ? `<img src="${d.fileData}">` : '<p style="font-size: 2em;">📄</p>'}
-                        </div>
-                        <div style="font-weight: bold;">${d.model}</div>
-                        <div style="font-size: 0.85em; color: #666;">${d.brand} ${d.year}</div>
-                        <div style="font-size: 0.8em; color: #999;">${d.system}</div>
-                    `;
-                    container.appendChild(card);
-                });
-                
-                if (diagrams.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; padding: 40px; color: #999;">No hay diagramas. Usa el panel Admin para subir.</p>';
-                }
-            };
-        }
-
-        function loadAdminDiagrams() {
-            if (!db) return;
-            const transaction = db.transaction(['diagrams'], 'readonly');
-            const request = transaction.objectStore('diagrams').getAll();
-            
-            request.onsuccess = (e) => {
-                const diagrams = e.target.result;
-                const container = document.getElementById('admin-diagram-list');
-                container.innerHTML = '';
-                
-                diagrams.forEach(d => {
-                    const card = document.createElement('div');
-                    card.className = 'diagram-card';
-                    card.innerHTML = `
-                        <div class="diagram-preview">
-                            ${d.fileType.includes('image') ? `<img src="${d.fileData}">` : '<p style="font-size: 2em;">📄</p>'}
-                        </div>
-                        <div style="font-weight: bold;">${d.model}</div>
-                    `;
-                    container.appendChild(card);
-                });
-            };
-        }
-
-        function searchDiagrams() {
-            // Implementar búsqueda
-        }
-
-        // UI
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            const tabElement = event?.target || document.querySelector(`[onclick*="${tab}"]`);
-            if (tabElement) tabElement.classList.add('active');
-            document.getElementById(`tab-${tab}`).classList.add('active');
-        }
-
-        function closeModal() {
-            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
-        }
-
-        // INIT
-        document.addEventListener('DOMContentLoaded', () => {
-            initDB();
-            initCharts();
-        });
+        log('Sistema listo', '#50fa7b');
     </script>
 </body>
 </html>
