@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Permissions-Policy" content="bluetooth=*">
-    <title>ProPart Diagnostic Pro - Sistema Completo</title>
+    <meta http-equiv="Permissions-Policy" content="bluetooth=*, microphone=*">
+    <title>ProPart Diagnostic Pro - Scanner Completo</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -21,8 +21,33 @@
             border-radius: 12px;
             margin-bottom: 20px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            position: relative;
         }
-        .header h1 { font-size: 1.8em; margin-bottom: 8px; }
+        .voice-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: 2px solid white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            transition: all 0.3s;
+        }
+        .voice-btn:hover { transform: scale(1.1); }
+        .voice-btn.listening {
+            background: linear-gradient(135deg, #f44336, #da190b);
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
         .container { max-width: 1200px; margin: 0 auto; }
         .card {
             background: white;
@@ -57,12 +82,8 @@
             width: 100%;
             margin: 8px 0;
             transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
-        button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-        }
+        button:hover:not(:disabled) { transform: translateY(-2px); }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-primary { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; }
         .btn-danger { background: linear-gradient(135deg, #f44336, #da190b); color: white; }
@@ -85,7 +106,6 @@
             font-size: 0.7em;
             color: #667eea;
             margin-bottom: 6px;
-            text-transform: uppercase;
         }
         .sensor-value {
             font-size: 1.6em;
@@ -100,8 +120,8 @@
         }
         
         .graph-section {
-            margin: 25px 0;
-            padding: 20px;
+            margin: 20px 0;
+            padding: 15px;
             background: #f9f9f9;
             border-radius: 10px;
         }
@@ -109,7 +129,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         .graph-controls label {
             font-weight: bold;
@@ -118,19 +138,16 @@
         }
         .graph-controls select {
             flex: 1;
-            padding: 10px;
-            font-size: 1em;
+            padding: 8px;
             border: 2px solid #667eea;
             border-radius: 8px;
             background: white;
-            cursor: pointer;
         }
         .graph {
             width: 100%;
-            height: 180px;
+            height: 150px;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .dtc-item {
@@ -152,7 +169,7 @@
             border-radius: 8px;
             font-family: monospace;
             font-size: 0.75em;
-            max-height: 180px;
+            max-height: 250px;
             overflow-y: auto;
         }
         .hidden { display: none !important; }
@@ -160,8 +177,10 @@
 </head>
 <body>
     <div class="header">
+        <button class="voice-btn" id="voiceBtn" title="Asistente de voz">🎤</button>
         <h1>⚡ PROPART DIAGNOSTIC PRO</h1>
-        <p>Fernando Millán | 777 683 8196 | 221 956 7392</p>
+        <p>Scanner OBD2 Profesional con Asistente de Voz</p>
+        <p style="font-size: 0.9em;">Fernando Millán | 777 683 8196</p>
     </div>
 
     <div class="container">
@@ -174,18 +193,19 @@
             <button class="btn-danger hidden" id="btnDisconnect">❌ DESCONECTAR</button>
             <button class="btn-warning hidden" id="btnDTC">📋 LEER CÓDIGOS DTC</button>
             <button class="btn-danger hidden" id="btnClear">🗑️ BORRAR CÓDIGOS</button>
+            <button class="btn-warning hidden" id="btnExtended" style="background: linear-gradient(135deg, #9C27B0, #7B1FA2);">
+                📊 MODO EXTENDIDO (12 sensores)
+            </button>
             
             <div id="dtcResults" class="hidden">
-                <h3 style="color: #ff9800; margin: 20px 0;">Códigos de Falla:</h3>
+                <h3 style="color: #ff9800; margin: 20px 0;">📋 Códigos de Falla:</h3>
                 <div id="dtcList"></div>
             </div>
         </div>
 
-        <!-- SENSORES (12 TOTALES) -->
+        <!-- SENSORES -->
         <div class="card">
-            <h2>📊 Sensores en Tiempo Real (12 Sensores)</h2>
-            <p style="color: #666; margin-bottom: 15px;">Todos los sensores actualizándose cada 2 segundos</p>
-            
+            <h2>📊 Sensores en Tiempo Real (14 Sensores)</h2>
             <div class="sensor-grid">
                 <div class="sensor-card"><h3>RPM</h3><div class="sensor-value" id="rpm">----</div></div>
                 <div class="sensor-card"><h3>Velocidad</h3><div class="sensor-value" id="speed">----</div><div class="sensor-unit">km/h</div></div>
@@ -194,6 +214,8 @@
                 <div class="sensor-card"><h3>Voltaje</h3><div class="sensor-value" id="voltage">----</div><div class="sensor-unit">V</div></div>
                 <div class="sensor-card"><h3>Carga</h3><div class="sensor-value" id="load">----</div><div class="sensor-unit">%</div></div>
                 <div class="sensor-card"><h3>TPS</h3><div class="sensor-value" id="tps">----</div><div class="sensor-unit">%</div></div>
+                <div class="sensor-card"><h3>APP1</h3><div class="sensor-value" id="app1">----</div><div class="sensor-unit">%</div></div>
+                <div class="sensor-card"><h3>APP2</h3><div class="sensor-value" id="app2">----</div><div class="sensor-unit">%</div></div>
                 <div class="sensor-card"><h3>MAP</h3><div class="sensor-value" id="map">----</div><div class="sensor-unit">kPa</div></div>
                 <div class="sensor-card"><h3>MAF</h3><div class="sensor-value" id="maf">----</div><div class="sensor-unit">g/s</div></div>
                 <div class="sensor-card"><h3>O2 Sensor</h3><div class="sensor-value" id="o2">----</div><div class="sensor-unit">V</div></div>
@@ -202,24 +224,22 @@
             </div>
         </div>
 
-        <!-- GRÁFICAS PERSONALIZABLES -->
+        <!-- GRÁFICAS -->
         <div class="card">
             <h2>📈 Gráficas Personalizables</h2>
-            <p style="color: #666; margin-bottom: 15px;">
-                Selecciona qué sensor quieres ver en cada gráfica. Cambias en tiempo real sin pausar.
-            </p>
             
-            <!-- GRÁFICA 1 -->
             <div class="graph-section">
                 <div class="graph-controls">
                     <label>Gráfica 1:</label>
-                    <select id="select1" onchange="updateGraphSelection()">
+                    <select id="select1" onchange="updateGraphs()">
                         <option value="rpm" selected>RPM</option>
                         <option value="speed">Velocidad</option>
                         <option value="temp">Temperatura Motor</option>
                         <option value="iat">Temperatura Aire</option>
                         <option value="load">Carga Motor</option>
                         <option value="tps">TPS</option>
+                        <option value="app1">APP1 (Pedal 1)</option>
+                        <option value="app2">APP2 (Pedal 2)</option>
                         <option value="map">MAP</option>
                         <option value="maf">MAF</option>
                         <option value="o2">O2 Sensor</option>
@@ -231,17 +251,18 @@
                 <canvas class="graph" id="graph1"></canvas>
             </div>
             
-            <!-- GRÁFICA 2 -->
             <div class="graph-section">
                 <div class="graph-controls">
                     <label>Gráfica 2:</label>
-                    <select id="select2" onchange="updateGraphSelection()">
+                    <select id="select2" onchange="updateGraphs()">
                         <option value="rpm">RPM</option>
                         <option value="speed">Velocidad</option>
                         <option value="temp" selected>Temperatura Motor</option>
                         <option value="iat">Temperatura Aire</option>
                         <option value="load">Carga Motor</option>
                         <option value="tps">TPS</option>
+                        <option value="app1">APP1 (Pedal 1)</option>
+                        <option value="app2">APP2 (Pedal 2)</option>
                         <option value="map">MAP</option>
                         <option value="maf">MAF</option>
                         <option value="o2">O2 Sensor</option>
@@ -253,17 +274,18 @@
                 <canvas class="graph" id="graph2"></canvas>
             </div>
             
-            <!-- GRÁFICA 3 -->
             <div class="graph-section">
                 <div class="graph-controls">
                     <label>Gráfica 3:</label>
-                    <select id="select3" onchange="updateGraphSelection()">
+                    <select id="select3" onchange="updateGraphs()">
                         <option value="rpm">RPM</option>
                         <option value="speed">Velocidad</option>
                         <option value="temp">Temperatura Motor</option>
                         <option value="iat">Temperatura Aire</option>
                         <option value="load" selected>Carga Motor</option>
                         <option value="tps">TPS</option>
+                        <option value="app1">APP1 (Pedal 1)</option>
+                        <option value="app2">APP2 (Pedal 2)</option>
                         <option value="map">MAP</option>
                         <option value="maf">MAF</option>
                         <option value="o2">O2 Sensor</option>
@@ -286,39 +308,41 @@
     <script>
         const UUIDS = ['000018f0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb'];
         let device, server, service, writeChar, notifyChar, loop;
-        let allData = '', waitingDTC = false;
+        let allDtcData = '';
+        let waitingForDTC = false;
+        let extendedMode = false;
         
-        // Datos de TODOS los sensores
         const sensorData = {
             rpm: [], speed: [], temp: [], iat: [], voltage: [], load: [],
-            tps: [], map: [], maf: [], o2: [], stft: [], ltft: []
+            tps: [], app1: [], app2: [], map: [], maf: [], o2: [], stft: [], ltft: []
         };
         
-        // Config de gráficas (max values)
         const graphConfig = {
-            rpm: { max: 7000, color: '#667eea', label: 'RPM' },
-            speed: { max: 200, color: '#2196F3', label: 'Velocidad (km/h)' },
-            temp: { max: 120, color: '#f44336', label: 'Temp Motor (°C)' },
-            iat: { max: 60, color: '#FF5722', label: 'Temp Aire (°C)' },
-            voltage: { max: 16, color: '#FFC107', label: 'Voltaje (V)' },
-            load: { max: 100, color: '#4CAF50', label: 'Carga (%)' },
-            tps: { max: 100, color: '#9C27B0', label: 'TPS (%)' },
-            map: { max: 255, color: '#3F51B5', label: 'MAP (kPa)' },
-            maf: { max: 100, color: '#00BCD4', label: 'MAF (g/s)' },
-            o2: { max: 1, color: '#009688', label: 'O2 (V)' },
-            stft: { max: 50, color: '#8BC34A', label: 'STFT (%)' },
-            ltft: { max: 50, color: '#CDDC39', label: 'LTFT (%)' }
+            rpm: { max: 7000, color: '#667eea' },
+            speed: { max: 200, color: '#2196F3' },
+            temp: { max: 120, color: '#f44336' },
+            iat: { max: 60, color: '#FF5722' },
+            voltage: { max: 16, color: '#FFC107' },
+            load: { max: 100, color: '#4CAF50' },
+            tps: { max: 100, color: '#9C27B0' },
+            app1: { max: 100, color: '#E91E63' },
+            app2: { max: 100, color: '#F06292' },
+            map: { max: 255, color: '#3F51B5' },
+            maf: { max: 100, color: '#00BCD4' },
+            o2: { max: 1, color: '#009688' },
+            stft: { max: 50, color: '#8BC34A' },
+            ltft: { max: 50, color: '#CDDC39' }
         };
         
-        const DTC = {
-            'P0036':'O2 calentador B1S2 circuito | Verificar cables, medir 5-20Ω',
-            'P0141':'O2 calentador B1S2 falla | Verificar 12V, reemplazar',
-            'P0501':'VSS rango | Verificar sensor, cables',
-            'P0606':'ECM error | Verificar batería, tierras',
-            'P0100':'MAF circuito | Cables, limpiar',
-            'P0171':'Sistema pobre | Fugas, MAF, inyectores',
-            'P0300':'Fallas encendido | Bujías, bobinas',
-            'P0420':'Catalizador | Verificar O2'
+        const DTC_DB = {
+            'P0036':'O2 calentador B1S2 circuito',
+            'P0141':'O2 calentador B1S2 falla',
+            'P0501':'VSS rango/rendimiento',
+            'P0606':'ECM error procesador',
+            'P0100':'MAF circuito',
+            'P0171':'Sistema muy pobre',
+            'P0300':'Fallas encendido',
+            'P0420':'Catalizador bajo'
         };
 
         function log(msg, color='#00ff00') {
@@ -339,11 +363,9 @@
             const w = canvas.width = canvas.offsetWidth;
             const h = canvas.height = canvas.offsetHeight;
             
-            // Limpiar
             ctx.fillStyle = '#fff';
             ctx.fillRect(0, 0, w, h);
             
-            // Grid
             ctx.strokeStyle = '#e0e0e0';
             ctx.lineWidth = 1;
             for (let i = 0; i <= 4; i++) {
@@ -354,7 +376,6 @@
                 ctx.stroke();
             }
             
-            // Datos
             if (data.length < 2) return;
             
             ctx.strokeStyle = config.color;
@@ -373,23 +394,16 @@
             ctx.stroke();
         }
 
-        function updateGraphSelection() {
-            const sensor1 = document.getElementById('select1').value;
-            const sensor2 = document.getElementById('select2').value;
-            const sensor3 = document.getElementById('select3').value;
-            
-            drawGraph('graph1', sensor1);
-            drawGraph('graph2', sensor2);
-            drawGraph('graph3', sensor3);
+        function updateGraphs() {
+            drawGraph('graph1', document.getElementById('select1').value);
+            drawGraph('graph2', document.getElementById('select2').value);
+            drawGraph('graph3', document.getElementById('select3').value);
         }
 
-        function updateAllGraphs() {
-            updateGraphSelection();
-        }
-
+        // BLUETOOTH
         document.getElementById('btnConnect').addEventListener('click', async () => {
             try {
-                log('Buscando dispositivo...', '#8be9fd');
+                log('🔍 Buscando dispositivo...', '#8be9fd');
                 document.getElementById('status').textContent = "🔍 Buscando...";
                 
                 device = await navigator.bluetooth.requestDevice({
@@ -397,13 +411,13 @@
                     optionalServices: UUIDS
                 });
                 
-                log('Conectando: ' + device.name, '#50fa7b');
+                log(`Conectando: ${device.name}`, '#50fa7b');
                 server = await device.gatt.connect();
                 
                 for (let uuid of UUIDS) {
                     try {
                         service = await server.getPrimaryService(uuid);
-                        log('Servicio OK', '#50fa7b');
+                        log('Servicio encontrado', '#50fa7b');
                         break;
                     } catch(e) {}
                 }
@@ -416,7 +430,7 @@
                 
                 await notifyChar.startNotifications();
                 notifyChar.addEventListener('characteristicvaluechanged', handleData);
-                log('Listo!', '#50fa7b');
+                log('Notificaciones activadas', '#50fa7b');
                 
                 document.getElementById('status').textContent = "✅ CONECTADO";
                 document.getElementById('status').classList.add('connected');
@@ -424,10 +438,14 @@
                 document.getElementById('btnDisconnect').classList.remove('hidden');
                 document.getElementById('btnDTC').classList.remove('hidden');
                 document.getElementById('btnClear').classList.remove('hidden');
+                document.getElementById('btnExtended').classList.remove('hidden');
                 
-                await send("AT Z"); await wait(1500);
-                await send("AT E0"); await wait(300);
-                await send("AT SP0"); await wait(500);
+                log('Inicializando ELM327...', '#8be9fd');
+                await send("AT Z"); await wait(2000);
+                await send("AT E0"); await wait(500);
+                await send("AT L0"); await wait(500);
+                await send("AT SP0"); await wait(800);
+                log('ELM327 listo', '#50fa7b');
                 
                 startLoop();
                 
@@ -446,74 +464,216 @@
             document.getElementById('btnDisconnect').classList.add('hidden');
             document.getElementById('btnDTC').classList.add('hidden');
             document.getElementById('btnClear').classList.add('hidden');
+            document.getElementById('btnExtended').classList.add('hidden');
+            extendedMode = false;
+            log('Desconectado', '#ffb86c');
         });
 
         document.getElementById('btnDTC').addEventListener('click', async () => {
             if (loop) clearInterval(loop);
-            allData = '';
-            waitingDTC = true;
+            allDtcData = '';
+            waitingForDTC = true;
             
             document.getElementById('dtcResults').classList.remove('hidden');
-            document.getElementById('dtcList').innerHTML = '<p style="text-align:center; padding:20px;">⏳ ESCANEANDO...</p>';
+            document.getElementById('dtcList').innerHTML = '<p style="text-align:center; padding:30px; font-size:1.2em;">⏳ ESCANEANDO CÓDIGOS DTC...<br><br>Esto puede tardar 15-20 segundos<br>Por favor espera...</p>';
             
-            log('Leyendo DTC...', '#8be9fd');
-            await send("03"); await wait(1500);
-            await send("03 01"); await wait(1500);
-            await send("03 02"); await wait(1500);
+            log('═══════════════════════════════', '#8be9fd');
+            log('📋 INICIANDO LECTURA DTC PROFUNDA', '#8be9fd');
+            log('═══════════════════════════════', '#8be9fd');
             
+            // LIMPIAR BUFFER PRIMERO
+            await send("AT AL"); await wait(500);
+            
+            // Enviar MÚLTIPLES comandos DTC con MUCHO tiempo de espera
+            log('Enviando comando 03 (página 0)...', '#f1fa8c');
+            await send("03"); await wait(3500);
+            
+            log('Enviando comando 03 01 (página 1)...', '#f1fa8c');
+            await send("03 01"); await wait(3500);
+            
+            log('Enviando comando 03 02 (página 2)...', '#f1fa8c');
+            await send("03 02"); await wait(3500);
+            
+            log('Enviando comando 03 03 (página 3)...', '#f1fa8c');
+            await send("03 03"); await wait(3500);
+            
+            log('Enviando comando 03 04 (página 4)...', '#f1fa8c');
+            await send("03 04"); await wait(3500);
+            
+            log('Enviando comando 03 05 (página 5)...', '#f1fa8c');
+            await send("03 05"); await wait(3500);
+            
+            // Esperar extra y procesar
+            log('Esperando datos finales...', '#f1fa8c');
             setTimeout(() => {
-                waitingDTC = false;
+                waitingForDTC = false;
                 displayDTC();
-                setTimeout(() => startLoop(), 2000);
-            }, 1000);
+                log('═══════════════════════════════', '#50fa7b');
+                log('✅ LECTURA DTC COMPLETADA', '#50fa7b');
+                log('═══════════════════════════════', '#50fa7b');
+                setTimeout(() => startLoop(), 3000);
+            }, 2000);
         });
 
         function displayDTC() {
-            log('Data: ' + allData, '#f1fa8c');
+            log('═══════════════════════════════', '#f1fa8c');
+            log('📊 PROCESANDO DATOS DTC RECIBIDOS', '#f1fa8c');
+            log('═══════════════════════════════', '#f1fa8c');
+            log(`DATOS COMPLETOS (${allDtcData.length} caracteres):`, '#f1fa8c');
+            log(allDtcData, '#ffff00');
+            log('═══════════════════════════════', '#f1fa8c');
             
             const codes = new Set();
-            const direct = allData.match(/[PCBU][0-9A-F]{4}/gi);
-            if (direct) direct.forEach(c => codes.add(c.toUpperCase()));
             
+            // ═══════ MÉTODO 1: Códigos directos (P0141, etc) ═══════
+            log('🔍 MÉTODO 1: Buscando códigos directos...', '#8be9fd');
+            const directMatches = allDtcData.match(/[PCBU][0-9A-F]{4}/gi);
+            if (directMatches) {
+                directMatches.forEach(c => {
+                    codes.add(c.toUpperCase());
+                    log(`  ✓ Código directo encontrado: ${c.toUpperCase()}`, '#50fa7b');
+                });
+            } else {
+                log('  ✗ No se encontraron códigos directos', '#ffb86c');
+            }
+            
+            // ═══════ MÉTODO 2: Respuestas 43 con espacios ═══════
+            log('🔍 MÉTODO 2: Parseando respuestas 43 XX XX...', '#8be9fd');
             const hexPattern = /43[\s]+((?:[0-9A-F]{2}[\s]*)+)/gi;
-            [...allData.matchAll(hexPattern)].forEach(match => {
-                const hex = match[1].replace(/\s/g, '');
-                for (let i = 0; i < hex.length; i += 4) {
-                    const chunk = hex.substring(i, i + 4);
-                    if (chunk !== '0000' && chunk.length === 4) {
-                        const dtc = hexToDTC(chunk);
-                        if (dtc) codes.add(dtc);
+            const hexMatches = [...allDtcData.matchAll(hexPattern)];
+            
+            if (hexMatches.length > 0) {
+                hexMatches.forEach((match, idx) => {
+                    const hex = match[1].replace(/\s/g, '');
+                    log(`  Respuesta 43 #${idx+1}: ${hex}`, '#8be9fd');
+                    
+                    for (let i = 0; i < hex.length; i += 4) {
+                        const chunk = hex.substring(i, i + 4);
+                        if (chunk !== '0000' && chunk.length === 4) {
+                            const dtc = hexToDTC(chunk);
+                            if (dtc) {
+                                codes.add(dtc);
+                                log(`    ✓ ${chunk} → ${dtc}`, '#50fa7b');
+                            }
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                log('  ✗ No se encontraron respuestas 43', '#ffb86c');
+            }
+            
+            // ═══════ MÉTODO 3: Buscar 43 SIN espacios ═══════
+            log('🔍 MÉTODO 3: Buscando 43 sin espacios...', '#8be9fd');
+            const hex43Pattern = /43([0-9A-F]{2,})/gi;
+            const hex43Matches = [...allDtcData.matchAll(hex43Pattern)];
+            
+            if (hex43Matches.length > 0) {
+                hex43Matches.forEach((match, idx) => {
+                    const hex = match[1];
+                    log(`  Respuesta 43 compacta #${idx+1}: ${hex}`, '#8be9fd');
+                    
+                    for (let i = 0; i < hex.length; i += 4) {
+                        const chunk = hex.substring(i, i + 4);
+                        if (chunk !== '0000' && chunk.length === 4) {
+                            const dtc = hexToDTC(chunk);
+                            if (dtc) {
+                                codes.add(dtc);
+                                log(`    ✓ ${chunk} → ${dtc}`, '#50fa7b');
+                            }
+                        }
+                    }
+                });
+            } else {
+                log('  ✗ No se encontraron respuestas 43 compactas', '#ffb86c');
+            }
+            
+            // ═══════ MÉTODO 4: Buscar CUALQUIER patrón 4 dígitos hex ═══════
+            log('🔍 MÉTODO 4: Buscando patrones sospechosos...', '#8be9fd');
+            const allHexGroups = allDtcData.match(/[0-9A-F]{4}/gi);
+            if (allHexGroups) {
+                const suspicious = allHexGroups.filter(h => 
+                    h !== '0000' && 
+                    h !== 'FFFF' && 
+                    !h.startsWith('41') &&
+                    !h.startsWith('AT')
+                );
+                suspicious.forEach(h => {
+                    const dtc = hexToDTC(h);
+                    if (dtc && dtc.match(/^[PCBU][0-9]{4}$/)) {
+                        log(`  ? Patrón sospechoso: ${h} → ${dtc}`, '#ffb86c');
+                    }
+                });
+            }
+            
+            log('═══════════════════════════════', '#f1fa8c');
+            log(`📋 TOTAL CÓDIGOS ÚNICOS ENCONTRADOS: ${codes.size}`, codes.size > 0 ? '#50fa7b' : '#f44336');
+            log('═══════════════════════════════', '#f1fa8c');
             
             const listEl = document.getElementById('dtcList');
             
             if (codes.size === 0) {
-                listEl.innerHTML = '<p style="text-align:center; padding:30px;">✅ SIN CÓDIGOS</p>';
-                log('Sin códigos', '#50fa7b');
+                listEl.innerHTML = `
+                    <div style="text-align:center; padding:30px;">
+                        <div style="font-size:3em; margin-bottom:15px;">⚠️</div>
+                        <div style="font-size:1.3em; font-weight:bold; color:#f44336; margin-bottom:15px;">
+                            NO SE DETECTARON CÓDIGOS
+                        </div>
+                        <div style="color:#666; margin-bottom:20px;">
+                            El scanner recibió ${allDtcData.length} caracteres de datos<br>
+                            pero no pudo extraer códigos DTC válidos.
+                        </div>
+                        <div style="background:#fff4e6; padding:15px; border-radius:8px; text-align:left; margin:20px auto; max-width:500px;">
+                            <strong>💡 Posibles causas:</strong><br>
+                            • El vehículo realmente no tiene códigos<br>
+                            • El scanner necesita más tiempo<br>
+                            • El protocolo OBD2 es diferente<br>
+                            • Problema de comunicación
+                        </div>
+                        <button onclick="document.getElementById('btnDTC').click()" 
+                                style="padding:12px 24px; background:#667eea; color:white; border:none; border-radius:8px; cursor:pointer; font-size:1.1em; margin-top:10px;">
+                            🔄 Intentar de Nuevo
+                        </button>
+                    </div>
+                `;
+                log('❌ RESULTADO: Sin códigos detectados', '#f44336');
             } else {
-                log('Códigos: ' + Array.from(codes).join(', '), '#50fa7b');
-                listEl.innerHTML = Array.from(codes).map(code => {
-                    const info = DTC[code] || 'Código genérico';
-                    return `<div class="dtc-item"><div class="dtc-code">❌ ${code}</div><div style="margin-top:10px;">${info}</div></div>`;
+                Array.from(codes).forEach(code => {
+                    log(`  ✅ ${code}`, '#50fa7b');
+                });
+                
+                listEl.innerHTML = `
+                    <div style="background:#d4edda; padding:15px; border-radius:8px; margin-bottom:20px; text-align:center;">
+                        <div style="font-size:1.2em; font-weight:bold; color:#155724;">
+                            ✅ ${codes.size} CÓDIGO${codes.size > 1 ? 'S' : ''} DETECTADO${codes.size > 1 ? 'S' : ''}
+                        </div>
+                    </div>
+                ` + Array.from(codes).map(code => {
+                    const desc = DTC_DB[code] || 'Código genérico OBD2 - Consultar base de datos';
+                    return `
+                        <div class="dtc-item">
+                            <div class="dtc-code">❌ ${code}</div>
+                            <div style="margin-top:10px; color:#666; font-size:1.05em;">${desc}</div>
+                        </div>
+                    `;
                 }).join('');
             }
         }
 
         function hexToDTC(hex) {
             const d = parseInt(hex[0], 16);
-            const p = ['P0','P1','P2','P3','C0','C1','C2','C3','B0','B1','B2','B3','U0','U1','U2','U3'];
-            return p[d] + hex.substring(1);
+            const prefixes = ['P0','P1','P2','P3','C0','C1','C2','C3','B0','B1','B2','B3','U0','U1','U2','U3'];
+            return prefixes[d] + hex.substring(1);
         }
 
         document.getElementById('btnClear').addEventListener('click', async () => {
-            if (confirm('¿Borrar códigos?')) {
+            if (confirm('¿Borrar códigos DTC?')) {
                 if (loop) clearInterval(loop);
+                log('🗑️ Borrando códigos...', '#ffb86c');
                 await send("04");
+                await wait(1000);
                 document.getElementById('dtcResults').classList.add('hidden');
-                log('Códigos borrados', '#50fa7b');
-                alert('✅ Códigos borrados');
+                log('✅ Códigos borrados', '#50fa7b');
+                alert('✅ Códigos borrados exitosamente');
                 await wait(500);
                 startLoop();
             }
@@ -522,7 +682,7 @@
         async function send(cmd) {
             if (!writeChar) return;
             await writeChar.writeValue(new TextEncoder().encode(cmd + "\r"));
-            log('TX: ' + cmd, '#bd93f9');
+            log(`TX: ${cmd}`, '#bd93f9');
         }
 
         function wait(ms) {
@@ -533,176 +693,248 @@
             const value = new TextDecoder().decode(event.target.value).trim();
             if (!value || value === '>') return;
             
-            log('RX: ' + value, '#f1fa8c');
+            log(`RX: ${value}`, '#f1fa8c');
             
-            if (waitingDTC) {
-                allData += value + ' ';
+            if (waitingForDTC) {
+                allDtcData += value + ' ';
                 return;
             }
             
-            // RPM
-            if (value.includes('41 0C')) {
-                const hex = value.replace(/\s/g, '').substring(4, 8);
-                if (hex.length === 4) {
-                    const rpm = Math.round(parseInt(hex, 16) / 4);
-                    document.getElementById('rpm').textContent = rpm;
-                    sensorData.rpm.push(rpm);
-                    if (sensorData.rpm.length > 50) sensorData.rpm.shift();
-                    updateAllGraphs();
+            // Parsear sensores
+            try {
+                // RPM (PID 0C)
+                if (value.includes('41 0C') || value.includes('410C')) {
+                    const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
+                    const match = hex.match(/410C([0-9A-F]{4})/i);
+                    if (match && match[1].length === 4) {
+                        const rpm = Math.round(parseInt(match[1], 16) / 4);
+                        document.getElementById('rpm').textContent = rpm;
+                        sensorData.rpm.push(rpm);
+                        if (sensorData.rpm.length > 50) sensorData.rpm.shift();
+                        updateGraphs();
+                    }
                 }
-            }
-            
-            // Velocidad
-            if (value.includes('41 0D')) {
-                const hex = value.replace(/\s/g, '').substring(4, 6);
-                if (hex.length === 2) {
-                    const speed = parseInt(hex, 16);
-                    document.getElementById('speed').textContent = speed;
-                    sensorData.speed.push(speed);
-                    if (sensorData.speed.length > 50) sensorData.speed.shift();
-                    updateAllGraphs();
+                
+                // Velocidad (PID 0D)
+                if (value.includes('41 0D') || value.includes('410D')) {
+                    const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
+                    const match = hex.match(/410D([0-9A-F]{2})/i);
+                    if (match && match[1].length === 2) {
+                        const speed = parseInt(match[1], 16);
+                        document.getElementById('speed').textContent = speed;
+                        sensorData.speed.push(speed);
+                        if (sensorData.speed.length > 50) sensorData.speed.shift();
+                        updateGraphs();
+                    }
                 }
-            }
-            
-            // Temp Motor
-            if (value.includes('41 05')) {
-                const hex = value.replace(/\s/g, '').substring(4, 6);
-                if (hex.length === 2) {
-                    const temp = parseInt(hex, 16) - 40;
-                    document.getElementById('temp').textContent = temp;
-                    sensorData.temp.push(temp);
-                    if (sensorData.temp.length > 50) sensorData.temp.shift();
-                    updateAllGraphs();
+                
+                // Temperatura Motor (PID 05)
+                if (value.includes('41 05') || value.includes('4105')) {
+                    const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
+                    const match = hex.match(/4105([0-9A-F]{2})/i);
+                    if (match && match[1].length === 2) {
+                        const temp = parseInt(match[1], 16) - 40;
+                        document.getElementById('temp').textContent = temp;
+                        sensorData.temp.push(temp);
+                        if (sensorData.temp.length > 50) sensorData.temp.shift();
+                        updateGraphs();
+                    }
                 }
-            }
-            
-            // Temp Aire (IAT)
-            if (value.includes('41 0F')) {
-                const hex = value.replace(/\s/g, '').substring(4, 6);
-                if (hex.length === 2) {
-                    const iat = parseInt(hex, 16) - 40;
-                    document.getElementById('iat').textContent = iat;
-                    sensorData.iat.push(iat);
-                    if (sensorData.iat.length > 50) sensorData.iat.shift();
-                    updateAllGraphs();
+                
+                // Temperatura Aire (PID 0F)
+                if (value.includes('41 0F') || value.includes('410F')) {
+                    const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
+                    const match = hex.match(/410F([0-9A-F]{2})/i);
+                    if (match && match[1].length === 2) {
+                        const iat = parseInt(match[1], 16) - 40;
+                        document.getElementById('iat').textContent = iat;
+                        sensorData.iat.push(iat);
+                        if (sensorData.iat.length > 50) sensorData.iat.shift();
+                        updateGraphs();
+                    }
                 }
-            }
-            
-            // Voltaje
-            if (value.includes('V')) {
-                const match = value.match(/(\d+\.?\d*)/);
-                if (match) {
-                    const voltage = parseFloat(match[1]);
-                    document.getElementById('voltage').textContent = voltage.toFixed(1);
-                    sensorData.voltage.push(voltage);
-                    if (sensorData.voltage.length > 50) sensorData.voltage.shift();
-                    updateAllGraphs();
+                
+                // Voltaje (ATRV)
+                if (value.includes('V') && !value.includes('41')) {
+                    const match = value.match(/(\d+\.?\d*)/);
+                    if (match) {
+                        const voltage = parseFloat(match[1]);
+                        document.getElementById('voltage').textContent = voltage.toFixed(1);
+                        sensorData.voltage.push(voltage);
+                        if (sensorData.voltage.length > 50) sensorData.voltage.shift();
+                        updateGraphs();
+                    }
                 }
-            }
-            
-            // Carga
-            if (value.includes('41 04')) {
-                const hex = value.replace(/\s/g, '').substring(4, 6);
-                if (hex.length === 2) {
-                    const load = Math.round((parseInt(hex, 16) * 100) / 255);
-                    document.getElementById('load').textContent = load;
-                    sensorData.load.push(load);
-                    if (sensorData.load.length > 50) sensorData.load.shift();
-                    updateAllGraphs();
+                
+                // Carga (PID 04)
+                if (value.includes('41 04') || value.includes('4104')) {
+                    const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
+                    const match = hex.match(/4104([0-9A-F]{2})/i);
+                    if (match && match[1].length === 2) {
+                        const load = Math.round((parseInt(match[1], 16) * 100) / 255);
+                        document.getElementById('load').textContent = load;
+                        sensorData.load.push(load);
+                        if (sensorData.load.length > 50) sensorData.load.shift();
+                        updateGraphs();
+                    }
                 }
-            }
-            
-            // TPS
-            if (value.includes('41 11')) {
-                const hex = value.replace(/\s/g, '').substring(4, 6);
-                if (hex.length === 2) {
-                    const tps = Math.round((parseInt(hex, 16) * 100) / 255);
-                    document.getElementById('tps').textContent = tps;
-                    sensorData.tps.push(tps);
-                    if (sensorData.tps.length > 50) sensorData.tps.shift();
-                    updateAllGraphs();
+                
+                // TPS (PID 11)
+                if (value.includes('41 11') || value.includes('4111')) {
+                    const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
+                    const match = hex.match(/4111([0-9A-F]{2})/i);
+                    if (match && match[1].length === 2) {
+                        const tps = Math.round((parseInt(match[1], 16) * 100) / 255);
+                        document.getElementById('tps').textContent = tps;
+                        sensorData.tps.push(tps);
+                        if (sensorData.tps.length > 50) sensorData.tps.shift();
+                        updateGraphs();
+                    }
                 }
-            }
-            
-            // MAP
-            if (value.includes('41 0B')) {
-                const hex = value.replace(/\s/g, '').substring(4, 6);
-                if (hex.length === 2) {
-                    const map = parseInt(hex, 16);
-                    document.getElementById('map').textContent = map;
-                    sensorData.map.push(map);
-                    if (sensorData.map.length > 50) sensorData.map.shift();
-                    updateAllGraphs();
+                
+                // MAP (PID 0B)
+                if (value.includes('41 0B') || value.includes('410B')) {
+                    const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
+                    const match = hex.match(/410B([0-9A-F]{2})/i);
+                    if (match && match[1].length === 2) {
+                        const map = parseInt(match[1], 16);
+                        document.getElementById('map').textContent = map;
+                        sensorData.map.push(map);
+                        if (sensorData.map.length > 50) sensorData.map.shift();
+                        updateGraphs();
+                    }
                 }
-            }
-            
-            // MAF
-            if (value.includes('41 10')) {
-                const hex = value.replace(/\s/g, '').substring(4, 8);
-                if (hex.length === 4) {
-                    const maf = parseInt(hex, 16) / 100;
-                    document.getElementById('maf').textContent = maf.toFixed(1);
-                    sensorData.maf.push(maf);
-                    if (sensorData.maf.length > 50) sensorData.maf.shift();
-                    updateAllGraphs();
+                
+                // MAF (PID 10)
+                if (value.includes('41 10') || value.includes('4110')) {
+                    const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
+                    const match = hex.match(/4110([0-9A-F]{4})/i);
+                    if (match && match[1].length === 4) {
+                        const maf = parseInt(match[1], 16) / 100;
+                        document.getElementById('maf').textContent = maf.toFixed(1);
+                        sensorData.maf.push(maf);
+                        if (sensorData.maf.length > 50) sensorData.maf.shift();
+                        updateGraphs();
+                    }
                 }
-            }
-            
-            // O2
-            if (value.includes('41 14')) {
-                const hex = value.replace(/\s/g, '').substring(4, 6);
-                if (hex.length === 2) {
-                    const o2 = parseInt(hex, 16) / 200;
-                    document.getElementById('o2').textContent = o2.toFixed(2);
-                    sensorData.o2.push(o2);
-                    if (sensorData.o2.length > 50) sensorData.o2.shift();
-                    updateAllGraphs();
+                
+                // O2 (PID 14)
+                if (value.includes('41 14') || value.includes('4114')) {
+                    const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
+                    const match = hex.match(/4114([0-9A-F]{2})/i);
+                    if (match && match[1].length === 2) {
+                        const o2 = parseInt(match[1], 16) / 200;
+                        document.getElementById('o2').textContent = o2.toFixed(2);
+                        sensorData.o2.push(o2);
+                        if (sensorData.o2.length > 50) sensorData.o2.shift();
+                        updateGraphs();
+                    }
                 }
-            }
-            
-            // STFT
-            if (value.includes('41 06')) {
-                const hex = value.replace(/\s/g, '').substring(4, 6);
-                if (hex.length === 2) {
-                    const stft = ((parseInt(hex, 16) - 128) * 100 / 128).toFixed(1);
-                    document.getElementById('stft').textContent = stft;
-                    sensorData.stft.push(parseFloat(stft));
-                    if (sensorData.stft.length > 50) sensorData.stft.shift();
-                    updateAllGraphs();
+                
+                // STFT (PID 06)
+                if (value.includes('41 06') || value.includes('4106')) {
+                    const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
+                    const match = hex.match(/4106([0-9A-F]{2})/i);
+                    if (match && match[1].length === 2) {
+                        const stft = ((parseInt(match[1], 16) - 128) * 100 / 128).toFixed(1);
+                        document.getElementById('stft').textContent = stft;
+                        sensorData.stft.push(parseFloat(stft));
+                        if (sensorData.stft.length > 50) sensorData.stft.shift();
+                        updateGraphs();
+                    }
                 }
-            }
-            
-            // LTFT
-            if (value.includes('41 07')) {
-                const hex = value.replace(/\s/g, '').substring(4, 6);
-                if (hex.length === 2) {
-                    const ltft = ((parseInt(hex, 16) - 128) * 100 / 128).toFixed(1);
-                    document.getElementById('ltft').textContent = ltft;
-                    sensorData.ltft.push(parseFloat(ltft));
-                    if (sensorData.ltft.length > 50) sensorData.ltft.shift();
-                    updateAllGraphs();
+                
+                // LTFT (PID 07)
+                if (value.includes('41 07') || value.includes('4107')) {
+                    const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
+                    const match = hex.match(/4107([0-9A-F]{2})/i);
+                    if (match && match[1].length === 2) {
+                        const ltft = ((parseInt(match[1], 16) - 128) * 100 / 128).toFixed(1);
+                        document.getElementById('ltft').textContent = ltft;
+                        sensorData.ltft.push(parseFloat(ltft));
+                        if (sensorData.ltft.length > 50) sensorData.ltft.shift();
+                        updateGraphs();
+                    }
                 }
+                
+                // APP1 - Accelerator Pedal Position 1 (PID 49)
+                if (value.includes('41 49') || value.includes('4149')) {
+                    const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
+                    const match = hex.match(/4149([0-9A-F]{2})/i);
+                    if (match && match[1].length === 2) {
+                        const app1 = Math.round((parseInt(match[1], 16) * 100) / 255);
+                        document.getElementById('app1').textContent = app1;
+                        sensorData.app1.push(app1);
+                        if (sensorData.app1.length > 50) sensorData.app1.shift();
+                        updateGraphs();
+                    }
+                }
+                
+                // APP2 - Accelerator Pedal Position 2 (PID 4A)
+                if (value.includes('41 4A') || value.includes('414A')) {
+                    const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
+                    const match = hex.match(/414A([0-9A-F]{2})/i);
+                    if (match && match[1].length === 2) {
+                        const app2 = Math.round((parseInt(match[1], 16) * 100) / 255);
+                        document.getElementById('app2').textContent = app2;
+                        sensorData.app2.push(app2);
+                        if (sensorData.app2.length > 50) sensorData.app2.shift();
+                        updateGraphs();
+                    }
+                }
+            } catch(e) {
+                log(`Error parseando: ${e.message}`, '#ff5555');
             }
         }
 
         function startLoop() {
-            loop = setInterval(async () => {
-                await send("010C"); await wait(80);
-                await send("010D"); await wait(80);
-                await send("0105"); await wait(80);
-                await send("010F"); await wait(80);
-                await send("0104"); await wait(80);
-                await send("0111"); await wait(80);
-                await send("010B"); await wait(80);
-                await send("0110"); await wait(80);
-                await send("0114"); await wait(80);
-                await send("0106"); await wait(80);
-                await send("0107"); await wait(80);
-                await send("ATRV");
-            }, 2000);
+            if (extendedMode) {
+                log('🔄 MODO EXTENDIDO: Monitoreando 12 sensores (más lento)', '#8be9fd');
+                loop = setInterval(async () => {
+                    await send("010C"); await wait(800);  // RPM
+                    await send("010D"); await wait(800);  // Velocidad
+                    await send("0105"); await wait(800);  // Temp Motor
+                    await send("010F"); await wait(800);  // Temp Aire
+                    await send("0104"); await wait(800);  // Carga
+                    await send("0111"); await wait(800);  // TPS
+                    await send("010B"); await wait(800);  // MAP
+                    await send("0110"); await wait(800);  // MAF
+                    await send("0114"); await wait(800);  // O2
+                    await send("0106"); await wait(800);  // STFT
+                    await send("0107"); await wait(800);  // LTFT
+                    await send("ATRV"); await wait(800);  // Voltaje
+                }, 12000); // Loop cada 12 segundos (12 sensores × 800ms + margen)
+            } else {
+                log('🔄 MODO NORMAL: Monitoreando 6 sensores principales', '#8be9fd');
+                loop = setInterval(async () => {
+                    await send("010C"); await wait(800);  // RPM
+                    await send("010D"); await wait(800);  // Velocidad
+                    await send("0105"); await wait(800);  // Temp Motor
+                    await send("0104"); await wait(800);  // Carga
+                    await send("0111"); await wait(800);  // TPS
+                    await send("ATRV"); await wait(800);  // Voltaje
+                }, 6000); // Loop cada 6 segundos
+            }
         }
+        
+        document.getElementById('btnExtended').addEventListener('click', () => {
+            if (loop) clearInterval(loop);
+            extendedMode = !extendedMode;
+            
+            if (extendedMode) {
+                document.getElementById('btnExtended').textContent = '⚡ MODO RÁPIDO (6 sensores)';
+                document.getElementById('btnExtended').style.background = 'linear-gradient(135deg, #4CAF50, #45a049)';
+                log('✅ Modo extendido activado - 12 sensores', '#50fa7b');
+            } else {
+                document.getElementById('btnExtended').textContent = '📊 MODO EXTENDIDO (12 sensores)';
+                document.getElementById('btnExtended').style.background = 'linear-gradient(135deg, #9C27B0, #7B1FA2)';
+                log('✅ Modo normal activado - 6 sensores', '#50fa7b');
+            }
+            
+            startLoop();
+        });
 
-        log('Sistema listo', '#50fa7b');
+        log('✅ Sistema iniciado - Listo para conectar', '#50fa7b');
     </script>
 </body>
 </html>
