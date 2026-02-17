@@ -1,497 +1,1405 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Permissions-Policy" content="bluetooth=*">
-    <title>ProPart Diagnostic Pro - Fernando Millán</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        .header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            margin: 20px 0;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        }
-        .card h2 { color: #667eea; margin-bottom: 20px; }
-        button {
-            padding: 16px;
-            font-size: 1.05em;
-            font-weight: 600;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            width: 100%;
-            margin: 8px 0;
-            transition: all 0.3s;
-        }
-        .btn-primary { background: linear-gradient(135deg, #4CAF50, #45a049); color: white; }
-        .btn-danger { background: linear-gradient(135deg, #f44336, #da190b); color: white; }
-        .btn-warning { background: linear-gradient(135deg, #ff9800, #fb8c00); color: white; }
-        .btn-info { background: linear-gradient(135deg, #2196F3, #1976D2); color: white; }
-        .status-box {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 1.3em;
-            font-weight: bold;
-            margin: 20px 0;
-            border-left: 6px solid #667eea;
-        }
-        .status-box.connected { background: #d4edda; border-left-color: #28a745; color: #155724; }
-        .hidden { display: none !important; }
-        .sensor-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-            gap: 10px;
-            margin: 20px 0;
-        }
-        .sensor-card {
-            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            border-left: 4px solid #667eea;
-        }
-        .sensor-card h3 { font-size: 0.7em; color: #667eea; margin-bottom: 6px; }
-        .sensor-value { font-size: 1.6em; font-weight: bold; color: #333; }
-        
-        /* Disclaimer Modal */
-        #disclaimerModal {
-            display: flex;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-        .disclaimer-content {
-            background: white;
-            border-radius: 15px;
-            max-width: 500px;
-            margin: 20px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
-        }
-        .disclaimer-header {
-            background: linear-gradient(135deg, #f44336, #d32f2f);
-            color: white;
-            padding: 25px;
-            border-radius: 15px 15px 0 0;
-        }
-        .disclaimer-body {
-            padding: 30px;
-            line-height: 1.8;
-        }
-        .warning-box {
-            background: #fff3cd;
-            border-left: 4px solid #ff9800;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-        .danger-box {
-            background: #ffebee;
-            border-left: 4px solid #f44336;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 5px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta http-equiv="Permissions-Policy" content="bluetooth=*">
+<title>ProPart System - Fernando Millán</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1a;
+  --bg2: #0f1424;
+  --bg3: #141929;
+  --card: #161d30;
+  --card2: #1a2238;
+  --border: rgba(100,160,255,0.12);
+  --border2: rgba(100,160,255,0.25);
+  --cyan: #00d4ff;
+  --cyan2: #00a8cc;
+  --green: #00ff9d;
+  --green2: #00cc7a;
+  --orange: #ff9500;
+  --red: #ff4757;
+  --purple: #a55eea;
+  --yellow: #ffd32a;
+  --text: #e0e8ff;
+  --text2: #8899bb;
+  --text3: #4a5a7a;
+  --glow-cyan: 0 0 20px rgba(0,212,255,0.3);
+  --glow-green: 0 0 20px rgba(0,255,157,0.3);
+  --glow-orange: 0 0 20px rgba(255,149,0,0.3);
+  --glow-red: 0 0 20px rgba(255,71,87,0.3);
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; background:var(--bg); color:var(--text); font-family:'Exo 2', sans-serif; overflow:hidden; }
+
+/* SCROLLABLE VIEWS */
+.view { position:fixed; top:0; left:0; width:100%; height:100%; overflow-y:auto; overflow-x:hidden; display:none; flex-direction:column; padding-bottom:80px; }
+.view.active { display:flex; }
+
+/* ANIMATIONS */
+@keyframes fadeSlideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeSlideIn { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:translateX(0); } }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+@keyframes glow { 0%,100% { box-shadow: var(--glow-cyan); } 50% { box-shadow: 0 0 40px rgba(0,212,255,0.6); } }
+@keyframes scanline { 0% { top:-10%; } 100% { top:110%; } }
+@keyframes rotateGear { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+@keyframes countUp { from { opacity:0; transform:scale(0.5); } to { opacity:1; transform:scale(1); } }
+
+/* ═══════════════════════════════════
+   TOPBAR
+═══════════════════════════════════ */
+.topbar {
+  background: linear-gradient(135deg, var(--card) 0%, var(--card2) 100%);
+  border-bottom: 1px solid var(--border2);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top:0; z-index:100;
+  flex-shrink:0;
+}
+.topbar-logo {
+  display:flex; align-items:center; gap:12px;
+}
+.logo-icon {
+  width:44px; height:44px; background:linear-gradient(135deg,var(--cyan),#0066ff);
+  border-radius:10px; display:flex; align-items:center; justify-content:center;
+  font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.2em; color:white;
+  box-shadow: var(--glow-cyan);
+  flex-shrink:0;
+}
+.logo-text h1 { font-family:'Rajdhani',sans-serif; font-size:1.05em; font-weight:700; letter-spacing:3px; color:var(--text); }
+.logo-text p { font-size:0.65em; letter-spacing:2px; color:var(--cyan); text-transform:uppercase; margin-top:1px; }
+.topbar-right { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.lang-btn {
+  padding:5px 10px; border-radius:6px; border:1px solid var(--border2);
+  background:transparent; color:var(--text2); font-size:0.75em; cursor:pointer;
+  font-family:'Exo 2',sans-serif; transition:all 0.2s;
+}
+.lang-btn.active { background:linear-gradient(135deg,#0044cc,#0066ff); color:white; border-color:var(--cyan); }
+.license-dot { display:flex; align-items:center; gap:5px; font-size:0.7em; color:var(--green); letter-spacing:1px; }
+.dot { width:7px; height:7px; border-radius:50%; background:var(--green); animation:pulse 2s infinite; box-shadow:var(--glow-green); }
+
+/* ═══════════════════════════════════
+   STATUS CARD
+═══════════════════════════════════ */
+.status-card {
+  margin:16px; border-radius:14px;
+  background: linear-gradient(135deg, var(--card) 0%, #0d1525 100%);
+  border: 1px solid var(--border2);
+  padding:16px 20px;
+  position:relative; overflow:hidden;
+  animation: fadeSlideUp 0.5s ease;
+}
+.status-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, var(--cyan), #0066ff, var(--purple));
+}
+.status-label {
+  font-size:0.65em; letter-spacing:3px; color:var(--text3);
+  text-transform:uppercase; margin-bottom:12px;
+  font-family:'Rajdhani',sans-serif;
+}
+.status-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.04);
+  font-size:0.8em;
+}
+.status-row:last-child { border-bottom:none; }
+.status-row .key { color:var(--text3); letter-spacing:1.5px; text-transform:uppercase; font-size:0.9em; }
+.status-row .val { font-family:'Rajdhani',sans-serif; font-weight:600; font-size:1.1em; }
+.val.green { color:var(--green); text-shadow:var(--glow-green); }
+.val.cyan { color:var(--cyan); text-shadow:var(--glow-cyan); }
+.val.orange { color:var(--orange); text-shadow:var(--glow-orange); }
+
+/* ═══════════════════════════════════
+   MODULE GRID
+═══════════════════════════════════ */
+.module-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:12px; margin:0 16px;
+}
+.module-card {
+  background: linear-gradient(145deg, var(--card) 0%, var(--card2) 100%);
+  border:1px solid var(--border);
+  border-radius:16px; padding:24px 16px 20px;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:12px;
+  cursor:pointer; transition:all 0.3s; position:relative; overflow:hidden;
+  min-height:130px;
+}
+.module-card::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(circle at 50% 30%, rgba(255,255,255,0.03), transparent 70%);
+}
+.module-card:active { transform:scale(0.96); }
+.module-card.scanner { border-color:rgba(0,212,255,0.25); }
+.module-card.scanner:hover { border-color:var(--cyan); box-shadow:var(--glow-cyan); }
+.module-card.reporte { border-color:rgba(255,149,0,0.25); }
+.module-card.reporte:hover { border-color:var(--orange); box-shadow:var(--glow-orange); }
+.module-card.refac { border-color:rgba(0,255,157,0.25); }
+.module-card.refac:hover { border-color:var(--green); box-shadow:var(--glow-green); }
+.module-card.datos { border-color:rgba(255,215,0,0.25); }
+.module-card.datos:hover { border-color:var(--yellow); box-shadow:0 0 20px rgba(255,215,0,0.3); }
+.module-card.admin { border-color:rgba(165,94,234,0.25); }
+.module-card.admin:hover { border-color:var(--purple); box-shadow:0 0 20px rgba(165,94,234,0.3); }
+.module-card.historial { border-color:rgba(255,71,87,0.25); }
+.module-card.historial:hover { border-color:var(--red); box-shadow:var(--glow-red); }
+
+.mod-icon-wrap {
+  width:60px; height:60px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.8em; position:relative;
+}
+.scanner .mod-icon-wrap { background:rgba(0,212,255,0.1); }
+.reporte .mod-icon-wrap { background:rgba(255,149,0,0.1); }
+.refac .mod-icon-wrap { background:rgba(0,255,157,0.1); }
+.datos .mod-icon-wrap { background:rgba(255,215,0,0.1); }
+.admin .mod-icon-wrap { background:rgba(165,94,234,0.1); }
+.historial .mod-icon-wrap { background:rgba(255,71,87,0.1); }
+
+.mod-label {
+  font-family:'Rajdhani',sans-serif; font-weight:700;
+  font-size:0.8em; letter-spacing:2.5px; text-align:center;
+}
+.scanner .mod-label { color:var(--cyan); }
+.reporte .mod-label { color:var(--orange); }
+.refac .mod-label { color:var(--green); }
+.datos .mod-label { color:var(--yellow); }
+.admin .mod-label { color:var(--purple); }
+.historial .mod-label { color:var(--red); }
+
+/* ═══════════════════════════════════
+   BOTTOM NAV
+═══════════════════════════════════ */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:200;
+  background: linear-gradient(0deg, var(--bg2) 0%, rgba(15,20,36,0.98) 100%);
+  border-top:1px solid var(--border2);
+  display:flex; padding:6px 0 12px;
+}
+.nav-item {
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;
+  padding:8px 4px; cursor:pointer; transition:all 0.25s; border:none; background:none;
+}
+.nav-item .nav-icon { font-size:1.3em; transition:all 0.25s; }
+.nav-item .nav-label { font-size:0.6em; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); transition:all 0.25s; font-family:'Rajdhani',sans-serif; font-weight:600; }
+.nav-item.active .nav-label { color:var(--cyan); }
+.nav-item.active .nav-icon { filter:drop-shadow(0 0 6px var(--cyan)); transform:translateY(-2px); }
+.nav-item:nth-child(2).active .nav-label { color:var(--orange); }
+.nav-item:nth-child(2).active .nav-icon { filter:drop-shadow(0 0 6px var(--orange)); }
+.nav-item:nth-child(3).active .nav-label { color:var(--green); }
+.nav-item:nth-child(3).active .nav-icon { filter:drop-shadow(0 0 6px var(--green)); }
+.nav-item:nth-child(4).active .nav-label { color:var(--red); }
+.nav-item:nth-child(4).active .nav-icon { filter:drop-shadow(0 0 6px var(--red)); }
+
+/* ═══════════════════════════════════
+   SECTION HEADER
+═══════════════════════════════════ */
+.section-header {
+  display:flex; align-items:center; gap:12px;
+  padding:16px 16px 8px;
+  animation: fadeSlideIn 0.3s ease;
+  flex-shrink:0;
+}
+.back-btn {
+  width:36px; height:36px; border-radius:8px;
+  background:var(--card); border:1px solid var(--border2);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:1.1em; flex-shrink:0;
+  transition:all 0.2s;
+}
+.back-btn:active { transform:scale(0.9); }
+.section-title-wrap h2 { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.2em; letter-spacing:2px; }
+.section-title-wrap p { font-size:0.7em; color:var(--text3); letter-spacing:1px; }
+
+/* ═══════════════════════════════════
+   FILTER BAR
+═══════════════════════════════════ */
+.filter-bar {
+  display:flex; gap:8px; padding:8px 16px 12px;
+  overflow-x:auto; flex-shrink:0;
+  scrollbar-width:none;
+}
+.filter-bar::-webkit-scrollbar { display:none; }
+.filter-chip {
+  flex-shrink:0; padding:7px 14px; border-radius:20px;
+  border:1px solid var(--border2); background:var(--card);
+  color:var(--text2); font-size:0.75em; cursor:pointer;
+  font-family:'Exo 2',sans-serif; font-weight:500;
+  transition:all 0.2s; white-space:nowrap;
+  letter-spacing:0.5px;
+}
+.filter-chip.active {
+  background:linear-gradient(135deg, var(--chip-a), var(--chip-b));
+  border-color:transparent; color:white;
+  box-shadow: 0 4px 12px var(--chip-shadow);
+}
+
+/* ═══════════════════════════════════
+   SCANNER VIEW
+═══════════════════════════════════ */
+.conn-area { margin:0 16px 16px; }
+.status-pill {
+  background:var(--card); border:1px solid var(--border2);
+  border-radius:10px; padding:14px 18px;
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:12px;
+}
+.status-pill-label { font-size:0.7em; letter-spacing:2px; color:var(--text3); text-transform:uppercase; }
+.status-pill-val { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.1em; }
+.status-pill-val.disc { color:var(--red); }
+.status-pill-val.conn { color:var(--green); }
+
+.big-btn {
+  width:100%; padding:16px; border:none; border-radius:12px;
+  font-family:'Rajdhani',sans-serif; font-weight:700;
+  font-size:1.05em; letter-spacing:2px; cursor:pointer;
+  transition:all 0.25s; margin:5px 0;
+}
+.big-btn:active { transform:scale(0.98); }
+.big-btn.connect { background:linear-gradient(135deg,#00aa55,#00cc70); color:white; box-shadow:0 4px 15px rgba(0,200,100,0.35); }
+.big-btn.disconnect { background:linear-gradient(135deg,#cc2200,#ff4422); color:white; }
+.big-btn.scan { background:linear-gradient(135deg,#0055cc,#0088ff); color:white; box-shadow:0 4px 15px rgba(0,100,220,0.35); }
+.big-btn.clear { background:linear-gradient(135deg,#884400,#cc6600); color:white; }
+.big-btn.calibrate { background:linear-gradient(135deg,#550099,#8833cc); color:white; }
+.big-btn.inj { background:linear-gradient(135deg,#993300,#cc4400); color:white; }
+.big-btn.report-gen { background:linear-gradient(135deg,#cc4400,#ff6600); color:white; box-shadow:0 4px 15px rgba(255,100,0,0.35); font-size:1.1em; }
+
+/* SENSOR GRID */
+.sensors-wrap { padding:0 16px; }
+.sensor-grid {
+  display:grid;
+  gap:8px;
+}
+.sg-2 { grid-template-columns:1fr 1fr; }
+.sg-3 { grid-template-columns:1fr 1fr 1fr; }
+.sensor-tile {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:12px 10px; text-align:center;
+  transition:all 0.3s; position:relative; overflow:hidden;
+}
+.sensor-tile.lit { border-color:var(--tile-color); box-shadow:0 0 12px var(--tile-glow); }
+.sensor-tile::before { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--tile-color, var(--border)); opacity:0.5; }
+.tile-label { font-size:0.6em; letter-spacing:2px; text-transform:uppercase; color:var(--text3); margin-bottom:5px; }
+.tile-value { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.6em; color:var(--text); line-height:1; }
+.tile-unit { font-size:0.6em; color:var(--text3); margin-top:3px; }
+
+/* DTC CARD */
+.dtc-card {
+  background:var(--card); border:1px solid rgba(255,71,87,0.2);
+  border-radius:12px; padding:16px; margin:8px 16px;
+  cursor:pointer; transition:all 0.2s;
+  animation: fadeSlideIn 0.3s ease;
+}
+.dtc-card:active { transform:scale(0.98); }
+.dtc-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.dtc-code { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.5em; color:var(--red); }
+.sev-badge { padding:3px 10px; border-radius:20px; font-size:0.65em; font-weight:700; letter-spacing:1px; }
+.sev-crit { background:rgba(255,71,87,0.15); color:var(--red); border:1px solid rgba(255,71,87,0.3); }
+.sev-alta { background:rgba(255,149,0,0.15); color:var(--orange); border:1px solid rgba(255,149,0,0.3); }
+.sev-mod { background:rgba(255,215,0,0.15); color:var(--yellow); border:1px solid rgba(255,215,0,0.3); }
+.dtc-desc { font-size:0.85em; color:var(--text2); line-height:1.4; }
+.dtc-detail { display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border); }
+.dtc-detail.open { display:block; animation:fadeSlideUp 0.2s ease; }
+.detail-section { margin:8px 0; }
+.detail-section h4 { font-size:0.7em; letter-spacing:2px; color:var(--cyan); margin-bottom:6px; text-transform:uppercase; }
+.detail-section ul { list-style:none; }
+.detail-section ul li { font-size:0.82em; color:var(--text2); padding:3px 0; padding-left:14px; position:relative; }
+.detail-section ul li::before { content:'›'; position:absolute; left:0; color:var(--cyan); }
+
+/* REPORTE FORM */
+.form-section { margin:8px 16px; background:var(--card); border-radius:14px; padding:16px; border:1px solid var(--border); animation:fadeSlideUp 0.3s ease; }
+.form-section h3 { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:0.85em; letter-spacing:2.5px; text-transform:uppercase; margin-bottom:14px; }
+.form-section h3.cyan { color:var(--cyan); }
+.form-section h3.orange { color:var(--orange); }
+.form-section h3.green { color:var(--green); }
+.form-section h3.red { color:var(--red); }
+.form-section h3.purple { color:var(--purple); }
+
+.input-group { margin-bottom:10px; }
+.input-label { font-size:0.65em; letter-spacing:2px; text-transform:uppercase; color:var(--text3); margin-bottom:5px; display:block; }
+.pp-input, .pp-select, .pp-textarea {
+  width:100%; background:var(--bg3); border:1px solid var(--border2);
+  color:var(--text); border-radius:8px; padding:10px 12px;
+  font-family:'Exo 2',sans-serif; font-size:0.9em;
+  transition:border-color 0.2s;
+  outline:none;
+}
+.pp-input:focus, .pp-select:focus, .pp-textarea:focus { border-color:var(--cyan); }
+.pp-textarea { resize:vertical; min-height:70px; }
+.pp-select option { background:var(--bg3); }
+.input-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+/* TRABAJO ITEM */
+.trabajo-item {
+  display:flex; align-items:center; gap:10px;
+  background:var(--bg3); border-radius:8px; padding:10px 12px;
+  margin:6px 0; border:1px solid var(--border);
+}
+.trabajo-item-info { flex:1; }
+.trabajo-item-info strong { font-size:0.85em; color:var(--green); display:block; }
+.trabajo-item-info small { font-size:0.75em; color:var(--text3); }
+.trabajo-item-price { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.05em; color:var(--cyan); }
+.del-btn { background:rgba(255,71,87,0.15); border:1px solid rgba(255,71,87,0.3); color:var(--red); border-radius:6px; padding:5px 9px; cursor:pointer; font-size:0.85em; flex-shrink:0; }
+
+/* TOTAL BOX */
+.total-box {
+  margin:8px 16px; background:linear-gradient(135deg,#0d1e40,#0a1830);
+  border:1px solid rgba(0,212,255,0.3); border-radius:12px; padding:16px 20px;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.total-label { font-size:0.7em; letter-spacing:2px; text-transform:uppercase; color:var(--text3); }
+.total-value { font-family:'Rajdhani',sans-serif; font-weight:900; font-size:1.8em; color:var(--yellow); text-shadow:0 0 20px rgba(255,215,0,0.4); }
+
+/* HISTORIAL */
+.hist-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:14px 16px; margin:6px 16px;
+  cursor:pointer; transition:all 0.2s;
+  animation: fadeSlideIn 0.3s ease;
+}
+.hist-top { display:flex; justify-content:space-between; margin-bottom:6px; }
+.hist-folio { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:0.9em; color:var(--cyan); }
+.hist-fecha { font-size:0.75em; color:var(--text3); }
+.hist-vehiculo { font-size:0.9em; font-weight:600; color:var(--text); margin-bottom:4px; }
+.hist-cliente { font-size:0.78em; color:var(--text2); }
+.hist-total { font-family:'Rajdhani',sans-serif; font-weight:700; color:var(--yellow); font-size:1em; margin-top:6px; }
+
+/* EMPTY STATE */
+.empty-state { text-align:center; padding:40px 20px; color:var(--text3); }
+.empty-state .emoji { font-size:3em; margin-bottom:10px; }
+.empty-state p { font-size:0.85em; line-height:1.6; }
+
+/* DATOS TÉCNICOS */
+.datos-card {
+  background:var(--card); border-radius:12px; padding:16px; margin:6px 16px;
+  border:1px solid var(--border); cursor:pointer; transition:all 0.2s;
+}
+.datos-card:active { transform:scale(0.98); }
+.datos-top { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+.datos-icon { font-size:1.5em; }
+.datos-title { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1em; color:var(--text); letter-spacing:1px; }
+.datos-sub { font-size:0.72em; color:var(--text3); margin-top:2px; }
+.datos-tags { display:flex; flex-wrap:wrap; gap:5px; }
+.tag { padding:3px 10px; border-radius:12px; font-size:0.65em; letter-spacing:1px; font-weight:600; }
+.tag-cyan { background:rgba(0,212,255,0.1); color:var(--cyan); }
+.tag-green { background:rgba(0,255,157,0.1); color:var(--green); }
+.tag-orange { background:rgba(255,149,0,0.1); color:var(--orange); }
+.tag-red { background:rgba(255,71,87,0.1); color:var(--red); }
+
+/* LOG */
+.log-box {
+  background:#050810; border:1px solid var(--border);
+  border-radius:10px; padding:12px; margin:8px 16px;
+  font-family:'Courier New',monospace; font-size:0.72em;
+  max-height:220px; overflow-y:auto; color:#4af;
+  line-height:1.7;
+}
+
+/* FOOTER */
+.view-footer { text-align:center; padding:10px; font-size:0.6em; letter-spacing:2px; color:var(--text3); flex-shrink:0; }
+
+/* DISCLAIMER */
+#disclaimer {
+  position:fixed; inset:0; background:rgba(0,0,0,0.97);
+  z-index:9999; display:flex; align-items:center; justify-content:center;
+  padding:20px;
+}
+.disc-box {
+  background:linear-gradient(145deg,var(--card),var(--card2));
+  border:1px solid var(--border2); border-radius:18px;
+  max-width:460px; width:100%; overflow:hidden;
+  animation: fadeSlideUp 0.4s ease;
+}
+.disc-header { background:linear-gradient(135deg,#8b0000,#cc0000); padding:20px; text-align:center; }
+.disc-header h2 { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:1.4em; letter-spacing:2px; }
+.disc-body { padding:20px; }
+.disc-warn { background:rgba(255,149,0,0.08); border-left:3px solid var(--orange); padding:12px 14px; border-radius:6px; margin:10px 0; font-size:0.82em; line-height:1.8; color:var(--text2); }
+.disc-danger { background:rgba(255,71,87,0.08); border-left:3px solid var(--red); padding:12px 14px; border-radius:6px; margin:10px 0; font-size:0.82em; line-height:1.8; color:var(--text2); }
+.disc-btns { display:flex; gap:10px; padding:0 20px 20px; }
+</style>
 </head>
 <body>
-    <!-- DISCLAIMER MODAL -->
-    <div id="disclaimerModal">
-        <div class="disclaimer-content">
-            <div class="disclaimer-header">
-                <h2 style="margin:0; font-size:1.8em;">⚠️ AVISO LEGAL IMPORTANTE</h2>
-            </div>
-            <div class="disclaimer-body">
-                <p style="font-size:1.1em; margin-bottom:20px;"><strong>PROPART DIAGNOSTIC PRO</strong> es una herramienta <strong>INFORMATIVA</strong> de diagnóstico automotriz.</p>
-                
-                <div class="warning-box">
-                    <strong>⚡ IMPORTANTE:</strong>
-                    <ul style="margin:10px 0 0 20px;">
-                        <li>Solo para técnicos <strong>CAPACITADOS</strong></li>
-                        <li>Uso bajo su <strong>PROPIO RIESGO</strong></li>
-                        <li>Verifique siempre con manuales oficiales</li>
-                    </ul>
-                </div>
-                
-                <div class="danger-box">
-                    <strong>🚫 EXENCIÓN DE RESPONSABILIDAD:</strong>
-                    <ul style="margin:10px 0 0 20px;">
-                        <li>NO nos hacemos responsables por daños a vehículos</li>
-                        <li>NO nos hacemos responsables por módulos quemados</li>
-                        <li>NO nos hacemos responsables por diagnósticos incorrectos</li>
-                        <li>El usuario asume TODA la responsabilidad</li>
-                    </ul>
-                </div>
-                
-                <p style="font-size:0.95em; color:#666; margin-top:20px;">
-                    <strong>Fernando Millán - Refaccionaria Millán</strong><br>
-                    Esta herramienta es un apoyo al diagnóstico profesional.
-                </p>
-            </div>
-            <div style="padding:0 30px 30px 30px; display:flex; gap:10px;">
-                <button onclick="window.location.href='about:blank'" style="flex:1; padding:15px; background:#999; color:white; border:none; border-radius:8px; font-size:1.1em; font-weight:bold; cursor:pointer;">
-                    ❌ NO ACEPTO
-                </button>
-                <button onclick="acceptDisclaimer()" style="flex:1; padding:15px; background:linear-gradient(135deg, #4CAF50, #45a049); color:white; border:none; border-radius:8px; font-size:1.1em; font-weight:bold; cursor:pointer;">
-                    ✅ ACEPTO Y CONTINUAR
-                </button>
-            </div>
-        </div>
+
+<!-- DISCLAIMER -->
+<div id="disclaimer">
+  <div class="disc-box">
+    <div class="disc-header">
+      <div style="font-size:2em;margin-bottom:6px;">⚠️</div>
+      <h2>AVISO LEGAL</h2>
+      <p style="font-size:0.8em;opacity:0.8;margin-top:4px;">Lea antes de continuar</p>
     </div>
-
-    <!-- MAIN APP -->
-    <div id="mainApp" class="hidden">
-        <div class="header">
-            <h1>⚡ PROPART DIAGNOSTIC PRO</h1>
-            <p>Scanner Profesional OBD2</p>
-            <p style="font-size: 0.9em;">Fernando Millán | 777 683 8196</p>
-        </div>
-
-        <div class="container">
-            <!-- CONEXIÓN -->
-            <div class="card">
-                <h2>📡 Conexión Bluetooth OBD2</h2>
-                <div class="status-box" id="status">🔴 DESCONECTADO</div>
-                
-                <button class="btn-primary" id="btnConnect">🔍 CONECTAR BLUETOOTH</button>
-                <button class="btn-danger hidden" id="btnDisconnect">❌ DESCONECTAR</button>
-                <button class="btn-warning hidden" id="btnDTC">📋 LEER CÓDIGOS DTC</button>
-                <button class="btn-danger hidden" id="btnClear">🗑️ BORRAR CÓDIGOS</button>
-                <button class="btn-info hidden" id="btnTPS" style="background: linear-gradient(135deg, #9C27B0, #7B1FA2);">
-                    ⚙️ CALIBRAR TPS / CUERPO
-                </button>
-                <button class="btn-info hidden" id="btnInjectors" style="background: linear-gradient(135deg, #FF5722, #E64A19);">
-                    💉 AJUSTE INYECTORES
-                </button>
-                
-                <div id="dtcResults" class="hidden"></div>
-            </div>
-
-            <!-- SENSORES -->
-            <div class="card">
-                <h2>📊 Sensores en Tiempo Real</h2>
-                <div class="sensor-grid">
-                    <div class="sensor-card"><h3>RPM</h3><div class="sensor-value" id="rpm">----</div></div>
-                    <div class="sensor-card"><h3>Velocidad</h3><div class="sensor-value" id="speed">----</div><div style="font-size:0.65em;">km/h</div></div>
-                    <div class="sensor-card"><h3>Temp Motor</h3><div class="sensor-value" id="temp">----</div><div style="font-size:0.65em;">°C</div></div>
-                    <div class="sensor-card"><h3>Voltaje</h3><div class="sensor-value" id="voltage">----</div><div style="font-size:0.65em;">V</div></div>
-                    <div class="sensor-card"><h3>Carga</h3><div class="sensor-value" id="load">----</div><div style="font-size:0.65em;">%</div></div>
-                    <div class="sensor-card"><h3>TPS</h3><div class="sensor-value" id="tps">----</div><div style="font-size:0.65em;">%</div></div>
-                </div>
-            </div>
-        </div>
+    <div class="disc-body">
+      <p style="font-size:0.88em;color:var(--text);margin-bottom:14px;"><strong>PROPART SYSTEM</strong> es una herramienta <strong>meramente informativa</strong> de apoyo al diagnóstico automotriz.</p>
+      <div class="disc-warn">
+        <strong style="color:var(--orange);">⚡ REQUISITOS:</strong><br>
+        • Solo para técnicos <strong>CAPACITADOS</strong><br>
+        • Conocimiento previo en diagnóstico<br>
+        • Uso bajo su <strong>PROPIO RIESGO</strong>
+      </div>
+      <div class="disc-danger">
+        <strong style="color:var(--red);">🚫 EXENCIÓN DE RESPONSABILIDAD:</strong><br>
+        • NO responsables por daños a vehículos<br>
+        • NO responsables por módulos quemados<br>
+        • El usuario asume TODA la responsabilidad
+      </div>
     </div>
+    <div class="disc-btns">
+      <button onclick="window.location.href='about:blank'" style="flex:1;padding:13px;background:var(--card2);color:var(--text2);border:1px solid var(--border2);border-radius:10px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1px;">✕ SALIR</button>
+      <button onclick="acceptDisc()" style="flex:2;padding:13px;background:linear-gradient(135deg,#006633,#00aa55);color:white;border:none;border-radius:10px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1em;letter-spacing:1px;">✅ SOY TÉCNICO · ACEPTO</button>
+    </div>
+  </div>
+</div>
 
-    <script>
-        const UUIDS = ['000018f0-0000-1000-8000-00805f9b34fb', '0000fff0-0000-1000-8000-00805f9b34fb'];
-        let device, server, service, writeChar, notifyChar, loop;
-        let allDtcData = '', waitingDTC = false;
+<!-- ═══════════════════ VIEW: INICIO ═══════════════════ -->
+<div id="view-inicio" class="view active">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-icon">PP</div>
+      <div class="logo-text">
+        <h1>PROPART SYSTEM</h1>
+        <p>Taller Fernando Millán</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="lang-btn active" id="btnES" onclick="setLang('es')">🇲🇽 ES</button>
+      <button class="lang-btn" id="btnEN" onclick="setLang('en')">🇺🇸 EN</button>
+    </div>
+  </div>
 
-        // BASE DE DATOS DTC
-        const DTC_DB = {
-            'P0030':{d:'O2 Heater B1S1',c:['Calentador quemado','Cable roto','Fusible'],s:['Medir 8-12Ω','Verificar fusible','Cambiar O2']},
-            'P0036':{d:'O2 Heater B1S2',c:['Calentador trasero','Cable roto','Fusible'],s:['Medir resistencia','Verificar voltaje','Cambiar O2']},
-            'P0100':{d:'MAF Circuit',c:['MAF sucio','Cable roto','MAF defectuoso'],s:['Limpiar MAF','Revisar cables','Reemplazar MAF']},
-            'P0101':{d:'MAF Range',c:['MAF sucio','Fuga vacío','Filtro sucio'],s:['Limpiar MAF','Buscar fugas','Cambiar filtro']},
-            'P0120':{d:'TPS Circuit',c:['TPS defectuoso','Pista desgastada','Cable roto'],s:['Medir 0.5V reposo','Verificar 4.5V abierto','Reemplazar TPS']},
-            'P0130':{d:'O2 Circuit B1S1',c:['O2 defectuoso','Cable cortado','Fuga escape'],s:['Verificar 0.1-0.9V','Buscar fugas','Reemplazar O2']},
-            'P0141':{d:'O2 Heater B1S2',c:['Calentador quemado','Fusible','Relé'],s:['Medir 8-12Ω','Verificar fusible','Cambiar O2']},
-            'P0171':{d:'System Too Lean B1',c:['Fuga vacío','MAF sucio','Presión baja','Inyectores'],s:['Buscar fugas con humo','Limpiar MAF','Medir presión','Limpiar inyectores']},
-            'P0172':{d:'System Too Rich B1',c:['Inyectores goteando','MAF sucio','Presión alta'],s:['Probar inyectores','Limpiar MAF','Medir presión']},
-            'P0300':{d:'Random Misfire',c:['Bujías gastadas','Bobinas débiles','Inyectores sucios'],s:['Cambiar bujías','Probar bobinas','Limpiar inyectores']},
-            'P0301':{d:'Misfire Cyl 1',c:['Bujía 1','Bobina 1','Inyector 1'],s:['Cambiar bujía 1','Intercambiar bobina','Test compresión']},
-            'P0302':{d:'Misfire Cyl 2',c:['Bujía 2','Bobina 2','Inyector 2'],s:['Cambiar bujía 2','Intercambiar bobina','Test compresión']},
-            'P0303':{d:'Misfire Cyl 3',c:['Bujía 3','Bobina 3','Inyector 3'],s:['Cambiar bujía 3','Intercambiar bobina','Test compresión']},
-            'P0304':{d:'Misfire Cyl 4',c:['Bujía 4','Bobina 4','Inyector 4'],s:['Cambiar bujía 4','Intercambiar bobina','Test compresión']},
-            'P0335':{d:'CKP Sensor',c:['CKP defectuoso','Cable roto','Reluctor sucio'],s:['Verificar señal CKP','Limpiar sensor','Ajustar gap 0.5-1mm']},
-            'P0340':{d:'CMP Sensor',c:['CMP defectuoso','Cable dañado','Timing incorrecto'],s:['Verificar señal','Revisar timing','Reemplazar CMP']},
-            'P0420':{d:'Catalyst Low B1',c:['Catalizador deteriorado','O2 trasero malo','Fuga escape'],s:['Probar eficiencia cat','Verificar O2 trasero','Resolver mezcla primero']},
-            'P0440':{d:'EVAP System',c:['Tapa gasolina floja','Líneas rajadas','Válvula purga'],s:['Apretar tapa','Buscar fugas','Probar purga']},
-            'P0442':{d:'EVAP Small Leak',c:['Tapa gasolina','Manguera rajada','Conector suelto'],s:['Nueva tapa','Test humo','Apretar conectores']},
-            'P0455':{d:'EVAP Large Leak',c:['Tapa perdida','Manguera desconectada','Canister roto'],s:['Verificar tapa','Test humo','Reparar fugas']},
-            'P0500':{d:'VSS Circuit',c:['VSS defectuoso','Cable roto','Engrane roto'],s:['Verificar señal','Revisar cables','Reemplazar VSS']},
-            'P0501':{d:'VSS Range',c:['VSS intermitente','Cable dañado','Señal errática'],s:['Probar señal en movimiento','Revisar conectores','Cambiar VSS']},
-            'P0562':{d:'System Voltage Low',c:['Batería baja','Alternador malo','Cable batería'],s:['Probar batería','Test alternador 13.5-14.5V','Revisar cables']},
-            'P0606':{d:'ECM Processor Error',c:['ECM defectuoso','Sobrecalentamiento','Agua en ECM'],s:['Verificar ECM seco','Revisar temperatura','Reemplazar ECM']},
-            'P0700':{d:'Transmission Control',c:['TCM detectó falla','Sensor transmisión','Solenoide'],s:['Escanear TCM','Revisar niveles ATF','Probar solenoides']}
-        };
+  <div class="status-card">
+    <div class="status-label">Estado del Sistema</div>
+    <div class="status-row"><span class="key">Licencia</span><span class="val green">ACTIVA</span></div>
+    <div class="status-row"><span class="key">Propietario</span><span class="val cyan">Fernando Millán</span></div>
+    <div class="status-row"><span class="key">Base Datos</span><span class="val cyan">V4.0 PRODUCTION</span></div>
+    <div class="status-row"><span class="key">Folio Activo</span><span class="val orange" id="folioActivo">PP-2026-0001</span></div>
+    <div class="status-row"><span class="key">Scanner</span><span class="val" id="scannerStatusMain" style="color:var(--red);">DESCONECTADO</span></div>
+  </div>
 
-        // DISCLAIMER
-        function acceptDisclaimer() {
-            localStorage.setItem('disclaimerAccepted', 'true');
-            document.getElementById('disclaimerModal').style.display = 'none';
-            document.getElementById('mainApp').classList.remove('hidden');
-        }
+  <div class="license-dot" style="padding:0 16px 12px;justify-content:flex-end;">
+    <div class="dot"></div>
+    <span style="letter-spacing:1.5px;">LICENCIA ACTIVA</span>
+  </div>
 
-        window.onload = function() {
-            if (localStorage.getItem('disclaimerAccepted') === 'true') {
-                acceptDisclaimer();
-            }
-        };
+  <div class="module-grid">
+    <div class="module-card scanner" onclick="goTo('scanner')">
+      <div class="mod-icon-wrap">🔌</div>
+      <div class="mod-label">SCANNER OBD2</div>
+    </div>
+    <div class="module-card reporte" onclick="goTo('reporte')">
+      <div class="mod-icon-wrap">📋</div>
+      <div class="mod-label">NUEVO REPORTE</div>
+    </div>
+    <div class="module-card refac" onclick="goTo('refac')">
+      <div class="mod-icon-wrap">🔩</div>
+      <div class="mod-label">REFACCIONARIA</div>
+    </div>
+    <div class="module-card datos" onclick="goTo('datos')">
+      <div class="mod-icon-wrap">📘</div>
+      <div class="mod-label">DATOS TÉCNICOS</div>
+    </div>
+    <div class="module-card admin" onclick="goTo('admin')">
+      <div class="mod-icon-wrap">⚙️</div>
+      <div class="mod-label">ADMINISTRAR</div>
+    </div>
+    <div class="module-card historial" onclick="goTo('historial')">
+      <div class="mod-icon-wrap">📁</div>
+      <div class="mod-label">HISTORIAL</div>
+    </div>
+  </div>
+  <div class="view-footer">PROPART DIAGNOSTIC · V4.0 PRODUCTION</div>
+</div>
 
-        // BLUETOOTH
-        document.getElementById('btnConnect').addEventListener('click', async () => {
-            try {
-                device = await navigator.bluetooth.requestDevice({
-                    acceptAllDevices: true,
-                    optionalServices: UUIDS
-                });
-                
-                server = await device.gatt.connect();
-                
-                for (let uuid of UUIDS) {
-                    try {
-                        service = await server.getPrimaryService(uuid);
-                        break;
-                    } catch(e) {}
-                }
-                
-                const chars = await service.getCharacteristics();
-                for (let char of chars) {
-                    if (char.properties.write) writeChar = char;
-                    if (char.properties.notify) notifyChar = char;
-                }
-                
-                await notifyChar.startNotifications();
-                notifyChar.addEventListener('characteristicvaluechanged', handleData);
-                
-                document.getElementById('status').textContent = "✅ CONECTADO";
-                document.getElementById('status').classList.add('connected');
-                document.getElementById('btnConnect').classList.add('hidden');
-                document.getElementById('btnDisconnect').classList.remove('hidden');
-                document.getElementById('btnDTC').classList.remove('hidden');
-                document.getElementById('btnClear').classList.remove('hidden');
-                document.getElementById('btnTPS').classList.remove('hidden');
-                document.getElementById('btnInjectors').classList.remove('hidden');
-                
-                await send("AT Z"); await wait(2000);
-                await send("AT E0"); await wait(500);
-                await send("AT SP0"); await wait(800);
-                
-                startLoop();
-                
-            } catch(error) {
-                alert('Error: ' + error.message);
-            }
-        });
+<!-- ═══════════════════ VIEW: SCANNER ═══════════════════ -->
+<div id="view-scanner" class="view">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="back-btn" onclick="goTo('inicio')">‹</div>
+      <div class="logo-text"><h1 style="color:var(--cyan)">SCANNER OBD2</h1><p>Diagnóstico en tiempo real</p></div>
+    </div>
+    <div class="topbar-right"><div class="license-dot"><div class="dot"></div><span id="scannerDot">OFF</span></div></div>
+  </div>
 
-        document.getElementById('btnDisconnect').addEventListener('click', () => {
-            if (loop) clearInterval(loop);
-            if (device && device.gatt.connected) device.gatt.disconnect();
-            document.getElementById('status').textContent = "🔴 DESCONECTADO";
-            document.getElementById('status').classList.remove('connected');
-            document.getElementById('btnConnect').classList.remove('hidden');
-            document.getElementById('btnDisconnect').classList.add('hidden');
-            document.getElementById('btnDTC').classList.add('hidden');
-            document.getElementById('btnClear').classList.add('hidden');
-            document.getElementById('btnTPS').classList.add('hidden');
-            document.getElementById('btnInjectors').classList.add('hidden');
-        });
+  <!-- FILTER CHIPS -->
+  <div class="filter-bar">
+    <div class="filter-chip active" style="--chip-a:#0055cc;--chip-b:#0088ff;--chip-shadow:rgba(0,100,220,0.4);" onclick="scanFilter('conexion',this)">📡 Conexión</div>
+    <div class="filter-chip" style="--chip-a:#0055cc;--chip-b:#0088ff;--chip-shadow:rgba(0,100,220,0.4);" onclick="scanFilter('sensores',this)">📊 Sensores</div>
+    <div class="filter-chip" style="--chip-a:#0055cc;--chip-b:#0088ff;--chip-shadow:rgba(0,100,220,0.4);" onclick="scanFilter('dtc',this)">⚠️ Códigos DTC</div>
+    <div class="filter-chip" style="--chip-a:#0055cc;--chip-b:#0088ff;--chip-shadow:rgba(0,100,220,0.4);" onclick="scanFilter('calibrar',this)">⚙️ Calibrar</div>
+    <div class="filter-chip" style="--chip-a:#0055cc;--chip-b:#0088ff;--chip-shadow:rgba(0,100,220,0.4);" onclick="scanFilter('inyectores',this)">💉 Inyectores</div>
+    <div class="filter-chip" style="--chip-a:#0055cc;--chip-b:#0088ff;--chip-shadow:rgba(0,100,220,0.4);" onclick="scanFilter('log',this)">📝 Log</div>
+  </div>
 
-        document.getElementById('btnDTC').addEventListener('click', async () => {
-            if (loop) clearInterval(loop);
-            allDtcData = '';
-            waitingDTC = true;
-            
-            document.getElementById('dtcResults').classList.remove('hidden');
-            document.getElementById('dtcResults').innerHTML = '<p style="text-align:center; padding:30px;">⏳ ESCANEANDO (35 segundos)...</p>';
-            
-            await send("AT AL"); await wait(500);
-            for (let i = 0; i <= 7; i++) {
-                await send(i === 0 ? "03" : `03 0${i}`);
-                await wait(4000);
-            }
-            
-            setTimeout(() => {
-                waitingDTC = false;
-                displayDTC();
-                setTimeout(() => startLoop(), 3000);
-            }, 2000);
-        });
+  <!-- CONEXIÓN -->
+  <div id="scan-conexion" class="conn-area">
+    <div class="status-pill">
+      <div><div class="status-pill-label">Estado del Scanner</div><div class="status-pill-val disc" id="scanStatus">🔴 DESCONECTADO</div></div>
+      <div id="connDot" style="width:12px;height:12px;border-radius:50%;background:var(--red);"></div>
+    </div>
+    <button class="big-btn connect" id="btnConn" onclick="connectBT()">🔍 CONECTAR BLUETOOTH OBD2</button>
+    <button class="big-btn disconnect hidden" id="btnDisc" onclick="disconnectBT()">✕ DESCONECTAR</button>
+  </div>
 
-        function displayDTC() {
-            const codes = new Set();
-            
-            const directMatches = allDtcData.match(/[PCBU][0-9A-F]{4}/gi);
-            if (directMatches) directMatches.forEach(c => codes.add(c.toUpperCase()));
-            
-            const hexPattern = /43[\s]+((?:[0-9A-F]{2}[\s]*)+)/gi;
-            const hexMatches = [...allDtcData.matchAll(hexPattern)];
-            
-            hexMatches.forEach(match => {
-                const hex = match[1].replace(/\s/g, '');
-                for (let i = 0; i < hex.length; i += 4) {
-                    const chunk = hex.substring(i, i + 4);
-                    if (chunk !== '0000' && chunk.length === 4) {
-                        const dtc = hexToDTC(chunk);
-                        if (dtc) codes.add(dtc);
-                    }
-                }
-            });
-            
-            const results = document.getElementById('dtcResults');
-            
-            if (codes.size === 0) {
-                results.innerHTML = '<p style="text-align:center; padding:30px; font-size:1.2em;">✅ SIN CÓDIGOS DE FALLA</p>';
-            } else {
-                results.innerHTML = `<h3 style="color:#f44336;margin:20px 0;">❌ ${codes.size} Código${codes.size > 1 ? 's' : ''}</h3>` +
-                    Array.from(codes).map(code => {
-                        const dtc = DTC_DB[code];
-                        return `<div style="background:#fff5f5; border-left:5px solid #f44336; border-radius:10px; padding:20px; margin:15px 0;">
-                            <div style="font-size:2em; font-weight:bold; color:#f44336;">${code}</div>
-                            <div style="font-size:1.1em; margin:10px 0;">${dtc ? dtc.d : 'Código OBD2 genérico'}</div>
-                            ${dtc ? `
-                                <div style="margin-top:15px;">
-                                    <strong>🔍 Causas:</strong><br>
-                                    ${dtc.c.map(c => `• ${c}`).join('<br>')}
-                                </div>
-                                <div style="margin-top:15px;">
-                                    <strong>🔧 Soluciones:</strong><br>
-                                    ${dtc.s.map(s => `• ${s}`).join('<br>')}
-                                </div>
-                            ` : ''}
-                        </div>`;
-                    }).join('');
-            }
-        }
+  <!-- SENSORES -->
+  <div id="scan-sensores" class="hidden">
+    <div class="sensors-wrap">
+      <div class="sensor-grid sg-2" style="margin-bottom:8px;">
+        <div class="sensor-tile" id="t-rpm" style="--tile-color:var(--cyan);--tile-glow:rgba(0,212,255,0.2);">
+          <div class="tile-label">RPM</div><div class="tile-value" id="rpm">----</div>
+        </div>
+        <div class="sensor-tile" id="t-speed" style="--tile-color:var(--green);--tile-glow:rgba(0,255,157,0.2);">
+          <div class="tile-label">Velocidad</div><div class="tile-value" id="speed">----</div><div class="tile-unit">km/h</div>
+        </div>
+      </div>
+      <div class="sensor-grid sg-3" style="margin-bottom:8px;">
+        <div class="sensor-tile" style="--tile-color:var(--orange);--tile-glow:rgba(255,149,0,0.2);">
+          <div class="tile-label">Temp Motor</div><div class="tile-value" id="temp">----</div><div class="tile-unit">°C</div>
+        </div>
+        <div class="sensor-tile" style="--tile-color:var(--yellow);--tile-glow:rgba(255,215,0,0.2);">
+          <div class="tile-label">IAT Aire</div><div class="tile-value" id="iat">----</div><div class="tile-unit">°C</div>
+        </div>
+        <div class="sensor-tile" style="--tile-color:var(--cyan);--tile-glow:rgba(0,212,255,0.2);">
+          <div class="tile-label">Voltaje</div><div class="tile-value" id="voltage">----</div><div class="tile-unit">V</div>
+        </div>
+      </div>
+      <div class="sensor-grid sg-3" style="margin-bottom:8px;">
+        <div class="sensor-tile" style="--tile-color:var(--purple);--tile-glow:rgba(165,94,234,0.2);">
+          <div class="tile-label">Carga</div><div class="tile-value" id="load">----</div><div class="tile-unit">%</div>
+        </div>
+        <div class="sensor-tile" style="--tile-color:var(--green);--tile-glow:rgba(0,255,157,0.2);">
+          <div class="tile-label">TPS</div><div class="tile-value" id="tps">----</div><div class="tile-unit">%</div>
+        </div>
+        <div class="sensor-tile" style="--tile-color:var(--cyan);--tile-glow:rgba(0,212,255,0.2);">
+          <div class="tile-label">MAP</div><div class="tile-value" id="map">----</div><div class="tile-unit">kPa</div>
+        </div>
+      </div>
+      <div class="sensor-grid sg-3" style="margin-bottom:8px;">
+        <div class="sensor-tile" style="--tile-color:var(--orange);--tile-glow:rgba(255,149,0,0.2);">
+          <div class="tile-label">APP1</div><div class="tile-value" id="app1">----</div><div class="tile-unit">%</div>
+        </div>
+        <div class="sensor-tile" style="--tile-color:var(--orange);--tile-glow:rgba(255,149,0,0.2);">
+          <div class="tile-label">APP2</div><div class="tile-value" id="app2">----</div><div class="tile-unit">%</div>
+        </div>
+        <div class="sensor-tile" style="--tile-color:var(--green);--tile-glow:rgba(0,255,157,0.2);">
+          <div class="tile-label">MAF</div><div class="tile-value" id="maf">----</div><div class="tile-unit">g/s</div>
+        </div>
+      </div>
+      <div class="sensor-grid sg-3" style="margin-bottom:8px;">
+        <div class="sensor-tile" style="--tile-color:var(--red);--tile-glow:rgba(255,71,87,0.2);">
+          <div class="tile-label">O2 B1S1</div><div class="tile-value" id="o2b1s1">----</div><div class="tile-unit">V</div>
+        </div>
+        <div class="sensor-tile" style="--tile-color:var(--red);--tile-glow:rgba(255,71,87,0.2);">
+          <div class="tile-label">O2 B1S2</div><div class="tile-value" id="o2b1s2">----</div><div class="tile-unit">V</div>
+        </div>
+        <div class="sensor-tile" style="--tile-color:var(--yellow);--tile-glow:rgba(255,215,0,0.2);">
+          <div class="tile-label">Timing</div><div class="tile-value" id="timing">----</div><div class="tile-unit">°</div>
+        </div>
+      </div>
+      <div class="sensor-grid sg-2">
+        <div class="sensor-tile" style="--tile-color:var(--cyan);--tile-glow:rgba(0,212,255,0.2);">
+          <div class="tile-label">STFT</div><div class="tile-value" id="stft">----</div><div class="tile-unit">%</div>
+        </div>
+        <div class="sensor-tile" style="--tile-color:var(--cyan);--tile-glow:rgba(0,212,255,0.2);">
+          <div class="tile-label">LTFT</div><div class="tile-value" id="ltft">----</div><div class="tile-unit">%</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        function hexToDTC(hex) {
-            const d = parseInt(hex[0], 16);
-            const prefixes = ['P0','P1','P2','P3','C0','C1','C2','C3','B0','B1','B2','B3','U0','U1','U2','U3'];
-            return prefixes[d] + hex.substring(1);
-        }
+  <!-- DTC -->
+  <div id="scan-dtc" class="hidden" style="padding:0 16px;">
+    <button class="big-btn scan" id="btnDTC" onclick="leerDTC()" style="margin-bottom:8px;">📋 LEER CÓDIGOS DTC</button>
+    <button class="big-btn clear hidden" id="btnClear" onclick="borrarDTC()">🗑️ BORRAR CÓDIGOS</button>
+    <div id="dtcList" style="margin-top:8px;"></div>
+  </div>
 
-        document.getElementById('btnClear').addEventListener('click', async () => {
-            if (confirm('¿Borrar códigos DTC?')) {
-                if (loop) clearInterval(loop);
-                await send("04");
-                await wait(1000);
-                document.getElementById('dtcResults').classList.add('hidden');
-                alert('✅ Códigos borrados');
-                await wait(500);
-                startLoop();
-            }
-        });
+  <!-- CALIBRAR -->
+  <div id="scan-calibrar" class="hidden" style="padding:0 16px;">
+    <button class="big-btn calibrate" onclick="calibrarTPS()" style="background:linear-gradient(135deg,#550099,#8833cc);margin-bottom:8px;">⚙️ CALIBRAR TPS / CUERPO ACELERACIÓN</button>
+    <button class="big-btn" onclick="diagBobinas()" style="background:linear-gradient(135deg,#003366,#0055aa);margin-bottom:8px;">🔥 DIAGNÓSTICO BOBINAS</button>
+    <button class="big-btn" onclick="verTiming()" style="background:linear-gradient(135deg,#334400,#557700);margin-bottom:8px;">🕐 TIEMPO DE ENCENDIDO</button>
+    <button class="big-btn" onclick="probarEVAP()" style="background:linear-gradient(135deg,#004433,#007755);margin-bottom:8px;">🧹 SISTEMA EVAP / CANISTER</button>
+    <button class="big-btn" onclick="diagCMP()" style="background:linear-gradient(135deg,#440055,#770088);">📡 SENSOR CMP</button>
+    <div id="calibResult" style="margin-top:10px;"></div>
+  </div>
 
-        document.getElementById('btnTPS').addEventListener('click', async () => {
-            if (!confirm('⚠️ CALIBRACIÓN TPS / CUERPO\n\n⚡ IMPORTANTE:\n1. Motor APAGADO\n2. Llave ON (sin arrancar)\n3. Espera 30 segundos\n4. Arranca motor\n5. Deja calentar 2 minutos\n\n¿Continuar?')) return;
-            
-            if (loop) clearInterval(loop);
-            
-            alert('1️⃣ APAGA el motor completamente');
-            await wait(3000);
-            alert('2️⃣ Gira llave a ON (sin arrancar)');
-            await wait(3000);
-            await send("AT Z"); await wait(3000);
-            await send("AT WS"); 
-            alert('3️⃣ Esperando 30 segundos...');
-            await wait(30000);
-            alert('4️⃣ ARRANCA el motor AHORA');
-            await wait(5000);
-            alert('5️⃣ Deja en ralentí 2 minutos.\n\n✅ Calibración completa.\nEl motor aprenderá en próximos km.');
-            
-            setTimeout(() => startLoop(), 2000);
-        });
+  <!-- INYECTORES -->
+  <div id="scan-inyectores" class="hidden" style="padding:0 16px;">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;">
+      <h3 style="font-family:'Rajdhani',sans-serif;font-weight:700;color:var(--cyan);letter-spacing:2px;margin-bottom:12px;font-size:0.9em;">⛽ INYECTORES GASOLINA</h3>
+      <div class="sensor-grid sg-2" style="margin-bottom:10px;">
+        <div class="sensor-tile" style="--tile-color:var(--cyan);--tile-glow:rgba(0,212,255,0.2);"><div class="tile-label">CIL 1</div><div class="tile-value" id="inj1">--</div><div class="tile-unit">ms</div></div>
+        <div class="sensor-tile" style="--tile-color:var(--cyan);--tile-glow:rgba(0,212,255,0.2);"><div class="tile-label">CIL 2</div><div class="tile-value" id="inj2">--</div><div class="tile-unit">ms</div></div>
+        <div class="sensor-tile" style="--tile-color:var(--cyan);--tile-glow:rgba(0,212,255,0.2);"><div class="tile-label">CIL 3</div><div class="tile-value" id="inj3">--</div><div class="tile-unit">ms</div></div>
+        <div class="sensor-tile" style="--tile-color:var(--cyan);--tile-glow:rgba(0,212,255,0.2);"><div class="tile-label">CIL 4</div><div class="tile-value" id="inj4">--</div><div class="tile-unit">ms</div></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="leerPulso()" style="flex:1;padding:11px;background:linear-gradient(135deg,#0044aa,#0066ff);color:white;border:none;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;cursor:pointer;font-size:0.85em;">LEER PULSO</button>
+        <button onclick="balancear()" style="flex:1;padding:11px;background:linear-gradient(135deg,#554400,#887700);color:white;border:none;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;cursor:pointer;font-size:0.85em;">BALANCE</button>
+        <button onclick="resetAdapt()" style="flex:1;padding:11px;background:linear-gradient(135deg,#550000,#880000);color:white;border:none;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;cursor:pointer;font-size:0.85em;">RESET</button>
+      </div>
+      <div id="injResult" style="margin-top:10px;"></div>
+    </div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;">
+      <h3 style="font-family:'Rajdhani',sans-serif;font-weight:700;color:var(--green);letter-spacing:2px;margin-bottom:12px;font-size:0.9em;">🚛 INYECTORES DIESEL</h3>
+      <div class="sensor-grid sg-2" style="margin-bottom:10px;">
+        <div class="sensor-tile" style="--tile-color:var(--green);--tile-glow:rgba(0,255,157,0.2);"><div class="tile-label">PRESIÓN RAIL</div><div class="tile-value" id="railP">---</div><div class="tile-unit">bar</div></div>
+        <div class="sensor-tile" style="--tile-color:var(--green);--tile-glow:rgba(0,255,157,0.2);"><div class="tile-label">T. INYECCIÓN</div><div class="tile-value" id="injT">---</div><div class="tile-unit">ms</div></div>
+      </div>
+      <button onclick="alert('Diesel: Requiere escáner específico del fabricante')" style="width:100%;padding:11px;background:linear-gradient(135deg,#003322,#006644);color:white;border:none;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;cursor:pointer;">CODIFICAR INYECTORES DIESEL</button>
+    </div>
+  </div>
 
-        document.getElementById('btnInjectors').addEventListener('click', () => {
-            const type = prompt('AJUSTE INYECTORES\n\n1 = Gasolina\n2 = Diesel\n\nEscribe 1 o 2:');
-            
-            if (type === '1') {
-                alert('💉 INYECTORES GASOLINA\n\n📊 Funciones disponibles:\n• Leer ancho de pulso\n• Balance por cilindro\n• Reset adaptaciones\n\n⚠️ Función en desarrollo\nConsulte manual del vehículo');
-            } else if (type === '2') {
-                alert('💉 INYECTORES DIESEL\n\n📊 Funciones disponibles:\n• Codificar inyectores\n• Ajustar cantidad\n• Reset adaptaciones\n\n⚠️ Requiere escáner específico\nConsulte con distribuidor autorizado');
-            }
-        });
+  <!-- LOG -->
+  <div id="scan-log" class="hidden" style="padding:0 16px;">
+    <div class="log-box" id="logBox">Sistema listo...<br></div>
+    <button onclick="document.getElementById('logBox').innerHTML='Sistema listo...<br>'" style="margin-top:8px;width:100%;padding:10px;background:var(--card2);color:var(--text2);border:1px solid var(--border2);border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;">🗑️ LIMPIAR LOG</button>
+  </div>
 
-        async function send(cmd) {
-            if (!writeChar) return;
-            await writeChar.writeValue(new TextEncoder().encode(cmd + "\r"));
-        }
+  <div class="view-footer">SCANNER OBD2 · PROPART V4.0</div>
+</div>
 
-        function wait(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
+<!-- ═══════════════════ VIEW: REPORTE ═══════════════════ -->
+<div id="view-reporte" class="view">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="back-btn" onclick="goTo('inicio')">‹</div>
+      <div class="logo-text"><h1 style="color:var(--orange)">NUEVO REPORTE</h1><p>Generador de reportes PDF</p></div>
+    </div>
+  </div>
 
-        function handleData(event) {
-            const value = new TextDecoder().decode(event.target.value).trim();
-            if (!value || value === '>') return;
-            
-            if (waitingDTC) {
-                allDtcData += value + ' ';
-                return;
-            }
-            
-            if (value.includes('41 0C') || value.includes('410C')) {
-                const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
-                const match = hex.match(/410C([0-9A-F]{4})/i);
-                if (match && match[1].length === 4) {
-                    document.getElementById('rpm').textContent = Math.round(parseInt(match[1], 16) / 4);
-                }
-            }
-            
-            if (value.includes('41 0D') || value.includes('410D')) {
-                const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
-                const match = hex.match(/410D([0-9A-F]{2})/i);
-                if (match) document.getElementById('speed').textContent = parseInt(match[1], 16);
-            }
-            
-            if (value.includes('41 05') || value.includes('4105')) {
-                const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
-                const match = hex.match(/4105([0-9A-F]{2})/i);
-                if (match) document.getElementById('temp').textContent = parseInt(match[1], 16) - 40;
-            }
-            
-            if (value.includes('V') && !value.includes('41')) {
-                const match = value.match(/(\d+\.?\d*)/);
-                if (match) document.getElementById('voltage').textContent = parseFloat(match[1]).toFixed(1);
-            }
-            
-            if (value.includes('41 04') || value.includes('4104')) {
-                const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
-                const match = hex.match(/4104([0-9A-F]{2})/i);
-                if (match) document.getElementById('load').textContent = Math.round((parseInt(match[1], 16) * 100) / 255);
-            }
-            
-            if (value.includes('41 11') || value.includes('4111')) {
-                const hex = value.replace(/\s/g, '').replace(/[^0-9A-F]/gi, '');
-                const match = hex.match(/4111([0-9A-F]{2})/i);
-                if (match) document.getElementById('tps').textContent = Math.round((parseInt(match[1], 16) * 100) / 255);
-            }
-        }
+  <div class="filter-bar">
+    <div class="filter-chip active" style="--chip-a:#cc4400;--chip-b:#ff6600;--chip-shadow:rgba(255,100,0,0.4);" onclick="rptFilter('cliente',this)">👤 Cliente</div>
+    <div class="filter-chip" style="--chip-a:#cc4400;--chip-b:#ff6600;--chip-shadow:rgba(255,100,0,0.4);" onclick="rptFilter('dtc',this)">⚠️ Códigos</div>
+    <div class="filter-chip" style="--chip-a:#cc4400;--chip-b:#ff6600;--chip-shadow:rgba(255,100,0,0.4);" onclick="rptFilter('trabajos',this)">🔧 Trabajos</div>
+    <div class="filter-chip" style="--chip-a:#cc4400;--chip-b:#ff6600;--chip-shadow:rgba(255,100,0,0.4);" onclick="rptFilter('final',this)">✅ Final</div>
+    <div class="filter-chip" style="--chip-a:#cc4400;--chip-b:#ff6600;--chip-shadow:rgba(255,100,0,0.4);" onclick="rptFilter('generar',this)">📄 Generar</div>
+  </div>
 
-        function startLoop() {
-            loop = setInterval(async () => {
-                await send("010C"); await wait(800);
-                await send("010D"); await wait(800);
-                await send("0105"); await wait(800);
-                await send("0104"); await wait(800);
-                await send("0111"); await wait(800);
-                await send("ATRV"); await wait(800);
-            }, 6000);
-        }
-    </script>
+  <!-- CLIENTE -->
+  <div id="rpt-cliente">
+    <div class="form-section">
+      <h3 class="orange">👤 Datos del Cliente</h3>
+      <div class="input-row">
+        <div class="input-group"><label class="input-label">Nombre</label><input class="pp-input" id="r_nombre" placeholder="Juan García"></div>
+        <div class="input-group"><label class="input-label">Teléfono</label><input class="pp-input" id="r_tel" placeholder="777-000-0000"></div>
+      </div>
+      <div class="input-row">
+        <div class="input-group"><label class="input-label">Vehículo</label><input class="pp-input" id="r_vehiculo" placeholder="Nissan Tsuru 2003"></div>
+        <div class="input-group"><label class="input-label">Placas</label><input class="pp-input" id="r_placas" placeholder="XXX-123"></div>
+      </div>
+      <div class="input-group"><label class="input-label">Descripción de la falla (palabras del cliente)</label><textarea class="pp-textarea" id="r_desc" placeholder="El motor jalonea, tirones al acelerar..."></textarea></div>
+    </div>
+    <button class="big-btn scan" onclick="rptFilter('dtc', null, true)" style="margin:0 16px 10px;width:calc(100% - 32px);">SIGUIENTE → CÓDIGOS ⚠️</button>
+  </div>
+
+  <!-- DTC REPORTE -->
+  <div id="rpt-dtc" class="hidden">
+    <div class="form-section">
+      <h3 class="red">⚠️ Códigos DTC</h3>
+      <div style="background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);border-radius:8px;padding:12px;margin-bottom:12px;font-size:0.82em;color:var(--text2);line-height:1.6;">
+        💡 <strong style="color:var(--cyan);">TIP:</strong> Primero lee los DTC en Scanner OBD2, luego presiona "Sincronizar"
+      </div>
+      <button onclick="syncDTCreport()" style="width:100%;padding:11px;background:linear-gradient(135deg,#004488,#0066cc);color:white;border:none;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1px;cursor:pointer;margin-bottom:12px;">🔄 SINCRONIZAR DTC DEL SCANNER</button>
+      <div id="r_dtc_list"><p style="color:var(--text3);font-size:0.82em;font-style:italic;">Sin códigos aún...</p></div>
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <input class="pp-input" id="r_dtc_cod" placeholder="P0171" style="width:90px;flex-shrink:0;">
+        <input class="pp-input" id="r_dtc_desc" placeholder="Descripción del código">
+        <button onclick="addDTCreport()" style="padding:10px 14px;background:var(--red);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:1.1em;flex-shrink:0;">+</button>
+      </div>
+    </div>
+    <button class="big-btn scan" onclick="rptFilter('trabajos',null,true)" style="margin:0 16px 10px;width:calc(100% - 32px);">SIGUIENTE → TRABAJOS 🔧</button>
+  </div>
+
+  <!-- TRABAJOS -->
+  <div id="rpt-trabajos" class="hidden">
+    <div class="form-section">
+      <h3 class="green">🔧 Trabajos Realizados</h3>
+      <div id="r_trab_list"><p style="color:var(--text3);font-size:0.82em;font-style:italic;">Sin trabajos aún...</p></div>
+      <div style="background:var(--bg3);border-radius:10px;padding:12px;margin-top:10px;border:1px solid var(--border);">
+        <div class="input-row" style="margin-bottom:8px;">
+          <div class="input-group" style="margin:0;"><label class="input-label">Concepto</label><input class="pp-input" id="r_trab_con" placeholder="Limpieza MAF"></div>
+          <div class="input-group" style="margin:0;"><label class="input-label">Costo $</label><input class="pp-input" type="number" id="r_trab_cost" placeholder="850"></div>
+        </div>
+        <input class="pp-input" id="r_trab_det" placeholder="Detalle del trabajo..." style="margin-bottom:8px;">
+        <button onclick="addTrabajoreport()" style="width:100%;padding:11px;background:linear-gradient(135deg,#004422,#006633);color:white;border:none;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;cursor:pointer;">+ AGREGAR TRABAJO</button>
+      </div>
+    </div>
+    <div class="total-box" id="r_total_box" style="display:none;">
+      <div><div class="total-label">Total del servicio</div></div>
+      <div class="total-value">$<span id="r_total">0.00</span></div>
+    </div>
+    <button class="big-btn scan" onclick="rptFilter('final',null,true)" style="margin:0 16px 10px;width:calc(100% - 32px);">SIGUIENTE → VALIDACIÓN ✅</button>
+  </div>
+
+  <!-- FINAL -->
+  <div id="rpt-final" class="hidden">
+    <div class="form-section">
+      <h3 class="green">✅ Validación Final</h3>
+      <div class="input-row">
+        <div class="input-group"><label class="input-label">Estado del vehículo</label>
+          <select class="pp-select" id="r_estado">
+            <option>✅ REPARADO</option>
+            <option>⚠️ PARCIALMENTE REPARADO</option>
+            <option>🔄 REQUIERE SEGUIMIENTO</option>
+            <option>❌ REQUIERE REFACCIONES</option>
+          </select>
+        </div>
+        <div class="input-group"><label class="input-label">Técnico responsable</label><input class="pp-input" id="r_tecnico" value="Fernando Millán"></div>
+      </div>
+      <div class="input-group"><label class="input-label">Observaciones finales</label><textarea class="pp-textarea" id="r_obs" placeholder="Vehículo funciona correctamente. Ralentí estable..."></textarea></div>
+    </div>
+    <button class="big-btn report-gen" onclick="rptFilter('generar',null,true)" style="margin:0 16px 10px;width:calc(100% - 32px);">SIGUIENTE → GENERAR PDF 📄</button>
+  </div>
+
+  <!-- GENERAR -->
+  <div id="rpt-generar" class="hidden">
+    <div class="form-section">
+      <h3 class="cyan">📄 Generar Reporte</h3>
+      <div id="rpt_preview" style="background:var(--bg3);border-radius:8px;padding:14px;font-size:0.82em;color:var(--text2);line-height:1.9;"></div>
+    </div>
+    <button class="big-btn report-gen" onclick="generarPDF()" style="margin:0 16px 10px;width:calc(100% - 32px);">📄 GENERAR PDF · DESCARGAR</button>
+    <button onclick="rptFilter('cliente',null,true);limpiarReporte()" style="margin:0 16px 10px;width:calc(100% - 32px);padding:13px;background:var(--card2);color:var(--text2);border:1px solid var(--border2);border-radius:10px;font-family:'Rajdhani',sans-serif;font-weight:700;cursor:pointer;">🔄 NUEVO REPORTE</button>
+    <div id="rpt_ok" style="display:none;margin:0 16px;background:rgba(0,255,157,0.08);border:1px solid rgba(0,255,157,0.3);border-radius:10px;padding:14px;text-align:center;color:var(--green);font-family:'Rajdhani',sans-serif;font-weight:700;"></div>
+  </div>
+
+  <div class="view-footer">REPORTE · PROPART V4.0</div>
+</div>
+
+<!-- ═══════════════════ VIEW: REFAC ═══════════════════ -->
+<div id="view-refac" class="view">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="back-btn" onclick="goTo('inicio')">‹</div>
+      <div class="logo-text"><h1 style="color:var(--green)">REFACCIONARIA</h1><p>Inventario y catálogo</p></div>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <div class="filter-chip active" style="--chip-a:#006633;--chip-b:#009955;--chip-shadow:rgba(0,180,80,0.4);" onclick="filterRefac('all',this)">Todos</div>
+    <div class="filter-chip" style="--chip-a:#006633;--chip-b:#009955;--chip-shadow:rgba(0,180,80,0.4);" onclick="filterRefac('sensores',this)">Sensores</div>
+    <div class="filter-chip" style="--chip-a:#006633;--chip-b:#009955;--chip-shadow:rgba(0,180,80,0.4);" onclick="filterRefac('filtros',this)">Filtros</div>
+    <div class="filter-chip" style="--chip-a:#006633;--chip-b:#009955;--chip-shadow:rgba(0,180,80,0.4);" onclick="filterRefac('encendido',this)">Encendido</div>
+    <div class="filter-chip" style="--chip-a:#006633;--chip-b:#009955;--chip-shadow:rgba(0,180,80,0.4);" onclick="filterRefac('frenos',this)">Frenos</div>
+    <div class="filter-chip" style="--chip-a:#006633;--chip-b:#009955;--chip-shadow:rgba(0,180,80,0.4);" onclick="filterRefac('electricidad',this)">Eléctrico</div>
+  </div>
+  <div style="padding:0 16px;"><input class="pp-input" id="refacSearch" placeholder="🔍 Buscar refacción..." oninput="buscarRefac()" style="margin-bottom:10px;"></div>
+  <div id="refacList" style="padding:0 16px;"></div>
+  <div class="view-footer">REFACCIONARIA · PROPART V4.0</div>
+</div>
+
+<!-- ═══════════════════ VIEW: DATOS ═══════════════════ -->
+<div id="view-datos" class="view">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="back-btn" onclick="goTo('inicio')">‹</div>
+      <div class="logo-text"><h1 style="color:var(--yellow)">DATOS TÉCNICOS</h1><p>Base de datos automotriz</p></div>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <div class="filter-chip active" style="--chip-a:#665500;--chip-b:#998800;--chip-shadow:rgba(180,140,0,0.4);" onclick="filterDatos('all',this)">Todos</div>
+    <div class="filter-chip" style="--chip-a:#665500;--chip-b:#998800;--chip-shadow:rgba(180,140,0,0.4);" onclick="filterDatos('dtc',this)">Códigos DTC</div>
+    <div class="filter-chip" style="--chip-a:#665500;--chip-b:#998800;--chip-shadow:rgba(180,140,0,0.4);" onclick="filterDatos('sensores',this)">Sensores</div>
+    <div class="filter-chip" style="--chip-a:#665500;--chip-b:#998800;--chip-shadow:rgba(180,140,0,0.4);" onclick="filterDatos('calibracion',this)">Calibración</div>
+    <div class="filter-chip" style="--chip-a:#665500;--chip-b:#998800;--chip-shadow:rgba(180,140,0,0.4);" onclick="filterDatos('fusibles',this)">Fusibles</div>
+  </div>
+  <div id="datosList" style="padding:0 16px;"></div>
+  <div class="view-footer">DATOS TÉCNICOS · PROPART V4.0</div>
+</div>
+
+<!-- ═══════════════════ VIEW: ADMIN ═══════════════════ -->
+<div id="view-admin" class="view">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="back-btn" onclick="goTo('inicio')">‹</div>
+      <div class="logo-text"><h1 style="color:var(--purple)">ADMINISTRAR</h1><p>Configuración del sistema</p></div>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <div class="filter-chip active" style="--chip-a:#440077;--chip-b:#7700bb;--chip-shadow:rgba(130,0,200,0.4);" onclick="filterAdmin('sistema',this)">Sistema</div>
+    <div class="filter-chip" style="--chip-a:#440077;--chip-b:#7700bb;--chip-shadow:rgba(130,0,200,0.4);" onclick="filterAdmin('taller',this)">Taller</div>
+    <div class="filter-chip" style="--chip-a:#440077;--chip-b:#7700bb;--chip-shadow:rgba(130,0,200,0.4);" onclick="filterAdmin('bluetooth',this)">Bluetooth</div>
+  </div>
+  <div id="adminContent" style="padding:0 16px;">
+    <div class="form-section">
+      <h3 class="purple">⚙️ Configuración del Sistema</h3>
+      <div class="input-group"><label class="input-label">Nombre del Taller</label><input class="pp-input" value="Refaccionaria Millán"></div>
+      <div class="input-group"><label class="input-label">Propietario</label><input class="pp-input" value="Fernando Millán"></div>
+      <div class="input-group"><label class="input-label">Teléfono</label><input class="pp-input" value="777 683 8196"></div>
+      <button onclick="alert('✅ Configuración guardada')" style="width:100%;padding:12px;background:linear-gradient(135deg,#440077,#7700bb);color:white;border:none;border-radius:8px;font-family:'Rajdhani',sans-serif;font-weight:700;cursor:pointer;margin-top:8px;">💾 GUARDAR CONFIGURACIÓN</button>
+    </div>
+  </div>
+  <div class="view-footer">ADMIN · PROPART V4.0</div>
+</div>
+
+<!-- ═══════════════════ VIEW: HISTORIAL ═══════════════════ -->
+<div id="view-historial" class="view">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="back-btn" onclick="goTo('inicio')">‹</div>
+      <div class="logo-text"><h1 style="color:var(--red)">HISTORIAL</h1><p>Reportes anteriores</p></div>
+    </div>
+  </div>
+  <div class="filter-bar">
+    <div class="filter-chip active" style="--chip-a:#880022;--chip-b:#cc0033;--chip-shadow:rgba(200,0,50,0.4);" onclick="filterHist('all',this)">Todos</div>
+    <div class="filter-chip" style="--chip-a:#880022;--chip-b:#cc0033;--chip-shadow:rgba(200,0,50,0.4);" onclick="filterHist('hoy',this)">Hoy</div>
+    <div class="filter-chip" style="--chip-a:#880022;--chip-b:#cc0033;--chip-shadow:rgba(200,0,50,0.4);" onclick="filterHist('semana',this)">Semana</div>
+    <div class="filter-chip" style="--chip-a:#880022;--chip-b:#cc0033;--chip-shadow:rgba(200,0,50,0.4);" onclick="filterHist('mes',this)">Mes</div>
+  </div>
+  <div id="historialList" style="padding:0 8px;"></div>
+  <div class="view-footer">HISTORIAL · PROPART V4.0</div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav" id="bottomNav">
+  <button class="nav-item active" id="nav-inicio" onclick="goTo('inicio')"><span class="nav-icon">🏠</span><span class="nav-label">Inicio</span></button>
+  <button class="nav-item" id="nav-reporte" onclick="goTo('reporte')"><span class="nav-icon">📋</span><span class="nav-label">Reporte</span></button>
+  <button class="nav-item" id="nav-refac" onclick="goTo('refac')"><span class="nav-icon">🔩</span><span class="nav-label">Refac.</span></button>
+  <button class="nav-item" id="nav-historial" onclick="goTo('historial')"><span class="nav-icon">📁</span><span class="nav-label">Historial</span></button>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// DTC DATABASE
+// ═══════════════════════════════════════
+const DTC_DB = {
+  'P0030':{d:'O2 Heater B1S1',c:['Calentador quemado','Cable roto','Fusible'],s:['Medir 8-12Ω','Verificar fusible','Cambiar O2'],sev:'mod'},
+  'P0100':{d:'MAF Circuit',c:['MAF sucio','Cable roto','MAF defectuoso'],s:['Limpiar MAF','Revisar cables','Reemplazar'],sev:'alta'},
+  'P0101':{d:'MAF Range',c:['MAF sucio','Fuga vacío','Filtro sucio'],s:['Limpiar MAF','Buscar fugas','Cambiar filtro'],sev:'alta'},
+  'P0107':{d:'MAP Low Input',c:['MAP defectuoso','Fuga vacío','Cable'],s:['Verificar vacío','Buscar fugas','Reemplazar MAP'],sev:'alta'},
+  'P0110':{d:'IAT Circuit',c:['IAT defectuoso','Cable roto'],s:['Medir resistencia','Revisar cables','Reemplazar IAT'],sev:'mod'},
+  'P0120':{d:'TPS Circuit',c:['TPS defectuoso','Pista desgastada','Cable roto'],s:['Medir 0.5V reposo','Verificar 4.5V','Reemplazar TPS'],sev:'crit'},
+  'P0130':{d:'O2 Circuit B1S1',c:['O2 defectuoso','Cable cortado','Fuga escape'],s:['Verificar señal','Buscar fugas','Reemplazar O2'],sev:'alta'},
+  'P0141':{d:'O2 Heater B1S2',c:['Calentador quemado','Fusible','Relé'],s:['Medir 8-12Ω','Verificar fusible','Cambiar O2'],sev:'mod'},
+  'P0171':{d:'System Too Lean B1',c:['Fuga vacío','MAF sucio','Presión baja','Inyectores'],s:['Humo para fugas','Limpiar MAF','Medir presión','Limpiar inyectores'],sev:'crit'},
+  'P0172':{d:'System Too Rich B1',c:['Inyectores goteando','MAF sucio','Presión alta'],s:['Probar inyectores','Limpiar MAF','Medir presión'],sev:'alta'},
+  'P0300':{d:'Random Misfire',c:['Bujías gastadas','Bobinas débiles','Inyectores'],s:['Cambiar bujías','Probar bobinas','Limpiar inyectores'],sev:'crit'},
+  'P0301':{d:'Misfire Cyl 1',c:['Bujía 1','Bobina 1','Inyector 1'],s:['Cambiar bujía 1','Intercambiar bobina','Test compresión'],sev:'crit'},
+  'P0302':{d:'Misfire Cyl 2',c:['Bujía 2','Bobina 2','Inyector 2'],s:['Cambiar bujía 2','Intercambiar bobina','Test compresión'],sev:'crit'},
+  'P0303':{d:'Misfire Cyl 3',c:['Bujía 3','Bobina 3','Inyector 3'],s:['Cambiar bujía 3','Intercambiar bobina','Test compresión'],sev:'crit'},
+  'P0304':{d:'Misfire Cyl 4',c:['Bujía 4','Bobina 4','Inyector 4'],s:['Cambiar bujía 4','Intercambiar bobina','Test compresión'],sev:'crit'},
+  'P0325':{d:'Knock Sensor 1',c:['Sensor detonación','Cable roto','Golpeteo real'],s:['Medir señal knock','Verificar cables','Reemplazar'],sev:'mod'},
+  'P0335':{d:'CKP Sensor',c:['CKP defectuoso','Cable roto','Reluctor sucio'],s:['Verificar señal','Limpiar sensor','Gap 0.5-1mm'],sev:'crit'},
+  'P0340':{d:'CMP Sensor',c:['CMP defectuoso','Cable dañado','Timing'],s:['Verificar señal','Revisar timing','Reemplazar CMP'],sev:'crit'},
+  'P0420':{d:'Catalyst Low B1',c:['Catalizador malo','O2 trasero','Fuga escape'],s:['Test eficiencia','Verificar O2','Resolver mezcla'],sev:'mod'},
+  'P0440':{d:'EVAP System',c:['Tapa floja','Líneas rajadas','Válvula purga'],s:['Apretar tapa','Buscar fugas','Probar purga'],sev:'leve'},
+  'P0455':{d:'EVAP Large Leak',c:['Tapa perdida','Manguera rota','Canister'],s:['Verificar tapa','Test humo','Reparar fugas'],sev:'mod'},
+  'P0562':{d:'Voltage Low',c:['Batería baja','Alternador malo','Cables'],s:['Probar batería','Test alternador','Revisar cables'],sev:'alta'},
+  'P0606':{d:'ECM Processor',c:['ECM defectuoso','Agua en ECM','Sobrecalentamiento'],s:['Verificar ECM seco','Reset','Reemplazar ECM'],sev:'crit'},
+  'P0700':{d:'Transmission Control',c:['TCM falla','Sensor trans','Solenoide'],s:['Escanear TCM','Revisar ATF','Probar solenoides'],sev:'alta'},
+};
+
+// REFACCIONES
+const REFACCIONES = [
+  {n:'Sensor MAF Universal',cat:'sensores',p:450,marca:'Bosch'},
+  {n:'Sensor TPS Nissan',cat:'sensores',p:320,marca:'Delphi'},
+  {n:'Sensor O2 delantero',cat:'sensores',p:580,marca:'Bosch'},
+  {n:'Sensor O2 trasero',cat:'sensores',p:520,marca:'NGK'},
+  {n:'Sensor MAP',cat:'sensores',p:280,marca:'Standard'},
+  {n:'Sensor IAT',cat:'sensores',p:180,marca:'Standard'},
+  {n:'Sensor CKP',cat:'sensores',p:350,marca:'Delphi'},
+  {n:'Sensor CMP',cat:'sensores',p:380,marca:'Delphi'},
+  {n:'Filtro de aire',cat:'filtros',p:85,marca:'Fram'},
+  {n:'Filtro de combustible',cat:'filtros',p:120,marca:'Wix'},
+  {n:'Filtro aceite',cat:'filtros',p:65,marca:'Fram'},
+  {n:'Bujías (4 pzas)',cat:'encendido',p:280,marca:'NGK'},
+  {n:'Bobina de encendido',cat:'encendido',p:450,marca:'Bosch'},
+  {n:'Cables de bujías',cat:'encendido',p:320,marca:'Standard'},
+  {n:'Pastillas freno delantera',cat:'frenos',p:380,marca:'Brembo'},
+  {n:'Pastillas freno trasera',cat:'frenos',p:280,marca:'Brembo'},
+  {n:'Disco freno delantero',cat:'frenos',p:520,marca:'Brembo'},
+  {n:'Batería 45Ah',cat:'electricidad',p:1200,marca:'Optima'},
+  {n:'Alternador remanufacturado',cat:'electricidad',p:1800,marca:'Remy'},
+  {n:'Fusible blade 10A',cat:'electricidad',p:25,marca:'Littelfuse'},
+];
+
+// ═══════════════════════════════════════
+// DATOS TÉCNICOS
+// ═══════════════════════════════════════
+const DATOS_TECH = [
+  {t:'Códigos DTC P0000-P0199',sub:'Motor - Sistema de combustible y aire',icon:'⚠️',cat:'dtc',tags:['OBD2','Motor']},
+  {t:'Códigos DTC P0200-P0399',sub:'Motor - Inyectores y encendido',icon:'💥',cat:'dtc',tags:['Inyectores','Bujías']},
+  {t:'Rangos sensor TPS',sub:'Voltaje reposo 0.5V / WOT 4.5V',icon:'📐',cat:'sensores',tags:['TPS','Calibración']},
+  {t:'Rangos sensor MAP',sub:'Vacío 101kPa (atm) / WOT 20-30kPa',icon:'💨',cat:'sensores',tags:['MAP','Vacío']},
+  {t:'Rangos sensor MAF',sub:'Ralentí 2-5 g/s / Carga 15-40 g/s',icon:'🌬️',cat:'sensores',tags:['MAF','Flujo']},
+  {t:'Resistencia sensores NTC',sub:'ECT/IAT: 20°C=2500Ω, 80°C=300Ω',icon:'🌡️',cat:'sensores',tags:['ECT','IAT']},
+  {t:'Calibración TPS paso a paso',sub:'Motor OFF → Llave ON → 30s → Arrancar',icon:'⚙️',cat:'calibracion',tags:['TPS','Cuerpo']},
+  {t:'Calibración idle/ralentí',sub:'Limpiar IAC → Calibrar TPS → Aprender',icon:'🔄',cat:'calibracion',tags:['IAC','Ralentí']},
+  {t:'Fusibles Nissan Tsuru',sub:'Caja motor + tablero completo',icon:'⚡',cat:'fusibles',tags:['Nissan','Tsuru']},
+  {t:'Fusibles VW Jetta 2.0',sub:'Panel fusibles detallado',icon:'⚡',cat:'fusibles',tags:['VW','Jetta']},
+];
+
+// ═══════════════════════════════════════
+// HISTORIAL (localStorage)
+// ═══════════════════════════════════════
+let historial = JSON.parse(localStorage.getItem('pp_historial')||'[]');
+let reportDTCdata = [];
+let reportTrabData = [];
+let folioN = parseInt(localStorage.getItem('pp_folio')||'7543');
+
+// ═══════════════════════════════════════
+// DISCLAIMER
+// ═══════════════════════════════════════
+function acceptDisc() {
+  localStorage.setItem('pp_disc','1');
+  document.getElementById('disclaimer').style.display='none';
+  updateFolio();
+  renderHistorial();
+  renderRefac('all');
+  renderDatos('all');
+}
+window.onload = () => {
+  if(localStorage.getItem('pp_disc')==='1') {
+    document.getElementById('disclaimer').style.display='none';
+    updateFolio(); renderHistorial(); renderRefac('all'); renderDatos('all');
+  }
+};
+
+function updateFolio() {
+  document.getElementById('folioActivo').textContent = `PP-2026-${folioN}`;
+}
+
+// ═══════════════════════════════════════
+// NAVEGACIÓN
+// ═══════════════════════════════════════
+const VIEWS = ['inicio','scanner','reporte','refac','datos','admin','historial'];
+function goTo(name) {
+  VIEWS.forEach(v => {
+    const el = document.getElementById('view-'+v);
+    if(el) el.classList.toggle('active', v===name);
+  });
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navEl = document.getElementById('nav-'+name);
+  if(navEl) navEl.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function setLang(l) {
+  document.getElementById('btnES').classList.toggle('active',l==='es');
+  document.getElementById('btnEN').classList.toggle('active',l==='en');
+}
+
+// ═══════════════════════════════════════
+// FILTER CHIPS HELPER
+// ═══════════════════════════════════════
+function activateChip(chip, container) {
+  if(!chip) return;
+  const parent = chip.closest('.filter-bar') || document.querySelector('#'+container+' .filter-bar');
+  if(parent) parent.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+}
+
+// ═══════════════════════════════════════
+// SCANNER FILTERS
+// ═══════════════════════════════════════
+const SCAN_SECTIONS = ['conexion','sensores','dtc','calibrar','inyectores','log'];
+function scanFilter(sec, chip) {
+  activateChip(chip);
+  SCAN_SECTIONS.forEach(s => {
+    const el = document.getElementById('scan-'+s);
+    if(el) el.classList.toggle('hidden', s!==sec);
+  });
+}
+
+// ═══════════════════════════════════════
+// BLUETOOTH OBD2
+// ═══════════════════════════════════════
+const UUIDS=['000018f0-0000-1000-8000-00805f9b34fb','0000fff0-0000-1000-8000-00805f9b34fb'];
+let device,server,service,writeChar,notifyChar,loop;
+let dtcRaw='', waitDTC=false;
+
+async function connectBT() {
+  try {
+    device = await navigator.bluetooth.requestDevice({acceptAllDevices:true, optionalServices:UUIDS});
+    server = await device.gatt.connect();
+    for(let u of UUIDS){ try{ service=await server.getPrimaryService(u); break; }catch(e){} }
+    const chars = await service.getCharacteristics();
+    for(let c of chars){ if(c.properties.write) writeChar=c; if(c.properties.notify) notifyChar=c; }
+    await notifyChar.startNotifications();
+    notifyChar.addEventListener('characteristicvaluechanged', handleData);
+    setConnected(true);
+    await sendCmd("AT Z"); await wait(2000);
+    await sendCmd("AT E0"); await wait(500);
+    await sendCmd("AT SP0"); await wait(800);
+    addLog('Scanner inicializado ✓','#00ff9d');
+    startLoop();
+  } catch(e) { alert('Error: '+e.message); addLog('Error: '+e.message,'#ff4757'); }
+}
+
+function disconnectBT() {
+  if(loop) clearInterval(loop);
+  if(device&&device.gatt.connected) device.gatt.disconnect();
+  setConnected(false);
+}
+
+function setConnected(on) {
+  document.getElementById('scanStatus').textContent = on ? '🟢 CONECTADO' : '🔴 DESCONECTADO';
+  document.getElementById('scanStatus').className = 'status-pill-val '+(on?'conn':'disc');
+  document.getElementById('connDot').style.background = on ? 'var(--green)' : 'var(--red)';
+  document.getElementById('scannerDot').textContent = on ? device.name : 'OFF';
+  document.getElementById('scannerStatusMain').textContent = on ? 'CONECTADO' : 'DESCONECTADO';
+  document.getElementById('scannerStatusMain').style.color = on ? 'var(--green)' : 'var(--red)';
+  document.getElementById('btnConn').classList.toggle('hidden',on);
+  document.getElementById('btnDisc').classList.toggle('hidden',!on);
+  document.getElementById('btnDTC').classList.toggle('hidden',!on);
+  document.getElementById('btnClear').classList.toggle('hidden',!on);
+}
+
+async function leerDTC() {
+  if(loop) clearInterval(loop);
+  dtcRaw=''; waitDTC=true;
+  document.getElementById('dtcList').innerHTML='<div class="empty-state"><div class="emoji">⏳</div><p>Escaneando DTC...<br>(35 segundos)</p></div>';
+  addLog('Escaneo DTC profundo...','#f1fa8c');
+  await sendCmd("AT AL"); await wait(500);
+  for(let i=0;i<=7;i++){ await sendCmd(i===0?"03":`03 0${i}`); await wait(4000); }
+  setTimeout(()=>{ waitDTC=false; displayDTC(); setTimeout(()=>startLoop(),3000); },2000);
+}
+
+function displayDTC() {
+  const codes=new Set();
+  const dm=dtcRaw.match(/[PCBU][0-9A-F]{4}/gi);
+  if(dm) dm.forEach(c=>codes.add(c.toUpperCase()));
+  const hp=/43[\s]+((?:[0-9A-F]{2}[\s]*)+)/gi;
+  [...dtcRaw.matchAll(hp)].forEach(m=>{
+    const hx=m[1].replace(/\s/g,'');
+    for(let i=0;i<hx.length;i+=4){ const ch=hx.substring(i,i+4); if(ch!=='0000'&&ch.length===4){ const d=hexDTC(ch); if(d) codes.add(d); } }
+  });
+  const el=document.getElementById('dtcList');
+  if(codes.size===0){ el.innerHTML='<div class="empty-state"><div class="emoji">✅</div><p>Sin códigos de falla detectados</p></div>'; return; }
+  el.innerHTML='<div style="padding:8px 0;font-family:Rajdhani,sans-serif;font-weight:700;color:var(--red);letter-spacing:1px;font-size:0.9em;">'+codes.size+' CÓDIGO'+(codes.size>1?'S':'')+' DETECTADO'+(codes.size>1?'S':'')+'</div>'+
+    Array.from(codes).map(code=>{
+      const d=DTC_DB[code];
+      const sev=d?d.sev:'mod';
+      const sevClass=sev==='crit'?'sev-crit':sev==='alta'?'sev-alta':'sev-mod';
+      const sevLabel=sev==='crit'?'CRÍTICO':sev==='alta'?'ALTO':'MODERADO';
+      return `<div class="dtc-card" onclick="this.querySelector('.dtc-detail').classList.toggle('open')">
+        <div class="dtc-top"><span class="dtc-code">${code}</span><span class="sev-badge ${sevClass}">${sevLabel}</span></div>
+        <div class="dtc-desc">${d?d.d:'Código OBD2 genérico'}</div>
+        ${d?`<div class="dtc-detail">
+          <div class="detail-section"><h4>Causas posibles</h4><ul>${d.c.map(c=>'<li>'+c+'</li>').join('')}</ul></div>
+          <div class="detail-section"><h4>Soluciones</h4><ul>${d.s.map(s=>'<li>'+s+'</li>').join('')}</ul></div>
+        </div>`:''}
+      </div>`;
+    }).join('');
+}
+
+function hexDTC(h){const p=['P0','P1','P2','P3','C0','C1','C2','C3','B0','B1','B2','B3','U0','U1','U2','U3'];return p[parseInt(h[0],16)]+h.substring(1);}
+
+async function borrarDTC(){
+  if(!confirm('¿Borrar códigos DTC?')) return;
+  if(loop) clearInterval(loop);
+  await sendCmd("04"); await wait(1500);
+  document.getElementById('dtcList').innerHTML='<div class="empty-state"><div class="emoji">✅</div><p>Códigos borrados</p></div>';
+  addLog('Códigos DTC borrados','#50fa7b');
+  setTimeout(()=>startLoop(),2000);
+}
+
+// CALIBRAR
+async function calibrarTPS(){
+  if(!confirm('⚙️ CALIBRACIÓN TPS\n\n1. Motor APAGADO\n2. Llave ON (sin arrancar)\n3. Espera 30 seg\n4. No toques acelerador\n\n¿Continuar?')) return;
+  if(loop) clearInterval(loop);
+  const r=document.getElementById('calibResult');
+  const steps=[
+    ['⚙️ Reset adaptaciones ECM...','ATWS',3000],
+    ['⚙️ Reset TPS...','ATPP 2C SV 00',2000],
+    ['⚙️ Calibrando ralentí...','06 06',2000],
+  ];
+  for(let [msg,cmd,ms] of steps){ r.innerHTML=`<div style="background:var(--card);border-radius:8px;padding:12px;color:var(--cyan);font-family:Rajdhani,sans-serif;font-weight:700;">${msg}</div>`; await sendCmd(cmd); await wait(ms); }
+  alert('4️⃣ ARRANCA el motor\nDeja en ralentí 2 minutos\n\n✅ El motor aprenderá las adaptaciones');
+  r.innerHTML='<div style="background:rgba(0,255,157,0.08);border:1px solid rgba(0,255,157,0.3);border-radius:8px;padding:12px;color:var(--green);font-family:Rajdhani,sans-serif;font-weight:700;">✅ CALIBRACIÓN COMPLETADA</div>';
+  setTimeout(()=>startLoop(),2000);
+}
+
+function diagBobinas(){ document.getElementById('calibResult').innerHTML='<div style="background:var(--card);border-radius:8px;padding:14px;margin-top:8px;"><div style="color:var(--orange);font-family:Rajdhani,sans-serif;font-weight:700;margin-bottom:8px;">🔥 DIAGNÓSTICO BOBINAS</div><div style="font-size:0.82em;color:var(--text2);line-height:1.8;">• Resistencia primaria: 0.5-2Ω<br>• Resistencia secundaria: 6,000-30,000Ω<br>• Intercambia bobinas para aislar falla<br>• Ver códigos P0300-P0304</div></div>'; }
+function verTiming(){ const t=document.getElementById('timing').textContent; document.getElementById('calibResult').innerHTML=`<div style="background:var(--card);border-radius:8px;padding:14px;margin-top:8px;"><div style="color:var(--yellow);font-family:Rajdhani,sans-serif;font-weight:700;margin-bottom:8px;">🕐 TIMING: ${t}°</div><div style="font-size:0.82em;color:var(--text2);line-height:1.8;">• Ralentí normal: 8-15° BTDC<br>• Acelerado: 20-40° BTDC<br>• Fuera de rango → Verificar CKP y cadena</div></div>`; }
+function probarEVAP(){ document.getElementById('calibResult').innerHTML='<div style="background:var(--card);border-radius:8px;padding:14px;margin-top:8px;"><div style="color:var(--cyan);font-family:Rajdhani,sans-serif;font-weight:700;margin-bottom:8px;">🧹 SISTEMA EVAP</div><div style="font-size:0.82em;color:var(--text2);line-height:1.8;">• P0440: Sistema general<br>• P0441: Purga incorrecta<br>• P0442: Fuga pequeña<br>• P0455: Fuga grande<br>• Verificar tapa gasolina y test de humo</div></div>'; }
+function diagCMP(){ document.getElementById('calibResult').innerHTML='<div style="background:var(--card);border-radius:8px;padding:14px;margin-top:8px;"><div style="color:var(--purple);font-family:Rajdhani,sans-serif;font-weight:700;margin-bottom:8px;">📡 SENSOR CMP</div><div style="font-size:0.82em;color:var(--text2);line-height:1.8;">• Señal correcta: cuadrada 0-5V<br>• Gap: 0.5-1.5mm<br>• P0340: Circuito falla<br>• P0341: Rango/performance</div></div>'; }
+
+// INYECTORES
+function leerPulso(){ ['inj1','inj2','inj3','inj4'].forEach((id,i)=>{ document.getElementById(id).textContent=[2.8,2.7,3.1,2.9][i].toFixed(1); }); }
+function balancear(){
+  const vals=['inj1','inj2','inj3','inj4'].map(id=>parseFloat(document.getElementById(id).textContent));
+  if(vals.some(isNaN)){alert('Primero lee el pulso');return;}
+  const avg=vals.reduce((a,b)=>a+b)/4, diff=((Math.max(...vals)-Math.min(...vals))/avg*100).toFixed(1);
+  document.getElementById('injResult').innerHTML=`<div style="background:${diff<10?'rgba(0,255,157,0.08)':'rgba(255,71,87,0.08)'};border:1px solid ${diff<10?'rgba(0,255,157,0.3)':'rgba(255,71,87,0.3)'};border-radius:8px;padding:12px;margin-top:8px;font-family:Rajdhani,sans-serif;font-weight:700;color:${diff<10?'var(--green)':'var(--red)'};">${diff<10?'✅ BALANCE OK':'❌ DESBALANCE'} | Diferencia: ${diff}%</div>`;
+}
+function resetAdapt(){ alert('✅ Adaptaciones reseteadas\nEl ECM aprenderá nuevos valores'); }
+
+// DATA HANDLER
+function handleData(event){
+  const raw=new TextDecoder().decode(event.target.value).trim();
+  if(!raw||raw==='>') return;
+  const val=raw.toUpperCase();
+  addLog('RX: '+raw,'#6272a4');
+  if(waitDTC){ dtcRaw+=raw+' '; return; }
+  const hx=val.replace(/\s/g,'').replace(/[^0-9A-F]/gi,'');
+  const sensors=[
+    {id:'rpm',pat:/410C([0-9A-F]{4})/i,fn:h=>Math.round(parseInt(h,16)/4)},
+    {id:'speed',pat:/410D([0-9A-F]{2})/i,fn:h=>parseInt(h,16)},
+    {id:'temp',pat:/4105([0-9A-F]{2})/i,fn:h=>parseInt(h,16)-40},
+    {id:'iat',pat:/410F([0-9A-F]{2})/i,fn:h=>parseInt(h,16)-40},
+    {id:'load',pat:/4104([0-9A-F]{2})/i,fn:h=>Math.round(parseInt(h,16)*100/255)},
+    {id:'tps',pat:/4111([0-9A-F]{2})/i,fn:h=>Math.round(parseInt(h,16)*100/255)},
+    {id:'app1',pat:/4149([0-9A-F]{2})/i,fn:h=>Math.round(parseInt(h,16)*100/255)},
+    {id:'app2',pat:/414A([0-9A-F]{2})/i,fn:h=>Math.round(parseInt(h,16)*100/255)},
+    {id:'map',pat:/410B([0-9A-F]{2})/i,fn:h=>parseInt(h,16)},
+    {id:'maf',pat:/4110([0-9A-F]{4})/i,fn:h=>(parseInt(h,16)/100).toFixed(1)},
+    {id:'o2b1s1',pat:/4114([0-9A-F]{2})/i,fn:h=>(parseInt(h,16)/200).toFixed(2)},
+    {id:'o2b1s2',pat:/4115([0-9A-F]{2})/i,fn:h=>(parseInt(h,16)/200).toFixed(2)},
+    {id:'stft',pat:/4106([0-9A-F]{2})/i,fn:h=>((parseInt(h,16)-128)*100/128).toFixed(1)},
+    {id:'ltft',pat:/4107([0-9A-F]{2})/i,fn:h=>((parseInt(h,16)-128)*100/128).toFixed(1)},
+    {id:'timing',pat:/410E([0-9A-F]{2})/i,fn:h=>(parseInt(h,16)/2-64).toFixed(1)},
+  ];
+  sensors.forEach(s=>{ const m=hx.match(s.pat); if(m){ const el=document.getElementById(s.id); if(el){ el.textContent=s.fn(m[1]); el.closest('.sensor-tile')?.classList.add('lit'); } } });
+  if(val.includes('V')&&!val.includes('41')){ const m=raw.match(/(\d+\.?\d*)/); if(m){ const el=document.getElementById('voltage'); if(el) el.textContent=parseFloat(m[1]).toFixed(1); } }
+}
+
+function startLoop(){
+  if(loop) clearInterval(loop);
+  loop=setInterval(async()=>{
+    await sendCmd("010C"); await wait(800);
+    await sendCmd("010D"); await wait(800);
+    await sendCmd("0105"); await wait(800);
+    await sendCmd("0104"); await wait(800);
+    await sendCmd("0111"); await wait(800);
+    await sendCmd("ATRV"); await wait(800);
+  },6000);
+}
+
+async function sendCmd(cmd){
+  if(!writeChar) return;
+  addLog('TX: '+cmd,'#8be9fd');
+  await writeChar.writeValue(new TextEncoder().encode(cmd+"\r"));
+}
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+function addLog(msg,color){ const el=document.getElementById('logBox'); if(!el) return; el.innerHTML+=`<span style="color:${color||'#00ff9d'}">[${new Date().toLocaleTimeString()}] ${msg}</span><br>`; el.scrollTop=el.scrollHeight; }
+
+// ═══════════════════════════════════════
+// REPORTE PDF - FILTROS
+// ═══════════════════════════════════════
+const RPT_SECS=['cliente','dtc','trabajos','final','generar'];
+function rptFilter(sec, chip, auto) {
+  if(chip) activateChip(chip);
+  RPT_SECS.forEach(s=>{ const el=document.getElementById('rpt-'+s); if(el) el.classList.toggle('hidden',s!==sec); });
+  if(sec==='generar') buildPreview();
+}
+
+function syncDTCreport(){
+  const codes=document.querySelectorAll('#dtcList .dtc-code');
+  reportDTCdata=[];
+  if(codes.length>0){
+    codes.forEach(el=>{
+      const code=el.textContent.trim(), d=DTC_DB[code];
+      reportDTCdata.push({code, desc:d?d.d:'Código OBD2', sev:d?(d.sev==='crit'?'CRÍTICO':d.sev==='alta'?'ALTO':'MODERADO'):'MODERADO'});
+    });
+    renderDTCrpt();
+    alert('✅ '+reportDTCdata.length+' código(s) sincronizado(s)');
+  } else { alert('Ve al Scanner → Lee DTC primero'); }
+}
+
+function addDTCreport(){
+  const code=document.getElementById('r_dtc_cod').value.trim().toUpperCase();
+  const desc=document.getElementById('r_dtc_desc').value.trim();
+  if(!code) return;
+  const d=DTC_DB[code];
+  reportDTCdata.push({code, desc:desc||(d?d.d:'Código OBD2'), sev:d?(d.sev==='crit'?'CRÍTICO':'MODERADO'):'MODERADO'});
+  document.getElementById('r_dtc_cod').value='';
+  document.getElementById('r_dtc_desc').value='';
+  renderDTCrpt();
+}
+
+function renderDTCrpt(){
+  const el=document.getElementById('r_dtc_list');
+  el.innerHTML=reportDTCdata.length===0?'<p style="color:var(--text3);font-size:0.82em;">Sin códigos aún...</p>':
+    reportDTCdata.map((d,i)=>`<div style="display:flex;align-items:center;background:var(--bg3);padding:10px;border-radius:8px;margin:5px 0;gap:8px;">
+      <span style="font-family:Rajdhani,sans-serif;font-weight:700;color:var(--red);min-width:60px;">${d.code}</span>
+      <span style="flex:1;font-size:0.82em;color:var(--text2);">${d.desc}</span>
+      <span style="background:rgba(255,71,87,0.15);color:var(--red);padding:2px 8px;border-radius:10px;font-size:0.65em;font-weight:700;">${d.sev}</span>
+      <button onclick="reportDTCdata.splice(${i},1);renderDTCrpt()" style="background:rgba(255,71,87,0.15);border:1px solid rgba(255,71,87,0.3);color:var(--red);border-radius:5px;padding:3px 8px;cursor:pointer;font-size:0.8em;">✕</button>
+    </div>`).join('');
+}
+
+function addTrabajoreport(){
+  const con=document.getElementById('r_trab_con').value.trim();
+  const det=document.getElementById('r_trab_det').value.trim();
+  const cost=parseFloat(document.getElementById('r_trab_cost').value)||0;
+  if(!con){alert('Escribe el concepto');return;}
+  reportTrabData.push({con,det,cost});
+  document.getElementById('r_trab_con').value='';
+  document.getElementById('r_trab_det').value='';
+  document.getElementById('r_trab_cost').value='';
+  renderTrabRpt();
+}
+
+function renderTrabRpt(){
+  const el=document.getElementById('r_trab_list');
+  const total=reportTrabData.reduce((s,t)=>s+t.cost,0);
+  el.innerHTML=reportTrabData.length===0?'<p style="color:var(--text3);font-size:0.82em;">Sin trabajos aún...</p>':
+    reportTrabData.map((t,i)=>`<div class="trabajo-item">
+      <div class="trabajo-item-info"><strong>${t.con}</strong><small>${t.det}</small></div>
+      <span class="trabajo-item-price">$${t.cost.toLocaleString('es-MX',{minimumFractionDigits:2})}</span>
+      <button class="del-btn" onclick="reportTrabData.splice(${i},1);renderTrabRpt()">✕</button>
+    </div>`).join('');
+  const tb=document.getElementById('r_total_box');
+  if(tb){ tb.style.display=reportTrabData.length>0?'flex':'none'; document.getElementById('r_total').textContent=total.toLocaleString('es-MX',{minimumFractionDigits:2}); }
+}
+
+function buildPreview(){
+  const nombre=document.getElementById('r_nombre')?.value||'---';
+  const vehiculo=document.getElementById('r_vehiculo')?.value||'---';
+  const placas=document.getElementById('r_placas')?.value||'---';
+  const total=reportTrabData.reduce((s,t)=>s+t.cost,0);
+  document.getElementById('rpt_preview').innerHTML=`
+    <div style="margin-bottom:8px;"><span style="color:var(--text3);">CLIENTE:</span> <strong>${nombre}</strong></div>
+    <div style="margin-bottom:8px;"><span style="color:var(--text3);">VEHÍCULO:</span> <strong>${vehiculo} | ${placas}</strong></div>
+    <div style="margin-bottom:8px;"><span style="color:var(--text3);">CÓDIGOS:</span> <strong style="color:var(--red);">${reportDTCdata.map(d=>d.code).join(', ')||'Ninguno'}</strong></div>
+    <div style="margin-bottom:8px;"><span style="color:var(--text3);">TRABAJOS:</span> <strong>${reportTrabData.length} concepto(s)</strong></div>
+    <div style="color:var(--yellow);font-family:Rajdhani,sans-serif;font-weight:700;font-size:1.2em;">TOTAL: $${total.toLocaleString('es-MX',{minimumFractionDigits:2})} MXN</div>`;
+}
+
+function limpiarReporte(){
+  reportDTCdata=[]; reportTrabData=[];
+  ['r_nombre','r_tel','r_vehiculo','r_placas','r_desc','r_obs'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  renderDTCrpt(); renderTrabRpt();
+}
+
+function generarPDF(){
+  const g=id=>document.getElementById(id)?.value?.trim()||'';
+  const nombre=g('r_nombre')||'Cliente', tel=g('r_tel')||'---';
+  const vehiculo=g('r_vehiculo')||'Vehículo', placas=g('r_placas')||'---';
+  const desc=g('r_desc')||'---', obs=g('r_obs')||'---';
+  const estado=document.getElementById('r_estado')?.value||'✅ REPARADO';
+  const tecnico=g('r_tecnico')||'Fernando Millán';
+  const total=reportTrabData.reduce((s,t)=>s+t.cost,0);
+  const folio=`PP-2026-${folioN}`; folioN++; localStorage.setItem('pp_folio',folioN); updateFolio();
+  const fecha=new Date().toLocaleDateString('es-MX');
+  const sRPM=document.getElementById('rpm')?.textContent||'---';
+  const sTemp=document.getElementById('temp')?.textContent||'---';
+  const sVolt=document.getElementById('voltage')?.textContent||'---';
+  const sTPS=document.getElementById('tps')?.textContent||'---';
+
+  // Guardar en historial
+  historial.unshift({folio,fecha,nombre,vehiculo,placas,total,dtc:reportDTCdata.map(d=>d.code).join(', ')||'N/A',trabajos:reportTrabData.length});
+  localStorage.setItem('pp_historial',JSON.stringify(historial.slice(0,50)));
+  renderHistorial();
+
+  const html=`<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Reporte ${folio}</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Arial,sans-serif;background:#f0f0f0;padding:20px;}
+.page{background:white;max-width:800px;margin:0 auto;padding:35px;box-shadow:0 0 20px rgba(0,0,0,0.15);}
+.hdr{background:linear-gradient(135deg,#1e3c72,#2a5298);color:white;padding:22px 28px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;}
+.logo{font-size:1.8em;font-weight:bold;letter-spacing:2px;}.hdr-r{text-align:right;font-size:0.88em;}
+.sec{font-size:1em;font-weight:bold;color:#1e3c72;border-bottom:3px solid #667eea;padding-bottom:5px;margin:18px 0 10px;letter-spacing:1px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;border:1px solid #ddd;border-radius:8px;overflow:hidden;margin-bottom:14px;}
+.cell{padding:9px 13px;}.cell:nth-child(odd){background:#f9f9f9;}.cell:nth-child(even){background:white;}
+.lbl{font-size:0.7em;color:#888;font-weight:bold;text-transform:uppercase;}.val{font-size:0.95em;color:#1e3c72;font-weight:bold;margin-top:2px;}
+.quote{background:#fff8e1;border-left:4px solid #ff9800;padding:11px 14px;border-radius:5px;font-style:italic;color:#555;margin-bottom:13px;font-size:0.88em;}
+table{width:100%;border-collapse:collapse;margin-bottom:13px;}th{background:#1e3c72;color:white;padding:9px 11px;text-align:left;font-size:0.82em;}
+td{padding:8px 11px;border-bottom:1px solid #eee;font-size:0.87em;}tr:nth-child(even) td{background:#f9f9f9;}
+.sev-c{background:#f44336;color:white;padding:2px 9px;border-radius:10px;font-size:0.7em;font-weight:bold;display:inline-block;}
+.sev-a{background:#ff9800;color:white;padding:2px 9px;border-radius:10px;font-size:0.7em;font-weight:bold;display:inline-block;}
+.total-r td{font-weight:bold;background:#e3f2fd;color:#1e3c72;}
+.gran{background:linear-gradient(135deg,#1e3c72,#2a5298);color:white;padding:13px 18px;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin:13px 0;}
+.gran-v{font-size:1.4em;font-weight:bold;color:#FFD700;}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:13px;}
+.sm{background:#f5f7fa;border-left:3px solid #667eea;padding:8px;border-radius:6px;text-align:center;}
+.sm-l{font-size:0.65em;color:#888;}.sm-v{font-size:1em;font-weight:bold;color:#1e3c72;}
+.firmas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:18px;}
+.fb{text-align:center;padding:12px;border:1px solid #ddd;border-radius:8px;}
+.fl{border-top:2px solid #333;margin:35px 12px 7px;}
+.estado-b{display:inline-block;background:#e8f5e9;border:2px solid #4CAF50;padding:7px 18px;border-radius:8px;font-size:1em;font-weight:bold;color:#2e7d32;margin-bottom:10px;}
+.footer{text-align:center;font-size:0.7em;color:#999;margin-top:18px;padding-top:10px;border-top:1px solid #eee;}
+@media print{body{background:white;padding:0;}.page{box-shadow:none;}.np{display:none!important;}}
+</style></head><body>
+<div class="page">
+<div class="hdr"><div><div class="logo">⚡ PROPART</div><div style="font-size:0.8em;opacity:0.8;">Diagnostic Pro · V4.0</div></div>
+<div class="hdr-r"><div style="font-size:1.05em;font-weight:bold;">REPORTE DE SERVICIO</div><div>Folio: ${folio}</div><div>Fecha: ${fecha}</div><div>Refaccionaria Millán | 777 683 8196</div></div></div>
+<div class="sec">🚗 DATOS DEL VEHÍCULO</div>
+<div class="grid2"><div class="cell"><div class="lbl">Propietario</div><div class="val">${nombre}</div></div><div class="cell"><div class="lbl">Teléfono</div><div class="val">${tel}</div></div>
+<div class="cell"><div class="lbl">Vehículo</div><div class="val">${vehiculo}</div></div><div class="cell"><div class="lbl">Placas</div><div class="val">${placas}</div></div>
+<div class="cell"><div class="lbl">Técnico</div><div class="val">${tecnico}</div></div><div class="cell"><div class="lbl">Fecha</div><div class="val">${fecha}</div></div></div>
+<div class="sec">📊 LECTURAS OBD2</div>
+<div class="sgrid"><div class="sm"><div class="sm-l">RPM</div><div class="sm-v">${sRPM}</div></div><div class="sm"><div class="sm-l">Temp Motor</div><div class="sm-v">${sTemp}°C</div></div><div class="sm"><div class="sm-l">Voltaje</div><div class="sm-v">${sVolt}V</div></div><div class="sm"><div class="sm-l">TPS</div><div class="sm-v">${sTPS}%</div></div></div>
+<div class="sec">1. 🔍 DIAGNÓSTICO INICIAL</div>
+<div class="quote">"${desc}"</div>
+${reportDTCdata.length>0?`<table><tr><th>Código</th><th>Descripción</th><th>Severidad</th></tr>${reportDTCdata.map(d=>`<tr><td><strong style="color:#f44336;font-size:1.05em;">${d.code}</strong></td><td>${d.desc}</td><td><span class="${d.sev==='CRÍTICO'?'sev-c':'sev-a'}">${d.sev}</span></td></tr>`).join('')}</table>`:'<p style="color:#4CAF50;font-weight:bold;margin-bottom:13px;">✅ Sin códigos DTC activos</p>'}
+<div class="sec">2. 🔧 TRABAJOS REALIZADOS</div>
+${reportTrabData.length>0?`<table><tr><th>#</th><th>Concepto</th><th>Descripción</th><th style="text-align:right;">Costo</th></tr>${reportTrabData.map((t,i)=>`<tr><td>${i+1}</td><td><strong>${t.con}</strong></td><td>${t.det||'---'}</td><td style="text-align:right;font-weight:bold;">$${t.cost.toLocaleString('es-MX',{minimumFractionDigits:2})}</td></tr>`).join('')}<tr class="total-r"><td colspan="3" style="text-align:right;">TOTAL:</td><td style="text-align:right;">$${total.toLocaleString('es-MX',{minimumFractionDigits:2})}</td></tr></table><div class="gran"><div>💰 TOTAL A PAGAR</div><div class="gran-v">$${total.toLocaleString('es-MX',{minimumFractionDigits:2})} MXN</div></div>`:'<p style="color:#999;">Sin trabajos registrados</p>'}
+<div class="sec">3. ✅ VALIDACIÓN FINAL</div>
+<div class="estado-b">${estado}</div><p style="color:#555;line-height:1.7;margin-bottom:18px;">${obs}</p>
+<div class="firmas"><div class="fb"><div style="font-size:0.75em;color:#666;font-weight:bold;">TALLER</div><div class="fl"></div><div style="font-weight:bold;">Refaccionaria Millán</div><div style="font-size:0.8em;color:#888;">777 683 8196</div></div>
+<div class="fb"><div style="font-size:0.75em;color:#666;font-weight:bold;">TÉCNICO</div><div class="fl"></div><div style="font-weight:bold;">${tecnico}</div></div>
+<div class="fb"><div style="font-size:0.75em;color:#666;font-weight:bold;">CLIENTE</div><div class="fl"></div><div style="font-weight:bold;">${nombre}</div></div></div>
+<div class="footer">Diagnóstico verificado con tecnología OBD2 ProPart Diagnostic Pro V4.0 | Refaccionaria Millán | Tel: 777 683 8196 | Folio: ${folio}</div>
+</div>
+<div class="np" style="max-width:800px;margin:16px auto;display:flex;gap:10px;">
+<button onclick="window.print()" style="flex:1;padding:14px;background:#1e3c72;color:white;border:none;border-radius:8px;font-size:1.05em;font-weight:bold;cursor:pointer;">🖨️ IMPRIMIR / GUARDAR PDF</button>
+<button onclick="window.close()" style="flex:1;padding:14px;background:#666;color:white;border:none;border-radius:8px;font-size:1.05em;cursor:pointer;">✕ CERRAR</button>
+</div></body></html>`;
+
+  const win=window.open('','_blank');
+  if(win){ win.document.write(html); win.document.close(); }
+  else alert('⚠️ Permite popups en Chrome');
+  const ok=document.getElementById('rpt_ok');
+  if(ok){ ok.style.display='block'; ok.innerHTML=`✅ Folio: ${folio} | Total: $${total.toLocaleString('es-MX',{minimumFractionDigits:2})} MXN`; }
+}
+
+// ═══════════════════════════════════════
+// REFACCIONARIA
+// ═══════════════════════════════════════
+let refacCat='all';
+function filterRefac(cat,chip){ refacCat=cat; activateChip(chip); renderRefac(cat); }
+function renderRefac(cat){
+  const search=document.getElementById('refacSearch')?.value.toLowerCase()||'';
+  const list=REFACCIONES.filter(r=>(cat==='all'||r.cat===cat)&&(r.n.toLowerCase().includes(search)||r.marca.toLowerCase().includes(search)));
+  const el=document.getElementById('refacList');
+  el.innerHTML=list.length===0?'<div class="empty-state"><div class="emoji">🔍</div><p>Sin resultados</p></div>':
+    list.map(r=>`<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin:6px 0;display:flex;justify-content:space-between;align-items:center;">
+      <div><div style="font-weight:600;font-size:0.9em;">${r.n}</div><div style="font-size:0.72em;color:var(--text3);margin-top:2px;">${r.marca} · ${r.cat}</div></div>
+      <div style="font-family:Rajdhani,sans-serif;font-weight:700;font-size:1.1em;color:var(--green);">$${r.p}</div>
+    </div>`).join('');
+}
+function buscarRefac(){ renderRefac(refacCat); }
+
+// ═══════════════════════════════════════
+// DATOS TÉCNICOS
+// ═══════════════════════════════════════
+function filterDatos(cat,chip){ activateChip(chip); renderDatos(cat); }
+function renderDatos(cat){
+  const list=DATOS_TECH.filter(d=>cat==='all'||d.cat===cat);
+  const el=document.getElementById('datosList');
+  const catColors={dtc:'var(--red)',sensores:'var(--cyan)',calibracion:'var(--purple)',fusibles:'var(--yellow)'};
+  el.innerHTML=list.map(d=>`<div class="datos-card" onclick="alert('${d.t}\\n\\n${d.sub}')">
+    <div class="datos-top"><span class="datos-icon">${d.icon}</span><div><div class="datos-title">${d.t}</div><div class="datos-sub">${d.sub}</div></div></div>
+    <div class="datos-tags">${d.tags.map(t=>`<span class="tag" style="background:rgba(100,200,255,0.08);color:var(--cyan);">${t}</span>`).join('')}</div>
+  </div>`).join('');
+}
+
+// ═══════════════════════════════════════
+// HISTORIAL
+// ═══════════════════════════════════════
+function filterHist(f,chip){ activateChip(chip); renderHistorial(f); }
+function renderHistorial(f='all'){
+  const el=document.getElementById('historialList');
+  if(!el) return;
+  let list=[...historial];
+  const hoy=new Date().toLocaleDateString('es-MX');
+  if(f==='hoy') list=list.filter(h=>h.fecha===hoy);
+  if(list.length===0){ el.innerHTML='<div class="empty-state"><div class="emoji">📂</div><p>Sin reportes en el historial</p></div>'; return; }
+  el.innerHTML=list.map((h,i)=>`<div class="hist-card" onclick="alert('Folio: ${h.folio}\\nFecha: ${h.fecha}\\nCliente: ${h.nombre}\\nVehículo: ${h.vehiculo}\\nCódigos DTC: ${h.dtc}\\nTrabajos: ${h.trabajos}\\nTotal: $${h.total.toLocaleString()}')">
+    <div class="hist-top"><span class="hist-folio">${h.folio}</span><span class="hist-fecha">${h.fecha}</span></div>
+    <div class="hist-vehiculo">${h.vehiculo} · ${h.placas}</div>
+    <div class="hist-cliente">${h.nombre}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+      <span style="font-size:0.75em;color:var(--text3);">DTC: ${h.dtc}</span>
+      <span class="hist-total">$${h.total.toLocaleString('es-MX',{minimumFractionDigits:2})}</span>
+    </div>
+  </div>`).join('');
+}
+
+// ADMIN
+function filterAdmin(sec,chip){ activateChip(chip); }
+</script>
 </body>
 </html>
