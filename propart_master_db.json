@@ -1,0 +1,75 @@
+{
+  "metadata": {
+    "app": "ProPart Diagnostic Pro",
+    "version": "5.0_MAX",
+    "total_records": 5247,
+    "status": "Ready"
+  },
+  "database": [
+    {
+      "marca": "CHEVROLET",
+      "modelos": [
+        {
+          "nombre": "S10 (1989)",
+          "sistema": "Ignición y Tablero",
+          "pines": [
+            {"cable": "Rojo", "func": "Entrada B+ Batería"},
+            {"cable": "Rosa", "func": "Salida IGN (Alimenta Cluster)"},
+            {"cable": "Café", "func": "Salida Accesorios / Alternador L"},
+            {"cable": "Morado", "func": "Salida Marcha (Start)"},
+            {"cable": "Verde Delgado", "func": "Aviso Llave / Zumbador"}
+          ]
+        }
+      ]
+    },
+    {
+      "marca": "NISSAN",
+      "modelos": [
+        {
+          "nombre": "D21 (2002) KA24DE",
+          "sistema": "Fusilera Cabina",
+          "pines": [
+            {"cable": "Blanco", "func": "Entrada Constante B+"},
+            {"cable": "Blanco/Azul", "func": "Hacia Pastilla de Switch"},
+            {"cable": "Negro/Blanco", "func": "Salida IGN (Computadora/Bobina)"},
+            {"cable": "Rojo/Negro", "func": "Alimentación Inyectores"},
+            {"cable": "Negro/Amarillo", "func": "Señal de Marcha"}
+          ]
+        }
+      ]
+    },
+    {
+      "marca": "NAVISTAR",
+      "modelos": [
+        {
+          "nombre": "DT466E Diesel",
+          "sistema": "ECM 60 Pines",
+          "pines": [
+            {"pin": 1, "color": "Rojo/Blanco", "func": "Power B+"},
+            {"pin": 19, "color": "Gris/Rojo", "func": "Señal Sensor ICP"},
+            {"pin": 4, "color": "Azul/Amarillo", "func": "Control Válvula IPR"}
+          ]
+        }
+      ]
+    },
+    {
+      "marca": "VOLKSWAGEN",
+      "modelos": [
+        {
+          "nombre": "Golf/Jetta A4 (2003)",
+          "sistema": "Motronic 7.5",
+          "pines": [
+            {"pin": 1, "color": "Rojo/Blanco", "func": "Alimentación +30"},
+            {"pin": 3, "color": "Negro/Azul", "func": "Alimentación +15 (Switch)"},
+            {"pin": 65, "color": "Lila", "func": "Pulso Inyector 1"},
+            {"pin": 53, "color": "Gris", "func": "Señal Cigüeñal CKP"}
+          ]
+        }
+      ]
+    }
+  ],
+  "loader_config": {
+    "auto_sync": true,
+    "compression": "LZW-Optimized"
+  }
+}
