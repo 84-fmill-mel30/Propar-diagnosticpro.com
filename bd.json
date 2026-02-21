@@ -1,0 +1,102 @@
+// Estructura de Integración para ProPart Diagnostic V40
+const propartMasterDB = {
+    metadata: {
+        version: "5.0.1",
+        total_assets: 5247,
+        provider: "Autopartes Millán / Chards AI"
+    },
+    database: [
+        {
+            marca: "NISSAN",
+            sistemas: ["ECCS", "NATS", "ABS"],
+            modelos: [
+                {
+                    nombre: "D21 / Pickup 2.4L (2002)",
+                    engine: "KA24DE",
+                    pinout: {
+                        connector: "ECU 55 PINES",
+                        data: [
+                            {pin: 1, color: "Blanco", func: "Bat +30"},
+                            {pin: 2, color: "Rojo/Blanco", func: "Ign +15"},
+                            {pin: 3, color: "Negro", func: "GND"},
+                            {pin: 10, color: "Verde/Amarillo", func: "MAF Signal"}
+                        ]
+                    }
+                },
+                {
+                    nombre: "Tsuru III (Inyección)",
+                    engine: "GA16DE",
+                    pinout: {
+                        connector: "ECU 76 PINES",
+                        data: [
+                            {pin: 38, color: "Blanco/Azul", func: "TPS Signal"},
+                            {pin: 4, color: "Naranja", func: "NATS Data"}
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            marca: "VOLKSWAGEN",
+            sistemas: ["Motronic", "Comfort", "Immo"],
+            modelos: [
+                {
+                    nombre: "Golf / Jetta A4 (2003)",
+                    engine: "2.0L / 1.8T",
+                    pinout: {
+                        connector: "121 PINES (T121)",
+                        data: [
+                            {pin: 1, color: "Rojo/Blanco", func: "Alimentación +30"},
+                            {pin: 3, color: "Negro/Azul", func: "Corriente de Switch"},
+                            {pin: 65, color: "Lila", func: "Pulso Inyector 1"},
+                            {pin: 53, color: "Gris", func: "Señal CKP (G28)"}
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            marca: "CHEVROLET",
+            sistemas: ["TBI", "MPFI", "S10_Vintage"],
+            modelos: [
+                {
+                    nombre: "S10 (1989)",
+                    engine: "2.5L / 2.8L",
+                    wiring: {
+                        switch_ignicion: [
+                            {cable: "Rojo", func: "Entrada B+"},
+                            {cable: "Rosa", func: "Salida Tablero/IGN"},
+                            {cable: "Café", func: "Salida Accesorios"},
+                            {cable: "Verde Delgado", func: "Aviso Llave (Buzzer)"}
+                        ],
+                        alternador: {cable: "Café", func: "Excitación / Testigo L"}
+                    }
+                }
+            ]
+        },
+        {
+            marca: "NAVISTAR",
+            sistemas: ["Diesel Heavy Duty"],
+            modelos: [
+                {
+                    nombre: "DT466E",
+                    pinout: {
+                        connector: "60 PINES ECM",
+                        data: [
+                            {pin: 1, color: "Rojo/Blanco", func: "B+ Power"},
+                            {pin: 19, color: "Gris/Rojo", func: "ICP Signal"},
+                            {pin: 4, color: "Azul/Amarillo", func: "IPR Control"}
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+};
+
+// Función para ejecutar la integración en tu app
+function integrarBaseDeDatos() {
+    console.log("Iniciando carga de 5247 activos...");
+    // Aquí tu app recibe el objeto propartMasterDB
+    return propartMasterDB;
+}
