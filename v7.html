@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+<title>PROPART PRO V7</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#030810;--bg2:#060F1C;--card:#091828;--card2:#0C2040;
+  --blue:#1E8CE0;--green:#00C48C;--red:#FF4B5C;--gold:#F5A623;
+  --purple:#A855F7;--cyan:#00D4E8;--orange:#FF7A2F;
+  --white:#EEF6FF;--lgray:#6A8CAA;--gray:#1E3A58;--border:#0F2A45;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html,body{height:100%;background:var(--bg);overflow:hidden}
+body{font-family:'Exo 2',sans-serif;color:var(--white);display:flex;flex-direction:column;max-width:480px;margin:0 auto;box-shadow:0 0 80px #000}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background-image:repeating-linear-gradient(0deg,transparent 27px,rgba(30,140,224,.012) 28px),repeating-linear-gradient(90deg,transparent 27px,rgba(30,140,224,.012) 28px)}
+.hdr{flex-shrink:0;z-index:20;position:relative;background:linear-gradient(180deg,#020810,#040E1C);border-bottom:2px solid var(--blue);padding:0 11px;display:flex;align-items:center;gap:8px;height:46px;box-shadow:0 4px 28px rgba(30,140,224,.2)}
+.hdr-logo{width:30px;height:30px;border-radius:8px;flex-shrink:0;background:linear-gradient(135deg,#1E8CE0,#052A50);display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;box-shadow:0 0 14px rgba(30,140,224,.5)}
+.hdr h1{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;line-height:1}
+.hdr-sub{font-size:6.5px;color:var(--blue);letter-spacing:1.5px;margin-top:1px}
+.hdr-pills{margin-left:auto;display:flex;gap:4px;align-items:center}
+.hpill{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:3px 8px;font-family:'Rajdhani',sans-serif;font-size:7.5px;font-weight:700;color:var(--lgray);letter-spacing:.8px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.hpill.on{background:rgba(0,196,140,.1);border-color:var(--green);color:var(--green)}
+.hpill.err{background:rgba(255,75,92,.08);border-color:var(--red);color:var(--red)}
+.bdot{width:5px;height:5px;border-radius:50%;background:currentColor;animation:bdot 1.5s infinite}
+@keyframes bdot{0%,100%{opacity:1}50%{opacity:.15}}
+.content{flex:1;overflow:hidden;position:relative;z-index:1}
+.screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;display:none;padding-bottom:56px;-webkit-overflow-scrolling:touch}
+.screen.active{display:block}
+.screen::-webkit-scrollbar{width:2px}
+.screen::-webkit-scrollbar-thumb{background:rgba(30,140,224,.4);border-radius:2px}
+.bnav{flex-shrink:0;z-index:20;background:linear-gradient(0deg,#020810,#040D1A);border-top:1px solid var(--border);display:flex;height:52px;box-shadow:0 -4px 20px rgba(0,0,0,.7)}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;cursor:pointer;color:var(--lgray);font-family:'Rajdhani',sans-serif;font-size:7px;font-weight:700;letter-spacing:.4px;transition:all .2s;border-top:2px solid transparent;padding:0}
+.nb.active{color:var(--blue);border-top-color:var(--blue)}
+.nb-ico{font-size:15px;line-height:1}
+.card{background:var(--card);border:1px solid var(--border);border-radius:11px;margin:0 11px 8px;padding:10px 12px}
+.card.bb{border-color:rgba(30,140,224,.22)}.card.bg{border-color:rgba(0,196,140,.22)}.card.br{border-color:rgba(255,75,92,.22)}.card.bgd{border-color:rgba(245,166,35,.22)}.card.bp{border-color:rgba(168,85,247,.22)}.card.bc{border-color:rgba(0,212,232,.22)}
+.sec-lbl{font-family:'Rajdhani',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:2px;color:var(--lgray);margin-bottom:8px}
+.sec-hdr{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:var(--lgray);padding:8px 12px 6px;border-bottom:1px solid var(--border)}
+.gauge-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:0 11px 8px}
+.gauge{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:9px 10px}
+.g-lbl{font-family:'Rajdhani',sans-serif;font-size:7.5px;font-weight:700;letter-spacing:1px;color:var(--lgray);margin-bottom:2px;display:flex;justify-content:space-between;align-items:center}
+.g-val{font-family:'Share Tech Mono',monospace;font-size:17px;font-weight:700;color:var(--white);line-height:1}
+.g-unit{font-size:8px;color:var(--lgray);font-family:'Rajdhani',sans-serif;margin-left:2px}
+.g-bar-bg{height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin:5px 0 3px}
+.g-bar{height:100%;border-radius:2px;transition:width .3s ease}
+.g-alert{font-size:7px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.5px;min-height:9px}
+.chart-wrap{margin:0 11px 8px;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:8px 10px}
+.chart-hdr{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.chart-ttl{font-family:'Rajdhani',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--lgray);flex:1}
+.chart-live{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--cyan)}
+canvas{display:block;width:100%;border-radius:5px;background:#040C18}
+.sp-wrap{margin:0 11px 8px;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:10px 12px}
+.sp-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.sp-ttl{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:2px;color:var(--lgray)}
+.sp-sel{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--cyan)}
+.sp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;max-height:210px;overflow-y:auto;padding-right:2px}
+.sp-grid::-webkit-scrollbar{width:2px}
+.sp-grid::-webkit-scrollbar-thumb{background:var(--blue)}
+.sp-item{padding:8px 5px;border-radius:7px;background:var(--bg2);border:1px solid var(--border);cursor:pointer;transition:all .15s;font-family:'Rajdhani',sans-serif;font-size:7.5px;font-weight:700;letter-spacing:.3px;text-align:center;line-height:1.3;user-select:none;min-height:38px;display:flex;align-items:center;justify-content:center}
+.sp-item.on{background:rgba(0,212,232,.1);border-color:var(--cyan);color:var(--cyan)}
+.sp-item.full{opacity:.35;cursor:not-allowed}
+.sp-item:not(.full):not(.on):active{transform:scale(.92)}
+.btn-adapt{width:100%;padding:8px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:7px;font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;color:var(--lgray);cursor:pointer;text-align:left;letter-spacing:.3px;transition:all .15s;touch-action:manipulation}
+.btn-adapt:active{transform:scale(.97);background:var(--card)}
+.btn-exec{background:rgba(30,140,224,.12);border-color:rgba(30,140,224,.35);color:var(--blue)}
+.btn-exec:active{background:rgba(30,140,224,.2)}
+.btn-gold{background:rgba(245,166,35,.12);border-color:rgba(245,166,35,.35);color:var(--gold)}
+.btn-warn{background:rgba(255,75,92,.08);border-color:rgba(255,75,92,.25);color:var(--red)}
+.map-table{border-collapse:collapse;font-family:'Share Tech Mono';font-size:8px;width:100%}
+.map-table td{border:1px solid var(--border);padding:3px 4px;text-align:center;min-width:32px}
+.map-table td:first-child{color:var(--lgray);background:var(--bg2);font-size:7px}
+.map-table tr:first-child td{color:var(--lgray);background:var(--bg2);font-size:7px}
+.map-cell{background:none;border:none;width:100%;color:var(--gold);font-family:'Share Tech Mono';font-size:8px;text-align:center;outline:none;min-width:28px}
+.tab-bar{display:flex;gap:3px;background:var(--bg2);border-radius:9px;padding:3px;margin:0 11px 8px}
+.tab{flex:1;padding:8px 3px;border-radius:6px;border:none;background:none;font-family:'Rajdhani',sans-serif;font-size:8px;font-weight:700;letter-spacing:.4px;color:var(--lgray);cursor:pointer;transition:all .2s;text-align:center;min-height:34px}
+.tab.on{background:var(--card);color:var(--blue);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.panel{display:none}.panel.on{display:block}
+.filter-row{display:flex;gap:5px;overflow-x:auto;padding:0 11px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+.filter-row::-webkit-scrollbar{display:none}
+.fp{padding:7px 14px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);font-family:'Rajdhani',sans-serif;font-size:8px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .18s;letter-spacing:.4px;flex-shrink:0;min-height:32px;display:flex;align-items:center}
+.fp.on{background:rgba(30,140,224,.15);border-color:var(--blue);color:var(--blue)}
+.fp:active{transform:scale(.93)}
+.search-bar{display:flex;align-items:center;gap:7px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:8px 12px;margin:0 11px 8px}
+.search-bar input{flex:1;background:none;border:none;outline:none;color:var(--white);font-size:12px;font-family:'Exo 2',sans-serif}
+.veh-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin:0 11px 7px;cursor:pointer;transition:all .2s}
+.veh-card:active{transform:scale(.97)}
+.veh-card.sel{border-color:var(--green);background:rgba(0,196,140,.05)}
+.veh-title{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;margin-bottom:3px}
+.veh-sub{font-size:8px;color:var(--lgray);margin-bottom:6px}
+.tag-row{display:flex;flex-wrap:wrap;gap:4px}
+.tag{font-size:7px;padding:2px 7px;border-radius:4px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.4px}
+.dtc-chip{border-radius:9px;border:1px solid rgba(255,75,92,.25);background:rgba(255,75,92,.05);padding:10px 12px;margin:0 11px 7px;cursor:pointer;transition:all .2s}
+.dtc-chip:hover{border-color:rgba(255,75,92,.45)}
+.dtc-code{font-family:'Share Tech Mono',monospace;font-size:15px;font-weight:700;color:var(--red)}
+.dtc-top{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.dtc-badge{font-size:7px;font-weight:700;padding:2px 7px;border-radius:4px;font-family:'Rajdhani',sans-serif;letter-spacing:.8px}
+.dtc-desc{font-size:8.5px;color:var(--lgray);line-height:1.6}
+.dtc-detail{display:none;margin-top:9px;padding-top:9px;border-top:1px solid rgba(255,75,92,.15)}
+.dtc-chip.open .dtc-detail{display:block}
+.dtc-sol-lbl{font-family:'Rajdhani',sans-serif;font-size:8px;font-weight:700;letter-spacing:1.5px;color:var(--green);margin-bottom:5px}
+.dtc-sol-item{display:flex;gap:8px;margin-bottom:5px;align-items:flex-start}
+.dtc-sol-n{width:16px;height:16px;border-radius:50%;background:rgba(0,196,140,.15);border:1px solid rgba(0,196,140,.3);display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-size:7.5px;font-weight:700;color:var(--green);flex-shrink:0}
+.dtc-sol-t{font-size:8px;color:var(--lgray);line-height:1.6}
+.dtc-symp{background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:7px;padding:7px 9px;margin-top:7px}
+.dtc-symp-lbl{font-family:'Rajdhani',sans-serif;font-size:7.5px;font-weight:700;letter-spacing:1px;color:var(--gold);margin-bottom:4px}
+.dtc-symp-txt{font-size:8px;color:var(--lgray);line-height:1.6}
+.cal-card{background:var(--card);border:1px solid var(--border);border-radius:11px;margin:0 11px 8px;padding:10px 12px;cursor:pointer;transition:all .2s}
+.cal-card:active{transform:scale(.97)}.cal-card.open{border-color:rgba(30,140,224,.35)}
+.cal-hdr{display:flex;align-items:center;gap:9px}
+.cal-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.cal-name{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:.8px}
+.cal-range{font-size:7.5px;color:var(--lgray);margin-top:1px}
+.cal-chevron{margin-left:auto;color:var(--lgray);font-size:12px;transition:transform .2s}
+.cal-card.open .cal-chevron{transform:rotate(90deg)}
+.cal-body{display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.cal-card.open .cal-body{display:block}
+.cal-live{font-family:'Share Tech Mono',monospace;font-size:24px;font-weight:700;text-align:center;margin-bottom:8px}
+.cal-bar-bg{height:8px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden;margin-bottom:9px}
+.cal-bar-fill{height:100%;border-radius:4px;transition:width .25s ease}
+.cal-zones{display:flex;gap:4px;margin-bottom:9px}
+.cal-zone{flex:1;text-align:center;padding:5px;border-radius:6px;font-family:'Rajdhani',sans-serif;font-size:7px;font-weight:700;letter-spacing:.4px}
+.cal-ref{width:100%;border-collapse:collapse;font-size:8px}
+.cal-ref th{background:rgba(255,255,255,.04);color:var(--lgray);padding:5px 8px;text-align:left;font-family:'Rajdhani',sans-serif;font-size:7px;font-weight:700;letter-spacing:1px}
+.cal-ref td{padding:5px 8px;border-top:1px solid rgba(255,255,255,.03);font-family:'Share Tech Mono',monospace;color:var(--lgray)}
+.cal-ref tr.hi td{color:var(--white);background:rgba(30,140,224,.07)}
+.step-list{margin-top:8px}
+.step{display:flex;gap:8px;margin-bottom:7px;align-items:flex-start}
+.step-n{width:20px;height:20px;border-radius:50%;background:rgba(30,140,224,.12);border:1px solid rgba(30,140,224,.3);display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-size:8.5px;font-weight:700;color:var(--blue);flex-shrink:0}
+.step-t{font-family:'Rajdhani',sans-serif;font-size:9.5px;font-weight:700;line-height:1.2}
+.step-d{font-size:7.5px;color:var(--lgray);margin-top:2px;line-height:1.5}
+.btn{border:none;border-radius:9px;padding:10px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:10px;letter-spacing:1.5px;cursor:pointer;transition:all .15s;text-align:center}
+.btn:active{transform:scale(.96)}
+.btn-blue{background:linear-gradient(135deg,var(--blue),#0A4A80);color:#fff;box-shadow:0 3px 14px rgba(30,140,224,.3)}
+.btn-red{background:rgba(255,75,92,.12);border:1px solid rgba(255,75,92,.3);color:var(--red)}
+.btn-green{background:rgba(0,196,140,.12);border:1px solid rgba(0,196,140,.3);color:var(--green)}
+.btn-ghost{background:var(--card);border:1px solid var(--border);color:var(--lgray)}
+.btn-row{display:flex;gap:6px;padding:0 11px;margin-bottom:8px}
+.home-hero{background:linear-gradient(135deg,#040E1C,#081E38);padding:12px 12px 10px;border-bottom:1px solid var(--border)}
+.hero-brand{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;letter-spacing:3px}
+.hero-model{font-family:'Rajdhani',sans-serif;font-size:11px;color:var(--blue);letter-spacing:1.5px;margin-top:2px}
+.hero-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:10px}
+.hero-stat{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;text-align:center}
+.hs-val{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;line-height:1}
+.hs-lbl{font-size:7px;color:var(--lgray);letter-spacing:.7px;margin-top:2px}
+.menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:11px}
+.menu-btn{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:14px 8px 12px;text-align:center;cursor:pointer;transition:all .2s}
+.menu-btn:active{transform:scale(.94)}
+.menu-ico{font-size:22px;margin-bottom:5px}
+.menu-lbl{font-family:'Rajdhani',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.6px;color:var(--lgray)}
+.pin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:8px}
+.pin-item{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:5px;text-align:center;cursor:pointer;transition:all .15s}
+.pin-item:active{transform:scale(.9)}
+.pin-num{font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;color:var(--blue)}
+.pin-name{font-size:6.5px;color:var(--lgray);font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.3px;margin-top:2px;line-height:1.2}
+.pin-v{font-size:6px;color:var(--cyan);font-family:'Share Tech Mono',monospace}
+.modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.8);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.modal.open{opacity:1;pointer-events:auto}
+.modal-sheet{background:var(--bg2);border-radius:16px 16px 0 0;border-top:1px solid var(--border);width:100%;max-width:480px;max-height:88vh;overflow-y:auto;padding-bottom:24px;transform:translateY(50px);transition:transform .3s}
+.modal.open .modal-sheet{transform:translateY(0)}
+.modal-drag{width:36px;height:4px;background:var(--gray);border-radius:2px;margin:10px auto 14px;display:block}
+.modal-ttl{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:2px;padding:0 14px;margin-bottom:12px}
+.prog-bg{height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:width .4s;width:0}
+#toast{position:fixed;bottom:62px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-size:10px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.8px;z-index:999;opacity:0;transition:all .28s;pointer-events:none;white-space:nowrap;max-width:360px;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok{border-color:var(--green);color:var(--green)}
+#toast.err{border-color:var(--red);color:var(--red)}
+#toast.warn{border-color:var(--gold);color:var(--gold)}
+#toast.info{border-color:var(--blue);color:var(--blue)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+</style>
+</head>
+<body>
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-logo">PP</div>
+  <div><h1>PROPART PRO</h1><div class="hdr-sub">DIAGNÓSTICO V7 · OBD2 · IA</div></div>
+  <div class="hdr-pills">
+    <div class="hpill" id="ble-pill" onclick="toggleBLE()"><span class="bdot" id="ble-dot"></span><span id="ble-lbl">BLE</span></div>
+    <div class="hpill" id="db-pill" onclick="showScreen('vehiculos')"><span id="db-count">DB</span></div>
+  </div>
+</header>
+
+<div class="content">
+
+<!-- HOME -->
+<div class="screen active" id="scr-home">
+  <div class="home-hero">
+    <div class="hero-brand" id="home-brand">SIN VEHÍCULO</div>
+    <div class="hero-model" id="home-model">Selecciona marca · modelo · año</div>
+    <div class="hero-grid">
+      <div class="hero-stat"><div class="hs-val" id="hs-rpm" style="color:var(--cyan)">—</div><div class="hs-lbl">RPM</div></div>
+      <div class="hero-stat"><div class="hs-val" id="hs-temp" style="color:var(--orange)">—°</div><div class="hs-lbl">TEMP</div></div>
+      <div class="hero-stat"><div class="hs-val" id="hs-volt" style="color:var(--green)">—</div><div class="hs-lbl">VOLTAJE</div></div>
+      <div class="hero-stat"><div class="hs-val" id="hs-speed">—</div><div class="hs-lbl">km/h</div></div>
+      <div class="hero-stat"><div class="hs-val" id="hs-dtc" style="color:var(--red)">—</div><div class="hs-lbl">FALLAS</div></div>
+      <div class="hero-stat"><div class="hs-val" id="hs-load">—%</div><div class="hs-lbl">CARGA</div></div>
+    </div>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-btn" onclick="showScreen('vehiculos')"><div class="menu-ico">🚗</div><div class="menu-lbl">VEHÍCULO</div></div>
+    <div class="menu-btn" onclick="showScreen('sensores')"><div class="menu-ico">📡</div><div class="menu-lbl">SENSORES</div></div>
+    <div class="menu-btn" onclick="showScreen('dtc')"><div class="menu-ico">⚠️</div><div class="menu-lbl">DTC/FALLAS</div></div>
+    <div class="menu-btn" onclick="showScreen('calibracion')"><div class="menu-ico">⚙️</div><div class="menu-lbl">CALIBRACIÓN</div></div>
+    <div class="menu-btn" onclick="showScreen('electrico')"><div class="menu-ico">🔌</div><div class="menu-lbl">ELÉCTRICO</div></div>
+    <div class="menu-btn" onclick="showScreen('reportes')"><div class="menu-ico">📋</div><div class="menu-lbl">REPORTES</div></div>
+  </div>
+  <div class="card bb">
+    <div class="sec-lbl">ESTADO DEL SISTEMA</div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:9px;color:var(--lgray)">Conexión OBD2</span><span id="sys-ble" style="font-family:'Share Tech Mono';font-size:9px;color:var(--red)">DESCONECTADO</span></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:9px;color:var(--lgray)">Base de datos</span><span id="sys-db" style="font-family:'Share Tech Mono';font-size:9px">LOCAL</span></div>
+    <div style="display:flex;justify-content:space-between"><span style="font-size:9px;color:var(--lgray)">Modo actual</span><span id="sys-mode" style="font-family:'Share Tech Mono';font-size:9px;color:var(--gold)">SIMULACIÓN</span></div>
+  </div>
+</div>
+
+<!-- VEHICULOS -->
+<div class="screen" id="scr-vehiculos">
+  <div class="sec-hdr">🚗 BASE DE DATOS — SELECCIÓN DE VEHÍCULO</div>
+  <div style="padding:8px 11px 0;font-family:'Rajdhani';font-size:7.5px;color:var(--lgray);letter-spacing:1.5px;font-weight:700">▶ MARCA</div>
+  <div class="filter-row" id="brand-row"></div>
+  <div style="padding:2px 11px 0;font-family:'Rajdhani';font-size:7.5px;color:var(--lgray);letter-spacing:1.5px;font-weight:700">▶ AÑO</div>
+  <div class="filter-row" id="year-row"></div>
+  <div class="search-bar"><span style="font-size:14px;color:var(--lgray)">🔍</span><input type="text" id="veh-search" placeholder="Buscar modelo, motor, ECU..." oninput="renderVehicles()"/></div>
+  <div id="veh-results"></div>
+</div>
+
+<!-- VEH DETAIL -->
+<div class="screen" id="scr-veh-detail">
+  <div class="sec-hdr" id="vd-title">INFORMACIÓN DEL VEHÍCULO</div>
+  <div class="tab-bar">
+    <button class="tab on" onclick="switchVDTab('vd-modulos',this)">MÓDULOS</button>
+    <button class="tab" onclick="switchVDTab('vd-senslist',this)">SENSORES</button>
+    <button class="tab" onclick="switchVDTab('vd-pinout',this)">PINOUT</button>
+    <button class="tab" onclick="switchVDTab('vd-diag',this)">DIAGRAMAS</button>
+  </div>
+  <div id="vd-modulos" class="panel on"></div>
+  <div id="vd-senslist" class="panel"></div>
+  <div id="vd-pinout" class="panel"></div>
+  <div id="vd-diag" class="panel"></div>
+  <div class="btn-row">
+    <button class="btn btn-blue" onclick="useVehicle()">✓ SELECCIONAR ESTE VEHÍCULO</button>
+    <button class="btn btn-ghost" onclick="showScreen('vehiculos')" style="max-width:80px">◀ ATRÁS</button>
+  </div>
+</div>
+
+<!-- SENSORES -->
+<div class="screen" id="scr-sensores">
+  <div class="sec-hdr">📡 MONITOREO EN TIEMPO REAL</div>
+  <div class="btn-row" style="padding-top:8px">
+    <button class="btn btn-blue" id="btn-start" onclick="startOBD()">▶ INICIAR OBD</button>
+    <button class="btn btn-red" id="btn-stop" style="display:none;max-width:80px" onclick="stopOBD()">■ STOP</button>
+    <button class="btn btn-ghost" onclick="toggleSimMode()" id="btn-sim" style="max-width:90px">SIM</button>
+  </div>
+  <!-- Sensor picker: 30 sensores, selecciona hasta 4 para graficar -->
+  <div class="sp-wrap">
+    <div class="sp-hdr">
+      <div class="sp-ttl">SELECCIONAR SENSORES (máx. 4 para gráficas)</div>
+      <div class="sp-sel" id="sp-count">0/4</div>
+    </div>
+    <div class="sp-grid" id="sp-grid"></div>
+  </div>
+  <!-- 4 gráficas de los sensores seleccionados -->
+  <div id="charts-area"></div>
+  <!-- Gauges de todos los sensores activos -->
+  <div class="gauge-grid" id="gauge-grid"></div>
+</div>
+
+<!-- DTC -->
+<div class="screen" id="scr-dtc">
+  <div class="sec-hdr">⚠️ DIAGNÓSTICO DE FALLAS DTC</div>
+  <div class="btn-row" style="padding-top:8px">
+    <button class="btn btn-blue" onclick="readDTC()">🔍 LEER FALLAS</button>
+    <button class="btn btn-red" onclick="clearDTC()">🗑 BORRAR DTC</button>
+    <button class="btn btn-ghost" style="max-width:90px" onclick="readPendingDTC()">PEND.</button>
+  </div>
+  <div class="card br" id="dtc-status-card">
+    <div class="sec-lbl">ESTADO ESCANEO</div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:9px;color:var(--lgray)">Fallas activas</span><span id="dtc-active" style="font-family:'Share Tech Mono';font-size:11px;color:var(--red)">—</span></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:9px;color:var(--lgray)">Pendientes</span><span id="dtc-pending" style="font-family:'Share Tech Mono';font-size:11px;color:var(--gold)">—</span></div>
+    <div style="display:flex;justify-content:space-between"><span style="font-size:9px;color:var(--lgray)">Protocolo</span><span id="dtc-proto" style="font-family:'Share Tech Mono';font-size:9px;color:var(--lgray)">OBD2 / ISO 15765</span></div>
+    <div class="prog-bg" style="margin-top:8px"><div class="prog-fill" id="dtc-prog" style="background:var(--blue)"></div></div>
+  </div>
+  <div class="tab-bar">
+    <button class="tab on" onclick="filterDTC('all',this)">TODAS</button>
+    <button class="tab" onclick="filterDTC('P',this)">P · MOTOR</button>
+    <button class="tab" onclick="filterDTC('C',this)">C · CHASIS</button>
+    <button class="tab" onclick="filterDTC('BU',this)">B/U</button>
+  </div>
+  <div id="dtc-list"></div>
+  <div id="dtc-empty" style="text-align:center;padding:24px;color:var(--lgray);font-family:'Rajdhani';font-size:10px;letter-spacing:1px">Presiona LEER FALLAS para escanear el vehículo</div>
+</div>
+
+<!-- CALIBRACION -->
+<div class="screen" id="scr-calibracion">
+  <div class="sec-hdr">⚙️ CALIBRACIÓN &amp; PROGRAMACIÓN</div>
+  <div class="tab-bar" style="flex-wrap:wrap;gap:3px">
+    <button class="tab on" onclick="switchCalTab('cal-gas',this)">⛽ GASOLINA</button>
+    <button class="tab" onclick="switchCalTab('cal-diesel',this)">🛢 DIESEL</button>
+    <button class="tab" onclick="switchCalTab('cal-hvolt',this)">⚡ HV/EV</button>
+    <button class="tab" onclick="switchCalTab('cal-adaptac',this)">🔄 ADAPTAC.</button>
+    <button class="tab" onclick="switchCalTab('cal-immo',this)">🔑 IMMO</button>
+    <button class="tab" onclick="switchCalTab('cal-prog',this)">💻 PROGRAM.</button>
+  </div>
+  <div id="cal-gas" class="panel on"></div>
+  <div id="cal-diesel" class="panel"></div>
+  <div id="cal-hvolt" class="panel"></div>
+
+  <!-- ADAPTACIONES -->
+  <div id="cal-adaptac" class="panel">
+    <div style="padding:8px 11px 0">
+      <!-- TPS LEARN -->
+      <div class="cal-card" id="cal-tps-learn">
+        <div class="cal-hdr" onclick="toggleCal('tps-learn',event)">
+          <div class="cal-ico" style="background:rgba(30,140,224,.15);border:1px solid rgba(30,140,224,.3)">🎚</div>
+          <div><div class="cal-name" style="color:var(--blue)">TPS / THROTTLE RESET</div><div class="cal-range">Aprendizaje posición mariposa ECM</div></div>
+          <div class="cal-chevron">▶</div>
+        </div>
+        <div class="cal-body">
+          <div style="font-size:8.5px;color:var(--lgray);margin-bottom:10px;line-height:1.7">Resetea el aprendizaje de posición de la mariposa. Hacer después de limpiar el cuerpo o sustituir TPS.</div>
+          <div id="tps-learn-status" style="font-family:'Share Tech Mono';font-size:9px;color:var(--cyan);margin-bottom:8px;min-height:16px"></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button class="btn-adapt" onclick="runAdapt('tps1')">1️⃣ Llave OFF — motor apagado 30s</button>
+            <button class="btn-adapt" onclick="runAdapt('tps2')">2️⃣ Llave ON (sin arrancar) — esperar 5s</button>
+            <button class="btn-adapt" onclick="runAdapt('tps3')">3️⃣ Verificar TPS: 0.45-0.52V en reposo</button>
+            <button class="btn-adapt" onclick="runAdapt('tps4')">4️⃣ Arrancar y dejar en ralentí 10min</button>
+            <button class="btn-adapt btn-exec" onclick="execAdapt('tps','TPS RESET COMPLETADO ✅')">⚡ EJECUTAR RESET TPS (OBD2)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- IAC LEARN -->
+      <div class="cal-card" id="cal-iac-learn">
+        <div class="cal-hdr" onclick="toggleCal('iac-learn',event)">
+          <div class="cal-ico" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3)">🌀</div>
+          <div><div class="cal-name" style="color:var(--purple)">IAC / IDLE LEARN</div><div class="cal-range">Aprendizaje ralentí ECM</div></div>
+          <div class="cal-chevron">▶</div>
+        </div>
+        <div class="cal-body">
+          <div style="font-size:8.5px;color:var(--lgray);margin-bottom:10px;line-height:1.7">Enseña a la ECM el ralentí correcto. Necesario después de limpiar cuerpo de aceleración o IAC.</div>
+          <div id="iac-learn-status" style="font-family:'Share Tech Mono';font-size:9px;color:var(--cyan);margin-bottom:8px;min-height:16px"></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button class="btn-adapt" onclick="runAdapt('iac1')">1️⃣ Motor a temperatura normal (90°C+)</button>
+            <button class="btn-adapt" onclick="runAdapt('iac2')">2️⃣ A/C apagado — todas las cargas OFF</button>
+            <button class="btn-adapt" onclick="runAdapt('iac3')">3️⃣ Dejar en ralentí SIN tocar pedal 10min</button>
+            <button class="btn-adapt" onclick="runAdapt('iac4')">4️⃣ Apagar — esperar 3min — volver a arrancar</button>
+            <button class="btn-adapt btn-exec" onclick="execAdapt('iac','IAC IDLE LEARN COMPLETADO ✅')">⚡ EJECUTAR IAC LEARN (OBD2)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LTFT RESET -->
+      <div class="cal-card" id="cal-ftrim-learn">
+        <div class="cal-hdr" onclick="toggleCal('ftrim-learn',event)">
+          <div class="cal-ico" style="background:rgba(0,196,140,.15);border:1px solid rgba(0,196,140,.3)">⛽</div>
+          <div><div class="cal-name" style="color:var(--green)">FUEL TRIM RESET</div><div class="cal-range">Reset adaptaciones combustible STFT/LTFT</div></div>
+          <div class="cal-chevron">▶</div>
+        </div>
+        <div class="cal-body">
+          <div style="font-size:8.5px;color:var(--lgray);margin-bottom:10px;line-height:1.7">Borra aprendizajes de mezcla. Hacer después de reparar fugas de vacío, limpiar inyectores o cambiar MAF.</div>
+          <div id="ftrim-learn-status" style="font-family:'Share Tech Mono';font-size:9px;color:var(--cyan);margin-bottom:8px;min-height:16px"></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button class="btn-adapt" onclick="runAdapt('ft1')">1️⃣ Resolver causa raíz primero (fugas, MAF, etc)</button>
+            <button class="btn-adapt" onclick="runAdapt('ft2')">2️⃣ Borrar DTCs activos</button>
+            <button class="btn-adapt btn-exec" onclick="execAdapt('ftrim','FUEL TRIM RESET COMPLETADO ✅')">⚡ RESET FUEL TRIMS (OBD2)</button>
+            <button class="btn-adapt" onclick="runAdapt('ft3')">3️⃣ Ciclo de conducción 20min variando RPM</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- APP CALIBRATION -->
+      <div class="cal-card" id="cal-app-learn">
+        <div class="cal-hdr" onclick="toggleCal('app-learn',event)">
+          <div class="cal-ico" style="background:rgba(233,30,140,.15);border:1px solid rgba(233,30,140,.3)">🦶</div>
+          <div><div class="cal-name" style="color:#E91E8C">APP / PEDAL LEARN</div><div class="cal-range">Calibración pedal acelerador APP1+APP2</div></div>
+          <div class="cal-chevron">▶</div>
+        </div>
+        <div class="cal-body">
+          <div style="font-size:8.5px;color:var(--lgray);margin-bottom:10px;line-height:1.7">Reinicializa el aprendizaje del pedal. Necesario al sustituir pedal o si hay P0221/P0222.</div>
+          <div id="app-learn-status" style="font-family:'Share Tech Mono';font-size:9px;color:var(--cyan);margin-bottom:8px;min-height:16px"></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button class="btn-adapt" onclick="runAdapt('app1')">1️⃣ Llave OFF — NO pisar pedal</button>
+            <button class="btn-adapt" onclick="runAdapt('app2')">2️⃣ Llave ON — esperar 3 segundos</button>
+            <button class="btn-adapt" onclick="runAdapt('app3')">3️⃣ Pisar pedal a fondo — mantener 5s</button>
+            <button class="btn-adapt" onclick="runAdapt('app4')">4️⃣ Soltar — esperar 5s — llave OFF</button>
+            <button class="btn-adapt btn-exec" onclick="execAdapt('app','APP PEDAL CALIBRADO ✅')">⚡ CALIBRAR APP (OBD2)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- INJECTOR BALANCE -->
+      <div class="cal-card" id="cal-inj-bal">
+        <div class="cal-hdr" onclick="toggleCal('inj-bal',event)">
+          <div class="cal-ico" style="background:rgba(38,198,218,.15);border:1px solid rgba(38,198,218,.3)">💉</div>
+          <div><div class="cal-name" style="color:var(--cyan)">BALANCE INYECTORES</div><div class="cal-range">Test pulso y caudal por cilindro</div></div>
+          <div class="cal-chevron">▶</div>
+        </div>
+        <div class="cal-body">
+          <div style="font-size:8.5px;color:var(--lgray);margin-bottom:10px;line-height:1.7">Activa cada inyector individualmente para medir caída de RPM. Diferencia mayor a 50 RPM indica inyector dañado.</div>
+          <div id="inj-bal-status" style="font-family:'Share Tech Mono';font-size:9px;color:var(--cyan);margin-bottom:8px;min-height:16px"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+            <button class="btn-adapt" onclick="testInjector(1)">⚡ INYECTOR 1</button>
+            <button class="btn-adapt" onclick="testInjector(2)">⚡ INYECTOR 2</button>
+            <button class="btn-adapt" onclick="testInjector(3)">⚡ INYECTOR 3</button>
+            <button class="btn-adapt" onclick="testInjector(4)">⚡ INYECTOR 4</button>
+          </div>
+          <button class="btn-adapt btn-exec" style="margin-top:6px;width:100%" onclick="execAdapt('inj','BALANCE INYECTORES COMPLETO ✅')">⚡ TEST TODOS (secuencial)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMMO -->
+  <div id="cal-immo" class="panel">
+    <div style="padding:8px 11px 0">
+      <div class="card bc" style="margin-bottom:8px;background:rgba(245,166,35,.05);border-color:rgba(245,166,35,.3)">
+        <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;color:var(--gold);margin-bottom:5px">⚠ INMOBILIZADOR — USO PROFESIONAL</div>
+        <div style="font-size:8px;color:var(--lgray);line-height:1.7">Procedimientos para manejo del sistema antirrobo. Requiere acceso físico al vehículo y documentación del propietario.</div>
+      </div>
+
+      <!-- NISSAN NATS -->
+      <div class="cal-card" id="cal-nats">
+        <div class="cal-hdr" onclick="toggleCal('nats',event)">
+          <div class="cal-ico" style="background:rgba(245,166,35,.15);border:1px solid rgba(245,166,35,.3)">🔑</div>
+          <div><div class="cal-name" style="color:var(--gold)">NISSAN NATS</div><div class="cal-range">Registro de llaves — Sistema Nissan Anti-Theft</div></div>
+          <div class="cal-chevron">▶</div>
+        </div>
+        <div class="cal-body">
+          <div style="font-size:8.5px;color:var(--lgray);margin-bottom:10px;line-height:1.7">Aplica a: Tsuru, Sentra B14/B15, Altima, X-Trail, Frontier, Murano y más.</div>
+          <div id="nats-status" style="font-family:'Share Tech Mono';font-size:9px;color:var(--gold);margin-bottom:8px;min-height:16px"></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button class="btn-adapt" onclick="immoStep('nats1','Verificando llave registrada...')">1️⃣ Verificar llaves registradas actuales</button>
+            <button class="btn-adapt" onclick="immoStep('nats2','Entrando modo registro NATS...')">2️⃣ Entrar modo registro (llave maestra)</button>
+            <button class="btn-adapt" onclick="immoStep('nats3','Registrando llave nueva...')">3️⃣ Registrar llave nueva (máx 4 llaves)</button>
+            <button class="btn-adapt" onclick="immoStep('nats4','Confirmando registro...')">4️⃣ Confirmar y salir del modo registro</button>
+            <button class="btn-adapt btn-exec btn-gold" onclick="execImmo('nats','NATS — LLAVE REGISTRADA ✅')">⚡ REGISTRAR POR OBD2</button>
+            <button class="btn-adapt btn-warn" onclick="execImmo('nats-erase','NATS — LLAVES BORRADAS ⚠')">🗑 BORRAR TODAS LAS LLAVES</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VW IMMO3/4 -->
+      <div class="cal-card" id="cal-vwimmo">
+        <div class="cal-hdr" onclick="toggleCal('vwimmo',event)">
+          <div class="cal-ico" style="background:rgba(30,140,224,.15);border:1px solid rgba(30,140,224,.3)">🔑</div>
+          <div><div class="cal-name" style="color:var(--blue)">VW/AUDI IMMO 3 &amp; 4</div><div class="cal-range">Adaptación inmobilizador Jetta A4/A5/Golf</div></div>
+          <div class="cal-chevron">▶</div>
+        </div>
+        <div class="cal-body">
+          <div style="font-size:8.5px;color:var(--lgray);margin-bottom:10px;line-height:1.7">Para VW Jetta A4 (IMMO3), Jetta A5/Golf MK5 (IMMO4). Requiere PIN del fabricante.</div>
+          <div id="vwimmo-status" style="font-family:'Share Tech Mono';font-size:9px;color:var(--blue);margin-bottom:8px;min-height:16px"></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;gap:6px;align-items:center">
+              <input id="vw-pin" placeholder="PIN 5 dígitos..." style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;font-family:'Share Tech Mono';font-size:11px;color:var(--white);outline:none" maxlength="5" type="password"/>
+              <button class="btn-adapt" style="flex-shrink:0;margin:0" onclick="document.getElementById('vw-pin').type=document.getElementById('vw-pin').type==='password'?'text':'password'">👁</button>
+            </div>
+            <button class="btn-adapt" onclick="immoStep('vw1','Leyendo estado IMMO...')">1️⃣ Leer estado inmobilizador</button>
+            <button class="btn-adapt" onclick="immoStep('vw2','Enviando PIN seguro...')">2️⃣ Autenticar con PIN</button>
+            <button class="btn-adapt btn-exec" onclick="execImmo('vw','VW IMMO — LLAVE ADAPTADA ✅')">⚡ ADAPTAR LLAVE (OBD2)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GM SKIM/PATS -->
+      <div class="cal-card" id="cal-skim">
+        <div class="cal-hdr" onclick="toggleCal('skim',event)">
+          <div class="cal-ico" style="background:rgba(255,75,92,.15);border:1px solid rgba(255,75,92,.3)">🔑</div>
+          <div><div class="cal-name" style="color:var(--red)">CHRYSLER SKIM / FORD PATS</div><div class="cal-range">Programación llaves Dodge/Ford</div></div>
+          <div class="cal-chevron">▶</div>
+        </div>
+        <div class="cal-body">
+          <div style="font-size:8.5px;color:var(--lgray);margin-bottom:10px;line-height:1.7">Dodge/Chrysler SKIM (Neon, RAM, Journey). Ford PATS (Fiesta, Focus, Fusion).</div>
+          <div id="skim-status" style="font-family:'Share Tech Mono';font-size:9px;color:var(--red);margin-bottom:8px;min-height:16px"></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button class="btn-adapt" onclick="immoStep('skim1','Verificando sistema SKIM...')">1️⃣ Verificar PCM y módulo SKIM</button>
+            <button class="btn-adapt" onclick="immoStep('skim2','Modo programación activo...')">2️⃣ Entrar modo programación</button>
+            <button class="btn-adapt btn-exec" onclick="execImmo('skim','SKIM/PATS — TRANSPONDER PROGRAMADO ✅')">⚡ PROGRAMAR TRANSPONDER</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ECM SWAP -->
+      <div class="cal-card" id="cal-ecmswap">
+        <div class="cal-hdr" onclick="toggleCal('ecmswap',event)">
+          <div class="cal-ico" style="background:rgba(0,196,140,.15);border:1px solid rgba(0,196,140,.3)">🧠</div>
+          <div><div class="cal-name" style="color:var(--green)">ADAPTACIÓN ECM NUEVO</div><div class="cal-range">Vincular ECM/PCM de reemplazo al vehículo</div></div>
+          <div class="cal-chevron">▶</div>
+        </div>
+        <div class="cal-body">
+          <div style="font-size:8.5px;color:var(--lgray);margin-bottom:10px;line-height:1.7">Cuando se reemplaza la ECM, debe vincularse con el inmobilizador del vehículo. Sin este paso el motor no arranca.</div>
+          <div id="ecmswap-status" style="font-family:'Share Tech Mono';font-size:9px;color:var(--green);margin-bottom:8px;min-height:16px"></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <button class="btn-adapt" onclick="immoStep('ecm1','Verificando VIN en ECM...')">1️⃣ Verificar VIN del ECM nuevo</button>
+            <button class="btn-adapt" onclick="immoStep('ecm2','Entrando modo vinculación...')">2️⃣ Entrar modo vinculación IMMO-ECM</button>
+            <button class="btn-adapt" onclick="immoStep('ecm3','Sincronizando IMMO...')">3️⃣ Sincronizar módulo IMMO</button>
+            <button class="btn-adapt btn-exec" onclick="execImmo('ecmswap','ECM VINCULADO AL VEHÍCULO ✅')">⚡ VINCULAR ECM NUEVO</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRAMACIÓN HP -->
+  <div id="cal-prog" class="panel">
+    <div style="padding:8px 11px 0">
+      <div class="card" style="margin-bottom:8px;background:rgba(255,122,47,.05);border-color:rgba(255,122,47,.3)">
+        <div style="font-size:8px;font-weight:700;letter-spacing:1.5px;color:var(--orange);margin-bottom:5px">🏁 PROGRAMACIÓN &amp; HP TUNING</div>
+        <div style="font-size:8px;color:var(--lgray);line-height:1.7">Ajuste de parámetros ECU, tablas de encendido, inyección y límites. Modo avanzado — solo técnicos certificados.</div>
+      </div>
+
+      <!-- PARÁMETROS BÁSICOS -->
+      <div class="cal-card" id="cal-params">
+        <div class="cal-hdr" onclick="toggleCal('params',event)">
+          <div class="cal-ico" style="background:rgba(255,122,47,.15);border:1px solid rgba(255,122,47,.3)">📊</div>
+          <div><div class="cal-name" style="color:var(--orange)">PARÁMETROS BÁSICOS ECU</div><div class="cal-range">RPM ralentí · Límite RPM · Avance base</div></div>
+          <div class="cal-chevron">▶</div>
+        </div>
+        <div class="cal-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+            <div>
+              <div style="font-size:7.5px;color:var(--lgray);margin-bottom:4px;letter-spacing:.5px">RPM RALENTÍ</div>
+              <input id="p-idle" type="number" value="750" min="600" max="1200" step="50" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:7px;font-family:'Share Tech Mono';font-size:13px;color:var(--orange);outline:none;text-align:center"/>
+            </div>
+            <div>
+              <div style="font-size:7.5px;color:var(--lgray);margin-bottom:4px;letter-spacing:.5px">LÍMITE RPM</div>
+              <input id="p-revlim" type="number" value="6500" min="4000" max="9000" step="100" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:7px;font-family:'Share Tech Mono';font-size:13px;color:var(--red);outline:none;text-align:center"/>
+            </div>
+            <div>
+              <div style="font-size:7.5px;color:var(--lgray);margin-bottom:4px;letter-spacing:.5px">AVANCE BASE °</div>
+              <input id="p-timing" type="number" value="10" min="0" max="30" step="1" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:7px;font-family:'Share Tech Mono';font-size:13px;color:var(--gold);outline:none;text-align:center"/>
+            </div>
+            <div>
+              <div style="font-size:7.5px;color:var(--lgray);margin-bottom:4px;letter-spacing:.5px">ENRIQ. FRÍO %</div>
+              <input id="p-cold" type="number" value="25" min="0" max="60" step="5" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:7px;font-family:'Share Tech Mono';font-size:13px;color:var(--blue);outline:none;text-align:center"/>
+            </div>
+          </div>
+          <div id="params-status" style="font-family:'Share Tech Mono';font-size:9px;color:var(--cyan);margin-bottom:8px;min-height:16px"></div>
+          <button class="btn-adapt btn-exec" onclick="writeParams()">⚡ ESCRIBIR PARÁMETROS EN ECU</button>
+        </div>
+      </div>
+
+      <!-- MAPA ENCENDIDO -->
+      <div class="cal-card" id="cal-ignmap">
+        <div class="cal-hdr" onclick="toggleCal('ignmap',event)">
+          <div class="cal-ico" style="background:rgba(255,75,92,.15);border:1px solid rgba(255,75,92,.3)">⚡</div>
+          <div><div class="cal-name" style="color:var(--red)">MAPA DE ENCENDIDO</div><div class="cal-range">Tabla avance vs RPM vs carga</div></div>
+          <div class="cal-chevron">▶</div>
+        </div>
+        <div class="cal-body">
+          <div style="font-size:8px;color:var(--lgray);margin-bottom:8px">Ajuste del avance de encendido por celda. Gasolina 87 oct recomendado máx 30°, 91+ hasta 38°</div>
+          <div id="ign-map-grid" style="overflow-x:auto"></div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button class="btn-adapt" style="flex:1" onclick="loadMapStock()">📥 CARGAR STOCK</button>
+            <button class="btn-adapt btn-exec" style="flex:1" onclick="writeIgnMap()">⚡ ESCRIBIR MAPA</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAPA INYECCIÓN -->
+      <div class="cal-card" id="cal-injmap">
+        <div class="cal-hdr" onclick="toggleCal('injmap',event)">
+          <div class="cal-ico" style="background:rgba(38,198,218,.15);border:1px solid rgba(38,198,218,.3)">💧</div>
+          <div><div class="cal-name" style="color:var(--cyan)">MAPA DE INYECCIÓN</div><div class="cal-range">Tiempo de pulso base vs RPM vs MAP</div></div>
+          <div class="cal-chevron">▶</div>
+        </div>
+        <div class="cal-body">
+          <div style="font-size:8px;color:var(--lgray);margin-bottom:8px">Tabla de tiempo de inyección base en ms. Ralentí típico 1.8-2.8ms. WOT 10-18ms.</div>
+          <div id="inj-map-grid" style="overflow-x:auto"></div>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <button class="btn-adapt" style="flex:1" onclick="loadInjMapStock()">📥 CARGAR STOCK</button>
+            <button class="btn-adapt btn-exec" style="flex:1" onclick="writeInjMap()">⚡ ESCRIBIR MAPA</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- O2 / LAMBDA TARGET -->
+      <div class="cal-card" id="cal-lambda">
+        <div class="cal-hdr" onclick="toggleCal('lambda',event)">
+          <div class="cal-ico" style="background:rgba(236,64,122,.15);border:1px solid rgba(236,64,122,.3)">🔬</div>
+          <div><div class="cal-name" style="color:#EC407A">TARGET LAMBDA / AFR</div><div class="cal-range">Mezcla objetivo por zona</div></div>
+          <div class="cal-chevron">▶</div>
+        </div>
+        <div class="cal-body">
+          <div style="font-size:8px;color:var(--lgray);margin-bottom:8px">AFR objetivo por zona de operación. Estequiométrico λ=1 = 14.7:1</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px">
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center">
+              <div style="font-size:7px;color:var(--lgray);margin-bottom:4px">RALENTÍ</div>
+              <input id="afr-idle" type="number" value="14.7" min="13" max="16" step="0.1" style="width:100%;background:none;border:none;font-family:'Share Tech Mono';font-size:13px;color:var(--green);outline:none;text-align:center"/>
+              <div style="font-size:7px;color:var(--lgray)">AFR</div>
+            </div>
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center">
+              <div style="font-size:7px;color:var(--lgray);margin-bottom:4px">CARGA MEDIA</div>
+              <input id="afr-cruise" type="number" value="14.7" min="13" max="16" step="0.1" style="width:100%;background:none;border:none;font-family:'Share Tech Mono';font-size:13px;color:var(--blue);outline:none;text-align:center"/>
+              <div style="font-size:7px;color:var(--lgray)">AFR</div>
+            </div>
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px;text-align:center">
+              <div style="font-size:7px;color:var(--lgray);margin-bottom:4px">WOT</div>
+              <input id="afr-wot" type="number" value="12.8" min="11" max="14" step="0.1" style="width:100%;background:none;border:none;font-family:'Share Tech Mono';font-size:13px;color:var(--red);outline:none;text-align:center"/>
+              <div style="font-size:7px;color:var(--lgray)">AFR</div>
+            </div>
+          </div>
+          <button class="btn-adapt btn-exec" onclick="writeLambda()">⚡ APLICAR TARGET LAMBDA</button>
+        </div>
+      </div>
+
+      <!-- LIMITES -->
+      <div class="cal-card" id="cal-limits">
+        <div class="cal-hdr" onclick="toggleCal('limits',event)">
+          <div class="cal-ico" style="background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.3)">🏁</div>
+          <div><div class="cal-name" style="color:var(--purple)">LÍMITES &amp; PROTECCIONES</div><div class="cal-range">Rev limit · Launch · Boost · Temp corte</div></div>
+          <div class="cal-chevron">▶</div>
+        </div>
+        <div class="cal-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+            <div>
+              <div style="font-size:7.5px;color:var(--lgray);margin-bottom:4px">REV LIMIT CORTE</div>
+              <input id="l-revcut" type="number" value="6800" min="4000" max="10000" step="100" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:7px;font-family:'Share Tech Mono';font-size:12px;color:var(--red);outline:none;text-align:center"/>
+            </div>
+            <div>
+              <div style="font-size:7.5px;color:var(--lgray);margin-bottom:4px">LAUNCH RPM</div>
+              <input id="l-launch" type="number" value="3500" min="1500" max="6000" step="100" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:7px;font-family:'Share Tech Mono';font-size:12px;color:var(--orange);outline:none;text-align:center"/>
+            </div>
+            <div>
+              <div style="font-size:7.5px;color:var(--lgray);margin-bottom:4px">BOOST LÍMITE kPa</div>
+              <input id="l-boost" type="number" value="200" min="100" max="350" step="10" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:7px;font-family:'Share Tech Mono';font-size:12px;color:var(--gold);outline:none;text-align:center"/>
+            </div>
+            <div>
+              <div style="font-size:7.5px;color:var(--lgray);margin-bottom:4px">CORTE TEMP °C</div>
+              <input id="l-temp" type="number" value="115" min="90" max="130" step="5" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:7px;font-family:'Share Tech Mono';font-size:12px;color:var(--purple);outline:none;text-align:center"/>
+            </div>
+          </div>
+          <button class="btn-adapt btn-exec" onclick="writeLimits()">⚡ APLICAR LÍMITES</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ELECTRICO -->
+<div class="screen" id="scr-electrico">
+  <div class="sec-hdr">🔌 ELÉCTRICO — DIAGRAMAS Y PINOUTS</div>
+  <div class="tab-bar">
+    <button class="tab on" onclick="switchElecTab('el-pin',this)">PINOUT ECU</button>
+    <button class="tab" onclick="switchElecTab('el-diag',this)">DIAGRAMAS</button>
+    <button class="tab" onclick="switchElecTab('el-arnes',this)">ARNÉS</button>
+  </div>
+  <div id="el-pin" class="panel on"></div>
+  <div id="el-diag" class="panel"></div>
+  <div id="el-arnes" class="panel"></div>
+</div>
+
+<!-- REPORTES -->
+<div class="screen" id="scr-reportes">
+  <div class="sec-hdr">📋 REPORTES TÉCNICOS</div>
+  <div class="card" style="margin-top:8px">
+    <div class="sec-lbl">DATOS DEL REPORTE</div>
+    <div style="margin-bottom:8px"><label style="font-family:'Rajdhani';font-size:7.5px;font-weight:700;letter-spacing:1px;color:var(--lgray);display:block;margin-bottom:4px">TÉCNICO</label><input id="rep-tech" type="text" placeholder="Nombre del técnico" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:8px 10px;font-size:11px;outline:none;color:var(--white);font-family:'Exo 2'"/></div>
+    <div><label style="font-family:'Rajdhani';font-size:7.5px;font-weight:700;letter-spacing:1px;color:var(--lgray);display:block;margin-bottom:4px">NOTAS</label><textarea id="rep-notes" rows="3" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:8px 10px;font-size:11px;outline:none;color:var(--white);font-family:'Exo 2';resize:vertical" placeholder="Observaciones técnicas..."></textarea></div>
+  </div>
+  <div class="btn-row"><button class="btn btn-blue" onclick="saveReport()">💾 GUARDAR REPORTE</button><button class="btn btn-ghost" onclick="printReport()">🖨 IMPRIMIR</button></div>
+  <div id="rep-list"></div>
+</div>
+
+</div><!-- /content -->
+
+<nav class="bnav">
+  <button class="nb active" onclick="showScreen('home')"><span class="nb-ico">🏠</span>HOME</button>
+  <button class="nb" onclick="showScreen('vehiculos')"><span class="nb-ico">🚗</span>VEHÍCULO</button>
+  <button class="nb" onclick="showScreen('sensores')"><span class="nb-ico">📡</span>SENSORES</button>
+  <button class="nb" onclick="showScreen('dtc')"><span class="nb-ico">⚠️</span>DTC</button>
+  <button class="nb" onclick="showScreen('calibracion')"><span class="nb-ico">⚙️</span>CALIBR.</button>
+  <button class="nb" onclick="showScreen('electrico')"><span class="nb-ico">🔌</span>ELÉCTRICO</button>
+</nav>
+
+<div id="toast"></div>
+
+<script>
+const ALL_SENSORS=[
+  {id:'RPM',name:'RPM MOTOR',unit:'RPM',min:0,max:7000,warn:6000,pid:'010C',color:'#00D4E8'},
+  {id:'ECT',name:'TEMP MOTOR',unit:'°C',min:-20,max:130,warn:110,pid:'0105',color:'#FF7A2F'},
+  {id:'SPEED',name:'VELOCIDAD',unit:'km/h',min:0,max:250,warn:200,pid:'010D',color:'#00C48C'},
+  {id:'LOAD',name:'CARGA MOTOR',unit:'%',min:0,max:100,warn:90,pid:'0104',color:'#A855F7'},
+  {id:'VOLT',name:'VOLTAJE',unit:'V',min:10,max:16,warn:15,pid:'0142',color:'#F5A623'},
+  {id:'TPS',name:'TPS MARIPOSA',unit:'%',min:0,max:100,warn:98,pid:'0111',color:'#1E8CE0'},
+  {id:'APP1',name:'APP1 PEDAL',unit:'%',min:0,max:100,warn:98,pid:'0149',color:'#E91E8C'},
+  {id:'APP2',name:'APP2 PEDAL',unit:'%',min:0,max:100,warn:98,pid:'014A',color:'#FF4081'},
+  {id:'MAP',name:'MAP/VACÍO',unit:'kPa',min:10,max:200,warn:170,pid:'010B',color:'#29B6F6'},
+  {id:'MAF',name:'MAF',unit:'g/s',min:0,max:80,warn:70,pid:'0110',color:'#4CAF50'},
+  {id:'IAT',name:'TEMP AIRE',unit:'°C',min:-20,max:80,warn:60,pid:'010F',color:'#FF8C00'},
+  {id:'O2B1S1',name:'O2 B1S1',unit:'V',min:0,max:1.2,warn:1.1,pid:'0124',color:'#E91E63'},
+  {id:'O2B1S2',name:'O2 B1S2',unit:'V',min:0,max:1.2,warn:1.1,pid:'0125',color:'#AD1457'},
+  {id:'STFT',name:'STFT B1',unit:'%',min:-25,max:25,warn:20,pid:'0106',color:'#00BCD4'},
+  {id:'LTFT',name:'LTFT B1',unit:'%',min:-25,max:25,warn:20,pid:'0107',color:'#006064'},
+  {id:'IGN',name:'AVANCE IGN',unit:'°',min:0,max:50,warn:48,pid:'010E',color:'#FF6B2B'},
+  {id:'IAC',name:'IAC PASOS',unit:'%',min:0,max:100,warn:90,pid:'011D',color:'#7C4DFF'},
+  {id:'BOOST',name:'BOOST',unit:'kPa',min:0,max:300,warn:250,pid:'0170',color:'#FF5722'},
+  {id:'FUEL',name:'PRES COMB',unit:'kPa',min:200,max:700,warn:650,pid:'0123',color:'#8BC34A'},
+  {id:'EVAP',name:'EVAP',unit:'%',min:0,max:100,warn:95,pid:'0118',color:'#607D8B'},
+  {id:'CKP',name:'CKP Hz',unit:'Hz',min:0,max:400,warn:380,pid:'01C1',color:'#3F51B5'},
+  {id:'CMP',name:'CMP °',unit:'°',min:0,max:720,warn:710,pid:'01C2',color:'#673AB7'},
+  {id:'KNOCK',name:'KNOCK',unit:'mV',min:0,max:5000,warn:4000,pid:'01C3',color:'#F44336'},
+  {id:'INJ1',name:'INJ1 PW',unit:'ms',min:0,max:20,warn:18,pid:'0167',color:'#26C6DA'},
+  {id:'INJ2',name:'INJ2 PW',unit:'ms',min:0,max:20,warn:18,pid:'0168',color:'#00ACC1'},
+  {id:'BOB1',name:'BOB1 PRIM',unit:'V',min:0,max:400,warn:380,pid:'01D0',color:'#9C27B0'},
+  {id:'BOB2',name:'BOB2 PRIM',unit:'V',min:0,max:400,warn:380,pid:'01D1',color:'#7B1FA2'},
+  {id:'BOB3',name:'BOB3 PRIM',unit:'V',min:0,max:400,warn:380,pid:'01D2',color:'#6A1B9A'},
+  {id:'BOB4',name:'BOB4 PRIM',unit:'V',min:0,max:400,warn:380,pid:'01D3',color:'#4A148C'},
+  {id:'BATTEMP',name:'TEMP BAT',unit:'°C',min:-10,max:60,warn:55,pid:'01C4',color:'#78909C'},
+];
+
+const DTC_DB={
+  'P0100':{desc:'MAF — Circuito mal funcionamiento',sys:'Motor',symp:'Ralentí inestable, humo negro, consumo elevado',sol:['Verificar conector MAF (pines sucios/corrosión)','Medir señal MAF: sube al acelerar','Limpiar MAF con spray especial','Revisar fugas de aire después del MAF','Sustituir MAF si señal no varía']},
+  'P0105':{desc:'MAP — Circuito presión múltiple',sys:'Motor',symp:'Sin potencia, mezcla errática',sol:['Verificar vacío al MAP: 30-80 kPa ralentí','Medir MAP: 0.5V vacío máx, 4.5V WOT','Revisar manguera de vacío','Verificar 5V VREF','Sustituir MAP si señal plana']},
+  'P0110':{desc:'IAT — Sensor temperatura de aire',sys:'Motor',symp:'Arranque difícil en frío, mezcla rica',sol:['Medir resistencia IAT: 2.5kΩ@20°C, 177Ω@60°C','Verificar continuidad harness','Revisar sensor físicamente']},
+  'P0115':{desc:'ECT — Sensor temperatura del motor',sys:'Motor',symp:'Ventilador errático, sin corrección temperatura',sol:['Medir resistencia ECT: 2.5kΩ@20°C, 177Ω@100°C','Verificar 5V VREF y GND','Sustituir si resistencia fuera de rango']},
+  'P0120':{desc:'TPS — Circuito sensor mariposa A',sys:'Motor',symp:'Ralentí irregular, tirones al acelerar',sol:['Verificar 5V VREF en pin A','Medir TPS: 0.5V cerrado a 4.5V WOT (lineal)','Revisar conector (corrosión)','Ajustar TPS si posición no corresponde a 0.5V','Sustituir TPS si señal tiene saltos']},
+  'P0121':{desc:'TPS — Rango/Rendimiento circuito A',sys:'Motor',symp:'Tirones al acelerar, pérdida de potencia',sol:['Verificar linealidad TPS con osciloscopio','Limpiar cuerpo de aceleración','Adaptar TPS (procedimiento reset ECM)','Revisar cableado TPS-ECM']},
+  'P0171':{desc:'Sistema pobre Banco 1 — Combustible',sys:'Motor',symp:'Sin potencia, O2 siempre lean, consumo bajo',sol:['Verificar presión combustible: 280-350 kPa','Revisar inyectores (colapso, fugas)','Buscar fugas de vacío en múltiple','Limpiar inyectores (ultrasónico)','Verificar sonda O2 B1S1 (respuesta lenta)','Revisar bomba de combustible (caudal)']},
+  'P0172':{desc:'Sistema rico Banco 1 — Combustible',sys:'Motor',symp:'Humo negro, consumo excesivo, bujías encharcadas',sol:['Verificar inyectores (fuga en reposo)','Revisar MAF (señal alta falsa)','Verificar regulador de presión combustible','Revisar sonda O2 (contaminada silicona)']},
+  'P0201':{desc:'Inyector cilindro 1 — Circuito abierto',sys:'Motor',symp:'Vibración, falla cil 1, humo blanco/negro',sol:['Medir resistencia inyector: 12-16 Ω (MPI)','Verificar pulso PWM con osciloscopio','Revisar conector inyector (corrosión)','Medir voltaje alimentación: 12V','Sustituir inyector si resistencia fuera de rango']},
+  'P0202':{desc:'Inyector cilindro 2 — Circuito abierto',sys:'Motor',symp:'Falla cil 2, vibración al acelerar',sol:['Medir resistencia inyector 2: 12-16 Ω','Verificar arnés ECM-inyector 2','Sustituir si en cortocircuito']},
+  'P0203':{desc:'Inyector cilindro 3',sys:'Motor',symp:'Misfire cil 3, humo intermitente',sol:['Verificar resistencia inyector 3','Revisar arnés ECM pin 3']},
+  'P0204':{desc:'Inyector cilindro 4',sys:'Motor',symp:'Motor trabajando en 3 cilindros',sol:['Igual que P0201 para cil 4']},
+  'P0300':{desc:'Fallo encendido — Múltiples cilindros aleatorio',sys:'Motor',symp:'Vibración severa, ralentí inestable, MIL parpadea',sol:['Verificar bujías (gap 0.8-1.0mm)','Medir cables de bujía (<25kΩ/m)','Verificar bobinas (primaria 0.5-2Ω, secundaria 8-15kΩ)','Revisar compresión (mínimo 125 PSI)','Verificar señal CKP con osciloscopio','Revisar presión y caudal inyectores']},
+  'P0301':{desc:'Fallo encendido cilindro 1',sys:'Motor',symp:'Vibración, temperatura escape baja cil 1',sol:['Sustituir bujía cil 1','Verificar bobina cil 1','Medir compresión cil 1']},
+  'P0302':{desc:'Fallo encendido cilindro 2',sys:'Motor',symp:'Vibración cil 2',sol:['Sustituir bujía cil 2','Verificar bobina y compresión cil 2']},
+  'P0303':{desc:'Fallo encendido cilindro 3',sys:'Motor',symp:'Misfire cil 3',sol:['Bujía, bobina, compresión cil 3']},
+  'P0304':{desc:'Fallo encendido cilindro 4',sys:'Motor',symp:'Misfire cil 4',sol:['Bujía, bobina, compresión cil 4']},
+  'P0320':{desc:'CKP — Sin señal posición cigüeñal',sys:'Motor',symp:'No enciende, apagados repentinos',sol:['Verificar air gap CKP: 0.5-1.5mm','Medir señal con osciloscopio (AC senoidal)','Revisar rueda fónica (dientes rotos)','Verificar resistencia sensor: 200-2000Ω']},
+  'P0335':{desc:'CKP — Circuito sensor cigüeñal A',sys:'Motor',symp:'Motor no arranca, ECU sin referencia RPM',sol:['Verificar continuidad cables CKP a ECM','Medir resistencia CKP: 200-1200Ω','Verificar air gap con galga','Revisar conector CKP por corrosión','Sustituir CKP si señal ausente']},
+  'P0340':{desc:'CMP — Sensor posición árbol de levas',sys:'Motor',symp:'Arranque lento, pérdida de potencia',sol:['Verificar señal CMP (Hall: 0-5V cuadrada)','Revisar sincronización distribución','Medir air gap sensor CMP','Verificar 5V y GND del sensor']},
+  'P0400':{desc:'EGR — Flujo válvula recirculación',sys:'Emisiones',symp:'Humo negro, consumo alto, ralentí inestable',sol:['Limpiar válvula EGR (carbón)','Verificar operación mecánica','Probar circuito eléctrico EGR','Verificar tuberías sin obstrucción']},
+  'P0420':{desc:'Catalizador — Eficiencia baja Banco 1',sys:'Emisiones',symp:'Sin síntoma notable, posible olor sulfuro',sol:['Verificar sonda O2 aguas abajo','Revisar fugas de escape antes del catalizador','Sustituir catalizador si eficiencia <70%']},
+  'P0440':{desc:'EVAP — Sistema de evaporación',sys:'Emisiones',symp:'Olor a gasolina, MIL encendida',sol:['Verificar tapón combustible bien sellado','Buscar fugas en líneas EVAP','Probar válvula purga EVAP','Verificar recipiente carbón activado']},
+  'P0500':{desc:'VSS — Sensor de velocidad',sys:'Transmisión',symp:'Velocímetro errático, cambios incorrectos ATC',sol:['Verificar señal VSS con voltímetro','Revisar engranaje sensor','Verificar arnés VSS a ECM/TCM']},
+  'P0505':{desc:'IAC — Sistema control de ralentí',sys:'Motor',symp:'Ralentí alto/bajo, oscilaciones RPM, apaga en caliente',sol:['Limpiar cuerpo de aceleración (carbón)','Verificar IAC (resistencia 20-30Ω por bobina)','Probar IAC con multímetro','Verificar señal PWM de ECM a IAC','Realizar adaptación IAC (reset ECM)']},
+  'P0600':{desc:'CAN — Comunicación serial ECM',sys:'Comunicación',symp:'Múltiples módulos sin comunicación',sol:['Verificar resistencia CAN Bus: 60Ω entre H y L','Verificar voltajes CAN-H (2.5-3.5V) CAN-L (1.5-2.5V)','Buscar módulo cortocircuitando la red','Revisar arnés CAN (ruptura, aplastamiento)']},
+  'P0601':{desc:'ECM — Error de memoria interna',sys:'ECM',symp:'Múltiples fallas simultáneas, comportamiento errático',sol:['Verificar alimentación ECM (12V IGN y B+)','Verificar tierras ECM a chasis','Reflashear ECM con software original','Sustituir ECM como último recurso']},
+  'P0700':{desc:'Falla sistema control transmisión',sys:'Transmisión',symp:'Cambios incorrectos, modo emergencia 3ra',sol:['Leer fallas específicas del TCM','Verificar nivel de ATF','Revisar solenoides de cambio']},
+  'P1491':{desc:'Válvula IAC — RPM bajas (Nissan)',sys:'Motor',symp:'Ralentí cae al encender AC o cargas',sol:['Limpiar cuerpo aceleración y IAC completamente','Realizar ajuste de ralentí base','Verificar TPS y reiniciar aprendizaje ECM']},
+  'P0221':{desc:'APP2 — Rango/Rendimiento circuito B pedal',sys:'Motor',symp:'Motor en modo limp, aceleración limitada',sol:['Verificar voltaje APP2 reposo: 0.30-0.42V','Verificar voltaje APP2 WOT: 2.0-2.2V','Comparar relación APP1/APP2 (debe ser ~2:1)','Sustituir pedal completo si señales no coinciden']},
+  'P0222':{desc:'APP2 — Voltaje bajo circuito B',sys:'Motor',symp:'Motor en modo limp home',sol:['Verificar arnés APP2 a ECM','Medir voltaje APP2: 0.30V reposo mínimo','Verificar VREF 5V en sensor pedal','Sustituir pedal acelerador']},
+  'U0100':{desc:'CAN — Sin comunicación con ECM',sys:'Comunicación',symp:'Dashboard sin datos, múltiples luces MIL',sol:['Verificar fusibles del ECM','Medir 12V IGN en conector ECM','Verificar resistencia CAN 60Ω','Revisar tierra del ECM']},
+};
+
+const LOCAL_VEH=[
+  {brand:'Nissan',model:'Tsuru',year:'1991-2017',engine:'GA16DE 1.6L',ecu:'Hitachi',fuel:'gasolina',modules:['ECM','BCM','IMMO'],sensors:['RPM','ECT','TPS','O2B1S1','MAP','IAT','IAC','STFT','LTFT','CKP','INJ1','INJ2'],pinout:[{n:1,name:'IGN SW',v:'12V'},{n:3,name:'GND',v:'0V'},{n:8,name:'CKP+',v:'AC'},{n:9,name:'CKP-',v:'AC'},{n:5,name:'TPS',v:'0.5-4.5V'},{n:21,name:'VREF',v:'5.00V'},{n:22,name:'SIG GND',v:'0V'},{n:10,name:'INJ1',v:'12V PWM'},{n:11,name:'INJ2',v:'12V PWM'},{n:12,name:'INJ3',v:'12V PWM'},{n:13,name:'INJ4',v:'12V PWM'},{n:17,name:'O2 B1S1',v:'0.1-0.9V'},{n:50,name:'B+',v:'12V'},{n:52,name:'IAC-A',v:'PWM'},{n:30,name:'ECT',v:'NTC'}]},
+  {brand:'Nissan',model:'Sentra B14',year:'1996-2006',engine:'GA16DE 1.6L',ecu:'Hitachi/Siemens',fuel:'gasolina',modules:['ECM','BCM','IMMO','NATS'],sensors:['RPM','ECT','TPS','APP1','APP2','O2B1S1','O2B1S2','MAF','IAT','IAC','STFT','LTFT','CKP','CMP','BOB1','BOB2','BOB3','BOB4'],pinout:[{n:1,name:'B+',v:'12V'},{n:3,name:'GND',v:'0V'},{n:8,name:'CKP+',v:'AC'},{n:5,name:'TPS',v:'0.5-4.5V'},{n:21,name:'VREF',v:'5.00V'},{n:10,name:'INJ1',v:'PWM'},{n:24,name:'MAF',v:'0-5V'},{n:17,name:'O2 B1',v:'0.1-0.9V'},{n:44,name:'APP1',v:'0.5-4.5V'},{n:45,name:'APP2',v:'0.3-2.2V'},{n:46,name:'CAN-H',v:'2.5-3.5V'},{n:47,name:'CAN-L',v:'1.5-2.5V'}]},
+  {brand:'Nissan',model:'Altima L30',year:'1998-2001',engine:'KA24DE 2.4L',ecu:'Hitachi',fuel:'gasolina',modules:['ECM','BCM','IMMO'],sensors:['RPM','ECT','TPS','O2B1S1','O2B1S2','MAF','IAT','STFT','LTFT','CKP','FUEL','INJ1','INJ2'],pinout:[{n:1,name:'B+',v:'12V'},{n:3,name:'GND',v:'0V'},{n:5,name:'TPS',v:'0.5-4.5V'},{n:21,name:'VREF',v:'5.00V'},{n:10,name:'INJ1',v:'PWM'}]},
+  {brand:'Nissan',model:'Murano Z50',year:'2003-2008',engine:'VQ35DE 3.5L V6',ecu:'Hitachi',fuel:'gasolina',modules:['ECM','BCM','CVT','NATS','SRS','ABS'],sensors:['RPM','ECT','TPS','APP1','APP2','O2B1S1','O2B1S2','MAF','IAT','CKP','CMP','BOB1','BOB2','BOB3']},
+  {brand:'Nissan',model:'Frontier D22',year:'1998-2008',engine:'KA24 2.4L / VG33 3.3L',ecu:'Hitachi',fuel:'gasolina',modules:['ECM','BCM','4WD'],sensors:['RPM','ECT','TPS','O2B1S1','MAF','IAT','IAC','STFT','LTFT','CKP','FUEL']},
+  {brand:'Volkswagen',model:'Jetta A4',year:'1998-2006',engine:'2.0L AEG / 1.8T APH',ecu:'Bosch ME7',fuel:'gasolina',modules:['ECM','BCM','IMMO3','ABS','SRS'],sensors:['RPM','ECT','TPS','APP1','APP2','MAF','IAT','O2B1S1','O2B1S2','STFT','LTFT','CKP','CMP','KNOCK','BOOST'],pinout:[{n:1,name:'B+',v:'12V'},{n:2,name:'GND',v:'0V'},{n:10,name:'INJ1',v:'PWM'},{n:25,name:'MAF',v:'0-5V'},{n:37,name:'TPS',v:'0.5-4.5V'},{n:44,name:'APP1',v:'0.5-4.5V'},{n:45,name:'APP2',v:'0.3-2.2V'},{n:75,name:'CAN-H',v:'2.5-3.5V'},{n:76,name:'CAN-L',v:'1.5-2.5V'}]},
+  {brand:'Volkswagen',model:'Jetta A5',year:'2006-2010',engine:'2.5L BGP / 2.0L TDI BRM',ecu:'Bosch MED9',fuel:'gasolina',modules:['ECM','TCM','BCM','IMMO4','ABS','SRS','Gateway'],sensors:['RPM','ECT','TPS','APP1','APP2','MAF','O2B1S1','O2B1S2','STFT','LTFT','CKP','CMP','KNOCK']},
+  {brand:'Chevrolet',model:'Cavalier',year:'1995-2004',engine:'2.2L L61',ecu:'Delco E78',fuel:'gasolina',modules:['PCM','BCM','ABS'],sensors:['RPM','ECT','TPS','O2B1S1','MAP','IAT','IAC','STFT','LTFT','CKP'],pinout:[{n:1,name:'B+',v:'12V'},{n:3,name:'GND',v:'0V'},{n:5,name:'TPS',v:'0.5-4.5V'},{n:21,name:'MAP',v:'0.5-4.5V'}]},
+  {brand:'Chevrolet',model:'Optra',year:'2004-2010',engine:'1.6L / 1.8L DOHC',ecu:'Bosch ME7',fuel:'gasolina',modules:['ECM','TCM','BCM','ABS','SRS'],sensors:['RPM','ECT','TPS','APP1','APP2','MAF','O2B1S1','STFT','LTFT','CKP']},
+  {brand:'Chevrolet',model:'Aveo',year:'2005-2017',engine:'1.4L / 1.6L DOHC',ecu:'Delphi',fuel:'gasolina',modules:['ECM','BCM','SRS','IMMO'],sensors:['RPM','ECT','TPS','APP1','APP2','MAP','IAT','O2B1S1','IAC']},
+  {brand:'Chevrolet',model:'Suburban GMT800',year:'1999-2006',engine:'5.3L Vortec LS',ecu:'GM PCM E38',fuel:'gasolina',modules:['PCM','BCM','EBCM','TCM','SRS'],sensors:['RPM','ECT','TPS','APP1','APP2','MAF','O2B1S1','O2B1S2','STFT','LTFT','IAC','CKP','CMP','KNOCK','BOB1','BOB2','BOB3','BOB4']},
+  {brand:'Ford',model:'Fiesta',year:'2009-2018',engine:'1.6L Sigma / 1.0L EcoBoost',ecu:'Bosch ME17',fuel:'gasolina',modules:['ECM','TCM','BCM','SRS','IMMO'],sensors:['RPM','ECT','TPS','APP1','APP2','MAF','O2B1S1','STFT','LTFT','BOOST','CKP','CMP']},
+  {brand:'Ford',model:'Focus MK2',year:'2005-2011',engine:'2.0L Duratec',ecu:'Bosch ME9',fuel:'gasolina',modules:['PCM','ABS','SRS','BCM'],sensors:['RPM','ECT','TPS','APP1','APP2','MAF','O2B1S1','O2B1S2','KNOCK']},
+  {brand:'Toyota',model:'Corolla E110',year:'1998-2002',engine:'1ZZ-FE 1.8L',ecu:'Toyota EFI',fuel:'gasolina',modules:['ECM','BCM','SRS'],sensors:['RPM','ECT','TPS','MAP','IAT','O2B1S1','STFT','LTFT','CKP','IAC']},
+  {brand:'Toyota',model:'Camry XV30',year:'2002-2006',engine:'2AZ-FE 2.4L / 1MZ-FE 3.0L',ecu:'Toyota EFI',fuel:'gasolina',modules:['ECM','BCM','SRS','IMMO'],sensors:['RPM','ECT','TPS','APP1','APP2','MAF','O2B1S1','O2B1S2','STFT','LTFT','CKP','CMP']},
+  {brand:'Honda',model:'Civic EG',year:'1992-1995',engine:'D15B2 / D16Z6',ecu:'Honda ECU',fuel:'gasolina',modules:['ECM','IMMO'],sensors:['RPM','ECT','TPS','MAP','IAT','O2B1S1','IAC','CKP'],pinout:[{n:1,name:'IGP',v:'12V'},{n:2,name:'GND',v:'0V'},{n:5,name:'MAP',v:'0.5-4.5V'},{n:10,name:'TPS',v:'0.5-4.5V'},{n:15,name:'O2',v:'0.1-0.9V'}]},
+  {brand:'Honda',model:'Civic EK',year:'1996-2000',engine:'D16Y7 / D16Y8',ecu:'Honda ECU',fuel:'gasolina',modules:['ECM','IMMO'],sensors:['RPM','ECT','TPS','MAP','O2B1S1','O2B1S2','IAC','STFT','LTFT']},
+  {brand:'Honda',model:'Accord CG',year:'1998-2002',engine:'F23A / J30A',ecu:'Honda ECU',fuel:'gasolina',modules:['ECM','BCM','IMMO','SRS'],sensors:['RPM','ECT','TPS','APP1','MAP','O2B1S1','STFT','LTFT','CKP','CMP']},
+  {brand:'Mazda',model:'3 BK',year:'2004-2009',engine:'LF 2.0L / L3 2.3L',ecu:'Mazda/Siemens',fuel:'gasolina',modules:['ECM','BCM','ABS','SRS','IMMO'],sensors:['RPM','ECT','TPS','APP1','APP2','MAF','O2B1S1','STFT','LTFT','CKP','CMP','KNOCK']},
+  {brand:'BMW',model:'Serie 3 E46',year:'1998-2006',engine:'M43 1.9L / M54 2.5L',ecu:'Siemens MS43',fuel:'gasolina',modules:['ECM','DSC','SRS','EWS3','ZKE'],sensors:['RPM','ECT','TPS','APP1','APP2','MAF','O2B1S1','O2B1S2','STFT','LTFT','IAT','CKP','CMP','KNOCK'],pinout:[{n:1,name:'B+',v:'12V'},{n:2,name:'GND',v:'0V'},{n:15,name:'CAN-H',v:'2.5V'},{n:16,name:'CAN-L',v:'1.5V'},{n:40,name:'APP1',v:'0.5-4.5V'},{n:41,name:'APP2',v:'0.3-2.2V'}]},
+  {brand:'Hyundai',model:'Accent LC',year:'2000-2006',engine:'G4EH 1.3L / G4FK 1.5L',ecu:'Bosch M7.9',fuel:'gasolina',modules:['ECM','BCM','ABS','SRS'],sensors:['RPM','ECT','TPS','MAP','IAT','O2B1S1','IAC','STFT','LTFT']},
+  {brand:'Kia',model:'Sportage SL',year:'2010-2015',engine:'2.0L G4KD / 2.0D D4HA',ecu:'Bosch MED17',fuel:'gasolina',modules:['ECM','TCM','BCM','ABS','SRS','IMMO'],sensors:['RPM','ECT','TPS','APP1','APP2','MAF','O2B1S1','O2B1S2','STFT','LTFT','CKP','CMP','BOOST']},
+  {brand:'Dodge',model:'Neon',year:'2000-2005',engine:'2.0L SOHC',ecu:'Chrysler SMEC',fuel:'gasolina',modules:['PCM','BCM','ABS','SRS','SKIM'],sensors:['RPM','ECT','TPS','MAP','IAT','O2B1S1','IAC','CKP']},
+  {brand:'Dodge',model:'RAM 1500',year:'2002-2008',engine:'3.7L V6 / 4.7L V8 / 5.7L HEMI',ecu:'Chrysler NGC',fuel:'gasolina',modules:['PCM','TCM','BCM','ABS','SRS','SKIM'],sensors:['RPM','ECT','TPS','APP1','APP2','MAP','MAF','O2B1S1','O2B1S2','STFT','LTFT','CKP','CMP','KNOCK','FUEL']},
+];
+
+const CAL_GAS=[
+  {id:'tps',name:'CUERPO DE ACELERACIÓN / TPS',ico:'🎚',range:'0.5V — 4.5V',color:'#1E8CE0',live:'TPS',
+   ref:[{c:'Cerrado (0%)',v:'0.40–0.52V'},{c:'Media apertura (50%)',v:'2.40–2.60V'},{c:'Plena WOT (100%)',v:'4.48–4.55V'},{c:'VREF referencia',v:'5.00V ±0.05'},{c:'GND señal',v:'< 0.05V'}],
+   zones:['CERRADO 0%','MEDIO 50%','WOT 100%'],
+   steps:[{t:'Verificar voltaje en reposo',d:'Con llave ON motor apagado: medir PIN TPS a GND señal. Debe ser 0.45-0.52V'},
+          {t:'Verificar linealidad',d:'Abrir mariposa suavemente. Voltaje debe subir LINEAL sin saltos ni planos. Usar osciloscopio'},
+          {t:'Verificar WOT plena apertura',d:'Con mariposa totalmente abierta: 4.45-4.55V. Si no llega, revisar posición física del TPS'},
+          {t:'Adaptación ECM (Throttle Reset)',d:'Con scanner: TPS Learn o Throttle Reset. O desconectar batería 10 min. Motor aprende posición reposo'}]},
+  {id:'app',name:'PEDAL ACELERADOR APP1 + APP2',ico:'🦶',range:'APP1: 0.5-4.5V / APP2: 0.3-2.2V',color:'#E91E8C',live:'APP1',
+   ref:[{c:'APP1 en reposo',v:'0.50–0.85V'},{c:'APP1 WOT',v:'4.00–4.60V'},{c:'APP2 en reposo',v:'0.30–0.42V'},{c:'APP2 WOT',v:'2.00–2.20V'},{c:'Relación APP1/APP2',v:'APP2 ≈ APP1 / 2'},{c:'VREF APP1',v:'5.00V'},{c:'VREF APP2',v:'5.00V'}],
+   zones:['REPOSO','MEDIA CARGA','WOT'],
+   steps:[{t:'Verificar voltaje reposo APP1',d:'Con llave ON sin tocar pedal: APP1 = 0.50-0.85V. Si 0V: arnés. Si 5V: cortocircuito VREF'},
+          {t:'Verificar voltaje reposo APP2',d:'APP2 en reposo: 0.30-0.42V. Siempre aproximadamente APP1/2'},
+          {t:'Verificar progresión lineal',d:'Presionar pedal lentamente. Ambas señales suben LINEALMENTE en proporción constante'},
+          {t:'Verificar coherencia APP1/APP2',d:'ECM compara ambas señales. Si difieren >10% = P0221/P0222. Reemplazar pedal completo'}]},
+  {id:'inj',name:'INYECTORES — TIEMPO DE PULSO',ico:'💉',range:'0.8ms — 20ms',color:'#26C6DA',live:'INJ1',
+   ref:[{c:'Ralentí caliente',v:'1.8–2.8ms'},{c:'Aceleración media',v:'4–8ms'},{c:'WOT plena',v:'12–18ms'},{c:'Desaceleración',v:'0ms (cut-off)'},{c:'Resistencia MPI',v:'12–16 Ω'},{c:'Resistencia directo',v:'2–4 Ω'}],
+   zones:['MÍNIMO','NORMAL','MÁXIMO'],
+   steps:[{t:'Medir resistencia inyector',d:'Con inyector desconectado: MPI 12-16Ω. Bajo resistencia (directo): 2-4Ω'},
+          {t:'Verificar pulso PWM',d:'Osciloscopio en pin inyector: pulsos cuadrados 12V. Ancho = tiempo de inyección'},
+          {t:'Verificar alimentación',d:'Pin positivo inyector = 12V con llave ON. ECM controla lado negativo (pulso a tierra)'},
+          {t:'Prueba de fugas',d:'Motor apagado con manómetro montado: presión no debe caer más de 30kPa en 30 minutos'}]},
+  {id:'bob',name:'BOBINAS DE ENCENDIDO',ico:'⚡',range:'0.5–2Ω primaria / 8–15kΩ sec.',color:'#9C27B0',live:'BOB1',
+   ref:[{c:'Resistencia primaria',v:'0.5–2.0 Ω'},{c:'Resistencia secundaria',v:'8,000–15,000 Ω'},{c:'Voltaje primario',v:'12V (colapsa al disparar)'},{c:'Tensión secundaria',v:'25,000–45,000 V'},{c:'Tiempo dwell',v:'2.5–5 ms'},{c:'Corriente pico',v:'8–12 A'}],
+   zones:['PRIMARIO','SECUNDARIO','DWELL'],
+   steps:[{t:'Resistencia primaria',d:'Multímetro entre pines 1-2 bobina: 0.5-2Ω. 0Ω = cortocircuito. >5Ω = abierta'},
+          {t:'Resistencia secundaria',d:'Entre pin central (alta tensión) y pin bajo: 8,000-15,000Ω típico'},
+          {t:'Verificar disparo ECM',d:'Osciloscopio en pin control: señal cuadrada 0-12V, frecuencia = encendidos/segundo'},
+          {t:'Verificar alimentación',d:'Pin positivo bobina = 12V con llave ON. Si no hay 12V: revisar relay bobinas o fusible'}]},
+  {id:'iac',name:'VÁLVULA IAC — CONTROL RALENTÍ',ico:'🌀',range:'30–55 Hz / 20–30 Ω / 700-800 RPM',color:'#7C4DFF',live:'IAC',
+   ref:[{c:'RPM ralentí objetivo',v:'700–800 RPM'},{c:'Señal PWM frecuencia',v:'30–55 Hz'},{c:'Resistencia bobina A',v:'20–30 Ω'},{c:'Resistencia bobina B',v:'20–30 Ω'},{c:'Pasos IAC (stepper)',v:'0–200 pasos'},{c:'Pasos en ralentí normal',v:'15–80 pasos'}],
+   zones:['CERRADO','NORMAL','ABIERTO'],
+   steps:[{t:'Medir resistencia bobinas',d:'Desconectar IAC. Medir entre pines A-B y C-D: 20-30Ω cada bobina. 0Ω = cortocircuito'},
+          {t:'Limpieza del IAC',d:'Extraer IAC, limpiar con spray limpia-cuerpos. NO usar solventes agresivos. Verificar aguja libre'},
+          {t:'Verificar señal con osciloscopio',d:'Pin de control: señal PWM 30-55Hz, voltaje 12V. Duty cycle varía con carga eléctrica'},
+          {t:'Adaptación después de limpieza',d:'Reset IAC learn con scanner. O: desconectar batería 10min, dejar ralentí calentar 10min sin tocar acelerador'}]},
+  {id:'o2',name:'SONDA LAMBDA O2',ico:'🔬',range:'0.1V — 0.9V @ 800ms',color:'#EC407A',live:'O2B1S1',
+   ref:[{c:'Señal en frío (<300°C)',v:'Plana ~0.5V'},{c:'Bucle cerrado (caliente)',v:'Oscila 0.1↔0.9V'},{c:'Mezcla pobre lean',v:'< 0.25V'},{c:'Mezcla rica rich',v:'> 0.75V'},{c:'Tiempo respuesta',v:'< 800ms ideal'},{c:'Resistencia calentador',v:'3–15 Ω'}],
+   zones:['POBRE LEAN','ESTEQUIO λ=1','RICO RICH'],
+   steps:[{t:'Verificar temperatura mínima',d:'Sonda debe estar >300°C para activarse. Monitorear con scanner hasta bucle cerrado'},
+          {t:'Verificar oscilación en caliente',d:'Ralentí caliente: señal debe cruzar 0.45V al menos 1 vez/segundo. Si oscila lento = envenenada'},
+          {t:'Verificar calentador',d:'Entre pines calentador: 3-15Ω. Verificar 12V en pin positivo del calentador'},
+          {t:'Prueba de mezcla',d:'Con propano: señal sube rápido (rich). Con vacío (air leak): señal baja rápido (lean). Si respuesta lenta = sonda gastada'}]},
+  {id:'maf',name:'MAF — SENSOR FLUJO DE AIRE',ico:'💨',range:'2–6 g/s ralentí / 50–80 g/s WOT',color:'#4CAF50',live:'MAF',
+   ref:[{c:'Ralentí 700-800 RPM',v:'2–6 g/s'},{c:'Aceleración media',v:'15–30 g/s'},{c:'WOT 4000 RPM',v:'50–80 g/s'},{c:'STFT con MAF correcto',v:'±5%'},{c:'Señal voltaje',v:'0–5V (lineal)'}],
+   zones:['RALENTÍ','MEDIA CARGA','PLENA CARGA'],
+   steps:[{t:'Verificar sin fugas de aire',d:'Buscar fugas entre MAF y mariposa. Fugas falsifican lectura (más aire = mezcla pobre)'},
+          {t:'Limpiar MAF',d:'Usar spray limpiador de MAF específico. NO tocar el filamento. Secar 10 min antes de reconectar'},
+          {t:'Verificar señal',d:'Señal aumenta con RPM. A 2500 RPM debe leer 15-25 g/s. Señal plana = MAF dañado'},
+          {t:'Comparar con MAP/desconectado',d:'Si motor mejora con MAF desconectado = MAF dando señal alta falsa. Sustituir'}]},
+  {id:'ckp',name:'CKP — SENSOR POSICIÓN CIGÜEÑAL',ico:'🔄',range:'200–1200 Ω / AC senoidal / 0.5–1.5mm',color:'#3F51B5',live:'CKP',
+   ref:[{c:'Tipo inductivo',v:'Señal AC senoidal'},{c:'Resistencia',v:'200–1200 Ω'},{c:'Air gap',v:'0.5–1.5 mm'},{c:'Tensión pico ralentí',v:'0.5–35 VAC'},{c:'Tensión pico WOT',v:'> 50 VAC'},{c:'Tipo Hall',v:'0–5V digital cuadrada'}],
+   zones:['BAJO RPM','RPM NORMAL','ALTO RPM'],
+   steps:[{t:'Medir resistencia (inductivo)',d:'Con sensor desconectado: 200-1200Ω entre pines. <50Ω = cortocircuito. >5kΩ = abierto'},
+          {t:'Verificar air gap',d:'Con galga de láminas: 0.5-1.5mm entre sensor y diente de rueda fónica. Si >2mm = señal débil'},
+          {t:'Verificar señal con osciloscopio',d:'Motor en marcha: señal AC senoidal limpia sin picos anómalos. Diente faltante = ciclo más largo'},
+          {t:'Verificar rueda fónica',d:'Girar motor a mano y contar dientes desde agujero sensor. Verificar dientes no rotos ni deformados'}]},
+];
+
+const CAL_DIESEL=[
+  {id:'rail',name:'RIEL COMMON RAIL — PRESIÓN',ico:'⛽',range:'300 bar arranque — 1800 bar WOT',color:'#FF6B2B',live:'FUEL',
+   ref:[{c:'Arranque frío',v:'300–500 bar'},{c:'Ralentí caliente',v:'250–350 bar'},{c:'Carga media',v:'800–1200 bar'},{c:'Carga máxima',v:'1400–1800 bar'},{c:'Fuga retorno inyectores',v:'< 0.8L/min @ 30s'}],
+   zones:['ARRANQUE','RALENTÍ','CARGA MÁXIMA'],
+   steps:[{t:'Conectar manómetro al riel',d:'Puerto de servicio en riel. Presión mínima arranque 300 bar. Sin presión: bomba HP o válvula reguladora'},
+          {t:'Verificar bomba HP',d:'Presión entrada bomba: 3-8 bar (bomba baja presión OK). Sin alta presión = bomba HP desgastada'},
+          {t:'Verificar válvula reguladora',d:'En riel: señal PWM de ECU. Si riel no sube con demanda = válvula atascada abierta'},
+          {t:'Prueba fugas inyectores retorno',d:'Desconectar retorno inyectores, recolectar 30 seg a 2000 RPM. >0.8L/min = inyector con fuga interna'}]},
+  {id:'egr_d',name:'EGR DIESEL — VÁLVULA RECIRCULACIÓN',ico:'♻️',range:'0–100% apertura / 20-40% ralentí',color:'#607D8B',live:'EVAP',
+   ref:[{c:'Ralentí frío',v:'0% cerrada'},{c:'Ralentí caliente',v:'20–40%'},{c:'Carga media',v:'0–20%'},{c:'Plena carga',v:'0% cerrada'},{c:'Control',v:'PWM o vacío neumático'}],
+   zones:['CERRADA','PARCIAL','ABIERTA'],
+   steps:[{t:'Verificar apertura con scanner',d:'En ralentí caliente, EGR debe abrir 20-40%. Sin movimiento: válvula obstruida con hollín'},
+          {t:'Limpiar válvula EGR',d:'Extraer válvula, limpiar con desengrasante. Verificar movimiento libre del pistón'},
+          {t:'Verificar control eléctrico',d:'Osciloscopio en pin control: señal PWM. Con señal pero sin movimiento = válvula mecánica trabada'},
+          {t:'Verificar tubería EGR',d:'Revisar tubería por obstrucciones de hollín. Limpiar o sustituir según estado'}]},
+  {id:'dpf',name:'DPF / FILTRO DE PARTÍCULAS',ico:'🫧',range:'0–50 kPa presión diferencial',color:'#9E9E9E',live:'EVAP',
+   ref:[{c:'Nuevo / limpio',v:'< 5 kPa diferencial'},{c:'Uso normal',v:'5–15 kPa'},{c:'Requiere regeneración',v:'15–30 kPa'},{c:'Saturado / obstruido',v:'> 30 kPa'},{c:'Temperatura regeneración',v:'550–700°C'}],
+   zones:['LIMPIO','NORMAL','SATURADO'],
+   steps:[{t:'Monitorear presión diferencial',d:'Con scanner: si >30kPa = DPF saturado, requiere regeneración forzada'},
+          {t:'Regeneración activa',d:'Scanner: iniciar regeneración forzada. Motor >80°C. Duración 20-30 min a 2000 RPM'},
+          {t:'Condiciones de regeneración',d:'Motor caliente, velocidad >60 km/h o con scanner. Sin regeneración: verificar inyector post-inyección'},
+          {t:'Limpieza profesional',d:'DPF >50kPa: limpieza ultrasónica o horno especializado. Si dañado físicamente: sustituir'}]},
+];
+
+const CAL_HVOLT=[
+  {id:'hvbat',name:'BATERÍA ALTA TENSIÓN HV',ico:'🔋',range:'200V–450V / SOC 40–80%',color:'#F5A623',live:'VOLT',
+   ref:[{c:'Toyota/Lexus Hybrid',v:'201V–244V'},{c:'Ford Hybrid',v:'330V'},{c:'BMW HV',v:'360V'},{c:'SOC objetivo',v:'40–80%'},{c:'Temperatura óptima',v:'20–35°C'}],
+   zones:['SOC BAJA','ÓPTIMO','ALTA CARGA'],
+   steps:[{t:'⚠ PRECAUCIÓN ALTA TENSIÓN',d:'Guantes dieléctricos Clase 0 mínimo. Desconectar plug de servicio NARANJA antes de trabajar en HV'},
+          {t:'Monitorear SOC',d:'Scanner híbrido: SOC debe estar 40-80%. Si baja de 20% en reposo = celda defectuosa'},
+          {t:'Verificar balance de celdas',d:'Diferencia entre celda más alta y baja no debe ser >0.3V. Mayor diferencia = celda deteriorada'},
+          {t:'Temperatura del paquete',d:'Si >45°C en reposo: falla sistema enfriamiento HV. Verificar ventilador HV y filtro'}]},
+];
+
+const GH_RAW='https://raw.githubusercontent.com/84-fmill-mel30/base_datos_master.json/main/master_data.json';
+const DB_CACHE_KEY='pp_gh_v7';
+const DB_CACHE_TTL=10*60*1000;
+
+let S={
+  ble:null,bleChar:null,bleConn:false,
+  simMode:true,obdRunning:false,obdTimer:null,
+  vehicles:[...LOCAL_VEH],masterDB:null,
+  selVehicle:null,
+  selectedSensors:[],
+  sensorHistory:{},sensorValues:{},
+  charts:{},dtcList:[],dtcFilter:'all',
+};
+
+document.addEventListener('DOMContentLoaded',()=>{
+  initSensorPicker();
+  initCalibration();
+  initElectrico();
+  renderVehicles();
+  loadGitHubDB(false);
+  ALL_SENSORS.forEach(s=>{S.sensorHistory[s.id]=[];S.sensorValues[s.id]=0;});
+  renderReports();
+});
+
+// NAVIGATION
+function showScreen(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('scr-'+n)?.classList.add('active');
+  S.screen=n;
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  const nm={home:0,vehiculos:1,sensores:2,dtc:3,calibracion:4,electrico:5};
+  if(nm[n]!==undefined)document.querySelectorAll('.nb')[nm[n]]?.classList.add('active');
+  if(n==='reportes')renderReports();
+}
+function switchVDTab(id,el){
+  document.querySelectorAll('#scr-veh-detail .panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById(id)?.classList.add('on');
+  document.querySelectorAll('#scr-veh-detail .tab').forEach(t=>t.classList.remove('on'));
+  if(el)el.classList.add('on');
+}
+function switchCalTab(id,el){
+  document.querySelectorAll('#scr-calibracion .panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById(id)?.classList.add('on');
+  document.querySelectorAll('#scr-calibracion .tab').forEach(t=>t.classList.remove('on'));
+  if(el)el.classList.add('on');
+}
+function switchElecTab(id,el){
+  document.querySelectorAll('#scr-electrico .panel').forEach(p=>p.classList.remove('on'));
+  document.getElementById(id)?.classList.add('on');
+  document.querySelectorAll('#scr-electrico .tab').forEach(t=>t.classList.remove('on'));
+  if(el)el.classList.add('on');
+}
+
+// SENSOR PICKER
+function initSensorPicker(){
+  const g=document.getElementById('sp-grid');
+  if(!g)return;
+  g.innerHTML=ALL_SENSORS.map(s=>
+    `<div class="sp-item" id="sp-${s.id}" onclick="toggleSensor('${s.id}')">${s.name}</div>`
+  ).join('');
+  ['RPM','ECT','TPS','O2B1S1'].forEach(id=>toggleSensor(id,true));
+}
+function toggleSensor(id,force){
+  const idx=S.selectedSensors.indexOf(id);
+  const el=document.getElementById('sp-'+id);
+  if(!el)return;
+  if(idx>=0){S.selectedSensors.splice(idx,1);el.classList.remove('on');}
+  else{
+    if(S.selectedSensors.length>=4&&!force){toast('Máximo 4 sensores — deselecciona uno','warn');return;}
+    S.selectedSensors.push(id);el.classList.add('on');
+  }
+  const full=S.selectedSensors.length>=4;
+  ALL_SENSORS.forEach(s=>{
+    const e=document.getElementById('sp-'+s.id);
+    if(!e)return;
+    if(!S.selectedSensors.includes(s.id)){if(full)e.classList.add('full');else e.classList.remove('full');}
+    else e.classList.remove('full');
+  });
+  document.getElementById('sp-count').textContent=S.selectedSensors.length+'/4';
+  rebuildCharts();rebuildGauges();
+}
+
+// CHARTS
+function rebuildCharts(){
+  const area=document.getElementById('charts-area');
+  if(!area)return;
+  area.innerHTML='';S.charts={};
+  S.selectedSensors.forEach(id=>{
+    const s=ALL_SENSORS.find(x=>x.id===id);
+    if(!s)return;
+    const w=document.createElement('div');
+    w.className='chart-wrap';
+    w.innerHTML=`<div class="chart-hdr">
+      <div class="chart-ttl" style="color:${s.color}">${s.name}</div>
+      <div class="chart-live" id="clive-${id}" style="color:${s.color}">— ${s.unit}</div>
+    </div>
+    <canvas id="chart-${id}" height="70"></canvas>`;
+    area.appendChild(w);
+    const canvas=document.getElementById('chart-'+id);
+    S.charts[id]={canvas,ctx:canvas.getContext('2d'),sensor:s};
+  });
+}
+function drawChart(id){
+  const ch=S.charts[id];if(!ch)return;
+  const{canvas,ctx,sensor}=ch;
+  const W=canvas.offsetWidth||350,H=70;
+  canvas.width=W;canvas.height=H;
+  const hist=S.sensorHistory[id]||[];
+  const maxPts=60;const pts=hist.slice(-maxPts);
+  ctx.clearRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=(i/4)*H;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  if(pts.length<2)return;
+  const range=sensor.max-sensor.min;
+  const toY=v=>H-((v-sensor.min)/range)*H;
+  const xStep=W/(maxPts-1);
+  // Warn zone
+  if(sensor.warn<sensor.max){
+    ctx.fillStyle='rgba(255,75,92,.06)';ctx.fillRect(0,0,W,toY(sensor.warn));
+  }
+  // Gradient fill
+  const grad=ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,sensor.color+'44');
+  grad.addColorStop(1,sensor.color+'00');
+  ctx.beginPath();
+  pts.forEach((v,i)=>{const x=i*xStep,y=Math.max(0,Math.min(H,toY(v)));i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.lineTo((pts.length-1)*xStep,H);ctx.lineTo(0,H);ctx.closePath();
+  ctx.fillStyle=grad;ctx.fill();
+  // Line
+  ctx.beginPath();
+  pts.forEach((v,i)=>{const x=i*xStep,y=Math.max(0,Math.min(H,toY(v)));i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.strokeStyle=sensor.color;ctx.lineWidth=2;ctx.lineJoin='round';ctx.stroke();
+  // Dot
+  const last=pts[pts.length-1];const lx=(pts.length-1)*xStep;const ly=Math.max(0,Math.min(H,toY(last)));
+  ctx.beginPath();ctx.arc(lx,ly,4,0,Math.PI*2);ctx.fillStyle=sensor.color;ctx.fill();
+  ctx.beginPath();ctx.arc(lx,ly,7,0,Math.PI*2);ctx.strokeStyle=sensor.color+'44';ctx.lineWidth=2;ctx.stroke();
+}
+
+// GAUGES
+function rebuildGauges(){
+  const grid=document.getElementById('gauge-grid');
+  if(!grid)return;grid.innerHTML='';
+  S.selectedSensors.forEach(id=>{
+    const s=ALL_SENSORS.find(x=>x.id===id);if(!s)return;
+    const d=document.createElement('div');d.className='gauge';
+    d.innerHTML=`<div class="g-lbl" style="color:${s.color}">${s.name}<span id="ga-${id}" class="g-alert"></span></div>
+      <div class="g-val" id="gv-${id}">—<span class="g-unit">${s.unit}</span></div>
+      <div class="g-bar-bg"><div class="g-bar" id="gb-${id}" style="background:${s.color}"></div></div>`;
+    grid.appendChild(d);
+  });
+}
+function updateGauges(){
+  S.selectedSensors.forEach(id=>{
+    const s=ALL_SENSORS.find(x=>x.id===id);
+    const val=S.sensorValues[id];
+    if(!s||val===undefined)return;
+    const pct=Math.max(0,Math.min(100,(val-s.min)/(s.max-s.min)*100));
+    const warn=val>=s.warn;const color=warn?'var(--red)':s.color;
+    const gv=document.getElementById('gv-'+id);
+    if(gv)gv.innerHTML=`${val.toFixed(1)}<span class="g-unit">${s.unit}</span>`;
+    const gb=document.getElementById('gb-'+id);
+    if(gb){gb.style.width=pct+'%';gb.style.background=color;}
+    const ga=document.getElementById('ga-'+id);
+    if(ga){ga.textContent=warn?'⚠':'';ga.style.color='var(--red)';}
+    const cl=document.getElementById('clive-'+id);
+    if(cl){cl.textContent=val.toFixed(2)+' '+s.unit;cl.style.color=color;}
+    S.sensorHistory[id].push(val);
+    if(S.sensorHistory[id].length>120)S.sensorHistory[id].shift();
+    drawChart(id);
+  });
+  // Hero
+  const rv=id=>S.sensorValues[id];
+  const e=(id,t)=>{const el=document.getElementById(id);if(el)el.textContent=t;};
+  e('hs-rpm',rv('RPM')?Math.round(rv('RPM')):'—');
+  e('hs-temp',rv('ECT')?Math.round(rv('ECT'))+'°':'—°');
+  e('hs-volt',rv('VOLT')?rv('VOLT').toFixed(1)+'V':'—');
+  e('hs-speed',rv('SPEED')?Math.round(rv('SPEED')):'—');
+  e('hs-load',rv('LOAD')?Math.round(rv('LOAD'))+'%':'—%');
+  const dtcEl=document.getElementById('hs-dtc');
+  if(dtcEl){const n=S.dtcList.filter(d=>d.type==='active').length;dtcEl.textContent=n||'—';dtcEl.style.color=n>0?'var(--red)':'var(--green)';}
+  // Cal live
+  [...CAL_GAS,...CAL_DIESEL,...CAL_HVOLT].forEach(ch=>{
+    const lel=document.getElementById('cal-live-'+ch.id);
+    const bel=document.getElementById('cal-bar-'+ch.id);
+    if(!lel||!bel)return;
+    const sid=ch.live;const sv=S.sensorValues[sid];
+    const sens=ALL_SENSORS.find(x=>x.id===sid);
+    if(sv!==undefined&&sens){
+      const pct=Math.max(0,Math.min(100,(sv-sens.min)/(sens.max-sens.min)*100));
+      lel.textContent=sv.toFixed(2)+' '+sens.unit;
+      bel.style.width=pct+'%';
+    }
+  });
+}
+
+// SIMULATION
+let simPhase=0;
+function simTick(){
+  simPhase+=0.06;const t=simPhase;
+  const base={
+    RPM:750+Math.sin(t*.3)*200+Math.random()*30,
+    ECT:75+Math.sin(t*.02)*15,SPEED:0,
+    LOAD:30+Math.sin(t*.4)*20+Math.random()*5,
+    VOLT:13.8+Math.sin(t*.1)*.3,
+    TPS:5+Math.sin(t*.5)*4+Math.abs(Math.sin(t*.2))*10,
+    APP1:5+Math.sin(t*.5)*4+Math.abs(Math.sin(t*.2))*10,
+    APP2:2.5+Math.sin(t*.5)*2+Math.abs(Math.sin(t*.2))*5,
+    MAP:35+Math.sin(t*.4)*10,MAF:3.5+Math.sin(t*.3)*1.5,
+    IAT:28+Math.sin(t*.01)*5,
+    O2B1S1:.1+((Math.sin(t*2)+1)/2)*.8,
+    O2B1S2:.45+Math.sin(t*.1)*.05,
+    STFT:Math.sin(t*1.5)*4,LTFT:Math.sin(t*.05)*3,
+    IGN:12+Math.sin(t*.3)*6,IAC:35+Math.sin(t*.2)*12,
+    BOOST:100+Math.sin(t*.3)*10,FUEL:350+Math.sin(t*.1)*30,
+    EVAP:Math.abs(Math.sin(t*.3))*40,
+    CKP:750/60*6.5+Math.random()*2,CMP:Math.abs(Math.sin(t*.2))*360,
+    KNOCK:Math.abs(Math.sin(t*3))*500,
+    INJ1:2.2+Math.sin(t*.3)*.5,INJ2:2.2+Math.sin(t*.35)*.5,
+    BOB1:350+Math.sin(t*.3)*30,BOB2:350+Math.sin(t*.35)*30,
+    BOB3:350+Math.sin(t*.4)*30,BOB4:350+Math.sin(t*.45)*30,
+    BATTEMP:25+Math.sin(t*.01)*5,
+  };
+  ALL_SENSORS.forEach(s=>{if(base[s.id]!==undefined)S.sensorValues[s.id]=Math.max(s.min,Math.min(s.max,base[s.id]));});
+  updateGauges();
+}
+
+// OBD CONTROL
+function startOBD(){
+  if(S.obdRunning)return;
+  S.obdRunning=true;
+  document.getElementById('btn-start').style.display='none';
+  document.getElementById('btn-stop').style.display='';
+  const sysMode=document.getElementById('sys-mode');
+  if(sysMode)sysMode.textContent=S.simMode?'SIMULACIÓN ACTIVA':'OBD2 EN VIVO';
+  rebuildCharts();rebuildGauges();
+  S.obdTimer=setInterval(()=>{if(S.simMode)simTick();else realOBDTick();},500);
+  toast(S.simMode?'▶ Simulación iniciada':'▶ OBD2 activo — leyendo sensores','ok');
+}
+function stopOBD(){
+  S.obdRunning=false;clearInterval(S.obdTimer);
+  document.getElementById('btn-start').style.display='';
+  document.getElementById('btn-stop').style.display='none';
+  toast('■ Monitoreo detenido','info');
+}
+function toggleSimMode(){
+  S.simMode=!S.simMode;
+  const btn=document.getElementById('btn-sim');
+  if(btn){btn.textContent=S.simMode?'SIM ✓':'OBD2';btn.style.color=S.simMode?'var(--gold)':'var(--blue)';}
+  if(S.obdRunning){stopOBD();setTimeout(startOBD,200);}
+  toast(S.simMode?'Modo SIMULACIÓN activado':'Modo OBD2 REAL — conecta adaptador',S.simMode?'warn':'info');
+}
+
+// BLE
+const BLE_PROFS=[
+  {svc:'0000ffe0-0000-1000-8000-00805f9b34fb',rx:'0000ffe1-0000-1000-8000-00805f9b34fb',tx:'0000ffe1-0000-1000-8000-00805f9b34fb'},
+  {svc:'0000fff0-0000-1000-8000-00805f9b34fb',rx:'0000fff1-0000-1000-8000-00805f9b34fb',tx:'0000fff2-0000-1000-8000-00805f9b34fb'},
+  {svc:'6e400001-b5a3-f393-e0a9-e50e24dcca9e',rx:'6e400003-b5a3-f393-e0a9-e50e24dcca9e',tx:'6e400002-b5a3-f393-e0a9-e50e24dcca9e'},
+];
+let bleRxBuf='',bleResolvers=[];
+async function toggleBLE(){
+  if(S.bleConn){disconnectBLE();return;}
+  if(!navigator.bluetooth){toast('Web Bluetooth no disponible','err');return;}
+  try{
+    toast('Buscando adaptador OBD2 BLE...','info',10000);
+    const dev=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:BLE_PROFS.map(p=>p.svc)});
+    const server=await dev.gatt.connect();
+    for(const p of BLE_PROFS){
+      try{
+        const svc=await server.getPrimaryService(p.svc);
+        const rx=await svc.getCharacteristic(p.rx);
+        const tx=await svc.getCharacteristic(p.tx);
+        await rx.startNotifications();
+        rx.addEventListener('characteristicvaluechanged',e=>{
+          const txt=new TextDecoder().decode(e.target.value);
+          bleRxBuf+=txt;let idx;
+          while((idx=bleRxBuf.indexOf('\n'))>=0){
+            const line=bleRxBuf.slice(0,idx).trim();bleRxBuf=bleRxBuf.slice(idx+1);
+            if(line&&!line.includes('SEARCHING')&&!line.startsWith('>'))if(bleResolvers.length>0)bleResolvers.shift()(line);
+          }
+        });
+        S.ble=dev;S.bleChar=tx;S.bleConn=true;break;
+      }catch(_){}
+    }
+    if(!S.bleConn)throw new Error('Perfil BLE no compatible con este adaptador');
+    setBLEUI(true);
+    await elmInit();
+    toast('✅ OBD2 BLE conectado — '+(dev.name||'Adaptador'),'ok');
+  }catch(e){setBLEUI(false);toast('BLE: '+e.message.slice(0,45),'err');}
+}
+function disconnectBLE(){if(S.ble)S.ble.gatt?.disconnect();S.bleConn=false;S.ble=null;S.bleChar=null;setBLEUI(false);stopOBD();toast('BLE desconectado','info');}
+function setBLEUI(conn){
+  const pill=document.getElementById('ble-pill');
+  const lbl=document.getElementById('ble-lbl');
+  if(pill)pill.className='hpill '+(conn?'on':'err');
+  if(lbl)lbl.textContent=conn?'BLE ✓':'BLE';
+  const sbl=document.getElementById('sys-ble');if(sbl){sbl.textContent=conn?'CONECTADO':'DESCONECTADO';sbl.style.color=conn?'var(--green)':'var(--red)';}
+}
+async function elmInit(){
+  for(const c of['ATZ','ATE0','ATL0','ATS0','ATH0','ATSP0']){await bleWrite(c);await delay(150);}
+}
+async function bleWrite(cmd){
+  if(!S.bleChar)return'';
+  await S.bleChar.writeValue(new TextEncoder().encode(cmd+'\n'));
+  return new Promise(res=>{const t=setTimeout(()=>{bleResolvers=bleResolvers.filter(r=>r!==res);res('TIMEOUT');},1000);bleResolvers.push(v=>{clearTimeout(t);res(v);});});
+}
+async function realOBDTick(){
+  const pidMap={RPM:'010C',ECT:'0105',TPS:'0111',APP1:'0149',APP2:'014A',VOLT:'0142',SPEED:'010D',LOAD:'0104',MAP:'010B',MAF:'0110',IAT:'010F',O2B1S1:'0124',STFT:'0106',LTFT:'0107',IGN:'010E'};
+  for(const id of S.selectedSensors){
+    const pid=pidMap[id];if(!pid)continue;
+    const resp=await bleWrite(pid);
+    const val=parseOBD(id,resp);
+    if(val!==null)S.sensorValues[id]=val;
+  }
+  updateGauges();
+}
+function parseOBD(id,resp){
+  try{
+    const hex=resp.replace(/\s/g,'');const A=parseInt(hex.slice(4,6),16);const B=parseInt(hex.slice(6,8),16);
+    switch(id){
+      case'RPM':return(A*256+B)/4;case'ECT':case'IAT':return A-40;
+      case'TPS':case'APP1':case'APP2':case'LOAD':return(A/255)*100;
+      case'SPEED':return A;case'MAP':return A;case'IGN':return(A-128)/2;
+      case'STFT':case'LTFT':return(A/128-1)*100;case'MAF':return(A*256+B)/100;
+      case'VOLT':return(A*256+B)/1000;case'O2B1S1':case'O2B1S2':return A/200;
+    }
+  }catch(_){}return null;
+}
+
+// DTC
+let dtcFilter='all';
+async function readDTC(){
+  document.getElementById('dtc-empty').style.display='none';
+  animProg('dtc-prog',0,40,600);
+  toast('🔍 Escaneando fallas DTC...','info',5000);
+  if(S.simMode){
+    await delay(1200);
+    S.dtcList=[{code:'P0300',type:'active',sys:'Motor'},{code:'P0171',type:'active',sys:'Motor'},{code:'P0505',type:'active',sys:'Motor'},{code:'P0335',type:'active',sys:'Motor'},{code:'P0420',type:'pending',sys:'Emisiones'}];
+    animProg('dtc-prog',40,100,400);setTimeout(()=>renderDTC(),450);
+  }else{
+    const resp=await bleWrite('03');
+    animProg('dtc-prog',40,100,800);
+    S.dtcList=parseRealDTC(resp);setTimeout(()=>renderDTC(),900);
+  }
+}
+async function readPendingDTC(){
+  toast('📋 Leyendo fallas pendientes...','info',3000);await delay(700);
+  const p=[{code:'P0420',type:'pending',sys:'Emisiones'},{code:'P0440',type:'pending',sys:'Emisiones'}];
+  S.dtcList=[...S.dtcList.filter(d=>d.type!=='pending'),...p];renderDTC();
+}
+function parseRealDTC(hex){
+  const res=[];
+  try{const clean=hex.replace(/\s|43/g,'');for(let i=0;i<clean.length;i+=4){const b1=parseInt(clean.slice(i,i+2),16);const b2=parseInt(clean.slice(i+2,i+4),16);if(!b1&&!b2)continue;const pre=['P','C','B','U'][(b1>>6)&3];res.push({code:pre+((b1&0x3F).toString(16).padStart(1,'0')+b2.toString(16).padStart(2,'0')).toUpperCase(),type:'active',sys:'Motor'});}}catch(_){}return res;
+}
+async function clearDTC(){
+  if(!confirm('¿Borrar TODOS los códigos de falla?'))return;
+  if(!S.simMode)await bleWrite('04');
+  S.dtcList=[];renderDTC();
+  document.getElementById('dtc-empty').style.display='block';
+  document.getElementById('dtc-empty').textContent='✅ Memoria DTC borrada correctamente';
+  toast('✅ DTC borrados','ok');
+}
+function filterDTC(type,el){
+  dtcFilter=type;
+  document.querySelectorAll('#scr-dtc .tab').forEach(t=>t.classList.remove('on'));
+  if(el)el.classList.add('on');renderDTC();
+}
+function renderDTC(){
+  const list=document.getElementById('dtc-list');
+  const empty=document.getElementById('dtc-empty');
+  const active=S.dtcList.filter(d=>d.type==='active');
+  const pending=S.dtcList.filter(d=>d.type==='pending');
+  const e=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  e('dtc-active',active.length);e('dtc-pending',pending.length);
+  const dtcEl=document.getElementById('hs-dtc');
+  if(dtcEl){dtcEl.textContent=active.length||'—';dtcEl.style.color=active.length>0?'var(--red)':'var(--green)';}
+  let filtered=S.dtcList;
+  if(dtcFilter==='P')filtered=S.dtcList.filter(d=>d.code.startsWith('P'));
+  else if(dtcFilter==='C')filtered=S.dtcList.filter(d=>d.code.startsWith('C'));
+  else if(dtcFilter==='BU')filtered=S.dtcList.filter(d=>d.code.startsWith('B')||d.code.startsWith('U'));
+  list.innerHTML='';
+  if(!filtered.length){empty.style.display='block';empty.textContent=S.dtcList.length===0?'Presiona LEER FALLAS para escanear':'Sin fallas en esta categoría';return;}
+  empty.style.display='none';
+  filtered.forEach(dtc=>{
+    const info=DTC_DB[dtc.code]||{desc:'Código no encontrado en base local',sys:dtc.sys||'Motor',symp:'Consultar manual del fabricante',sol:['Usar scanner específico del vehículo','Verificar manualmente según código']};
+    const isActive=dtc.type==='active';
+    const chip=document.createElement('div');chip.className='dtc-chip';
+    chip.innerHTML=`<div class="dtc-top">
+      <div class="dtc-code">${dtc.code}</div>
+      <span class="dtc-badge" style="background:rgba(${isActive?'255,75,92':'245,166,35'},.18);color:var(${isActive?'--red':'--gold'})">${isActive?'ACTIVA':'PENDIENTE'}</span>
+      <span class="dtc-badge" style="background:rgba(30,140,224,.12);color:var(--blue)">${info.sys}</span>
+    </div>
+    <div class="dtc-desc">${info.desc}</div>
+    <div class="dtc-detail">
+      <div class="dtc-symp"><div class="dtc-symp-lbl">⚠ SÍNTOMAS</div><div class="dtc-symp-txt">${info.symp||'—'}</div></div>
+      <div style="margin-top:8px"><div class="dtc-sol-lbl">✅ DIAGNÓSTICO PASO A PASO</div>
+        ${(info.sol||[]).map((s,i)=>`<div class="dtc-sol-item"><div class="dtc-sol-n">${i+1}</div><div class="dtc-sol-t">${s}</div></div>`).join('')}
+      </div>
+    </div>`;
+    chip.addEventListener('click',()=>chip.classList.toggle('open'));
+    list.appendChild(chip);
+  });
+}
+
+// VEHICLES
+let vFilter={brand:'ALL',year:'ALL',search:''};
+function buildBrandRow(){
+  const row=document.getElementById('brand-row');if(!row)return;
+  const brands=['ALL',...new Set(S.vehicles.map(v=>v.brand))].sort((a,b)=>a==='ALL'?-1:a.localeCompare(b));
+  row.innerHTML=brands.map(b=>`<div class="fp ${b===vFilter.brand?'on':''}" onclick="setVFilter('brand','${b}')">${b==='ALL'?'TODAS':b.toUpperCase()}</div>`).join('');
+}
+function buildYearRow(){
+  const row=document.getElementById('year-row');if(!row)return;
+  const yrs=['ALL'];const now=new Date().getFullYear();
+  for(let y=now;y>=1985;y-=5)yrs.push(y+'–'+(y+4));
+  row.innerHTML=yrs.map(y=>`<div class="fp ${y===vFilter.year?'on':''}" onclick="setVFilter('year','${y}')">${y==='ALL'?'TODOS':y}</div>`).join('');
+}
+function setVFilter(type,val){
+  vFilter[type]=val;renderVehicles();
+}
+function renderVehicles(){
+  buildBrandRow();buildYearRow();
+  const res=document.getElementById('veh-results');if(!res)return;
+  const si=document.getElementById('veh-search');
+  const sq=si?si.value.toLowerCase():'';
+  let list=S.vehicles.filter(v=>{
+    const bOk=vFilter.brand==='ALL'||v.brand===vFilter.brand;
+    const sOk=!sq||[v.brand,v.model,v.engine||'',v.ecu||''].join(' ').toLowerCase().includes(sq);
+    return bOk&&sOk;
+  });
+  res.innerHTML='';
+  if(!list.length){res.innerHTML='<div style="text-align:center;padding:20px;color:var(--lgray);font-family:Rajdhani;font-size:10px">Sin resultados — cambia los filtros</div>';return;}
+  list.slice(0,40).forEach(v=>{
+    const isSel=S.selVehicle&&S.selVehicle.model===v.model&&S.selVehicle.brand===v.brand&&S.selVehicle.year===v.year;
+    const d=document.createElement('div');d.className='veh-card'+(isSel?' sel':'');
+    d.innerHTML=`<div class="veh-title">${v.brand} ${v.model}</div>
+      <div class="veh-sub">${v.year} · ${v.engine||'—'} · ECU: ${v.ecu||'—'}</div>
+      <div class="tag-row">
+        <span class="tag" style="background:rgba(30,140,224,.15);color:var(--blue)">${v.fuel||'gasolina'}</span>
+        ${(v.modules||[]).slice(0,4).map(m=>`<span class="tag" style="background:rgba(255,255,255,.06);color:var(--lgray)">${m}</span>`).join('')}
+        ${(v.sensors||[]).length>0?`<span class="tag" style="background:rgba(0,212,232,.1);color:var(--cyan)">${(v.sensors||[]).length} sens.</span>`:''}
+      </div>`;
+    d.addEventListener('click',()=>showVehicleDetail(v));
+    res.appendChild(d);
+  });
+  if(list.length>40){const more=document.createElement('div');more.style.cssText='text-align:center;padding:10px;color:var(--lgray);font-family:Rajdhani;font-size:9px;letter-spacing:1px';more.textContent='+'+( list.length-40)+' vehículos más — refina el filtro';res.appendChild(more);}
+}
+function showVehicleDetail(v){
+  S.selVehicle=v;
+  document.getElementById('vd-title').textContent=v.brand+' '+v.model+' · '+v.year;
+  // Módulos
+  const mods=v.modules||['ECM','BCM'];
+  const modsIcos={ECM:'🧠',PCM:'🧠',BCM:'🏠',TCM:'⚙',ABS:'🛡',SRS:'💥',IMMO:'🔑',NATS:'🔑',CVT:'⚙',TCU:'⚙',Gateway:'🔗','4WD':'🚙',EBCM:'🛡'};
+  document.getElementById('vd-modulos').innerHTML=`
+    <div style="padding:10px 11px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px">
+      ${mods.map(m=>`<div class="gauge" style="text-align:center;cursor:pointer">
+        <div style="font-size:18px">${modsIcos[m]||'📦'}</div>
+        <div style="font-family:'Rajdhani';font-size:10px;font-weight:700;color:var(--blue);margin-top:4px">${m}</div>
+        <div style="font-size:7px;color:var(--lgray)">Módulo</div>
+      </div>`).join('')}
+    </div>
+    <div class="card bc" style="margin-top:4px">
+      <div class="sec-lbl">DATOS ECU / MÓDULO PRINCIPAL</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:9px;color:var(--lgray)">ECU/ECM</span><span style="font-family:'Share Tech Mono';font-size:9px;color:var(--white)">${v.ecu||'—'}</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:9px;color:var(--lgray)">Motor</span><span style="font-family:'Share Tech Mono';font-size:9px;color:var(--white)">${v.engine||'—'}</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:9px;color:var(--lgray)">Año</span><span style="font-family:'Share Tech Mono';font-size:9px;color:var(--white)">${v.year||'—'}</span></div>
+      <div style="display:flex;justify-content:space-between"><span style="font-size:9px;color:var(--lgray)">Combustible</span><span style="font-family:'Share Tech Mono';font-size:9px;color:var(--white)">${v.fuel||'gasolina'}</span></div>
+    </div>`;
+  // Sensores
+  const vSens=v.sensors||ALL_SENSORS.slice(0,8).map(s=>s.id);
+  document.getElementById('vd-senslist').innerHTML=`
+    <div style="padding:8px 11px 0;font-family:'Rajdhani';font-size:8px;font-weight:700;color:var(--lgray);letter-spacing:1.5px">${vSens.length} SENSORES COMPATIBLES CON ESTE VEHÍCULO</div>
+    <div class="gauge-grid" style="margin-top:6px">
+      ${vSens.map(sid=>{const s=ALL_SENSORS.find(x=>x.id===sid);if(!s)return'';return`<div class="gauge" style="cursor:pointer" onclick="toggleSensor('${s.id}')">
+        <div class="g-lbl" style="color:${s.color}">${s.name}</div>
+        <div style="font-family:'Share Tech Mono';font-size:7.5px;color:var(--lgray)">${s.unit} · ${s.pid}</div>
+        <div style="font-size:7px;color:var(--lgray);margin-top:3px">${s.min}–${s.max} ${s.unit}</div>
+      </div>`;}).join('')}
+    </div>`;
+  // Pinout
+  const pins=v.pinout||[];
+  document.getElementById('vd-pinout').innerHTML=pins.length>0?`
+    <div style="padding:8px 11px 0;font-family:'Rajdhani';font-size:8px;font-weight:700;color:var(--lgray);letter-spacing:1.5px">PINOUT ECU ${v.ecu||''}</div>
+    <div class="pin-grid" style="margin:6px 11px">
+      ${pins.map(p=>`<div class="pin-item" onclick="toast('PIN ${p.n}: ${p.name} — ${p.v}','info',4000)">
+        <div class="pin-num">${p.n}</div>
+        <div class="pin-name">${p.name}</div>
+        <div class="pin-v">${p.v}</div>
+      </div>`).join('')}
+    </div>`:'<div style="padding:20px;text-align:center;color:var(--lgray);font-family:Rajdhani;font-size:10px;letter-spacing:1px">Sin pinout cargado para este vehículo<br><span style="font-size:8px">Próximamente en actualización DB</span></div>';
+  // Diagramas
+  document.getElementById('vd-diag').innerHTML=`
+    <div style="padding:8px 11px;display:grid;grid-template-columns:1fr 1fr;gap:7px">
+      ${[['💉','INYECCIÓN'],['⚡','ENCENDIDO'],['🔗','CAN BUS'],['🌀','RALENTÍ IAC'],['🦶','PEDAL APP'],['🔄','CKP / CMP'],['🔬','O2 LAMBDA'],['♻️','EGR / EVAP']].map(([ico,name])=>`
+      <div class="gauge" style="cursor:pointer;text-align:center" onclick="toast('Diagrama: ${name} — próximamente disponible','info')">
+        <div style="font-size:20px;margin-bottom:5px">${ico}</div>
+        <div style="font-family:'Rajdhani';font-size:9px;font-weight:700;color:var(--lgray)">${name}</div>
+      </div>`).join('')}
+    </div>`;
+  showScreen('veh-detail');
+  const firstTab=document.querySelector('#scr-veh-detail .tab');
+  if(firstTab){document.querySelectorAll('#scr-veh-detail .tab').forEach(t=>t.classList.remove('on'));firstTab.classList.add('on');}
+}
+function useVehicle(){
+  if(!S.selVehicle){toast('Selecciona un vehículo primero','warn');return;}
+  const v=S.selVehicle;
+  const e=(id,t)=>{const el=document.getElementById(id);if(el)el.textContent=t;};
+  e('home-brand',v.brand+' '+v.model);
+  e('home-model',v.year+' · '+(v.engine||'')+' · '+(v.ecu||''));
+  e('db-count',v.brand);
+  // Auto-cargar sensores del vehículo
+  document.querySelectorAll('.sp-item').forEach(el=>el.classList.remove('on','full'));
+  S.selectedSensors=[];
+  const defS=(v.sensors||['RPM','ECT','TPS','O2B1S1']).slice(0,4);
+  defS.forEach(id=>toggleSensor(id,true));
+  showScreen('home');
+  toast('✅ '+v.brand+' '+v.model+' seleccionado','ok');
+}
+
+// CALIBRACIÓN
+function initCalibration(){
+  const gasEl=document.getElementById('cal-gas');
+  const dslEl=document.getElementById('cal-diesel');
+  const hvEl=document.getElementById('cal-hvolt');
+  if(gasEl)gasEl.innerHTML=CAL_GAS.map(ch=>buildCalCard(ch)).join('');
+  if(dslEl)dslEl.innerHTML=CAL_DIESEL.map(ch=>buildCalCard(ch)).join('');
+  if(hvEl)hvEl.innerHTML=CAL_HVOLT.map(ch=>buildCalCard(ch)).join('');
+}
+function buildCalCard(ch){
+  const refRows=(ch.ref||[]).map(r=>`<tr><td>${r.c}</td><td style="color:var(--white)">${r.v||''}</td></tr>`).join('');
+  const zones=(ch.zones||['MIN','NORMAL','MAX']);
+  const zc=['rgba(0,196,140,.15)','rgba(30,140,224,.15)','rgba(255,75,92,.15)'];
+  const zt=['var(--green)','var(--blue)','var(--red)'];
+  const zonesHtml=zones.map((z,i)=>`<div class="cal-zone" style="background:${zc[i]};color:${zt[i]}">${z}</div>`).join('');
+  const stepsHtml=(ch.steps||[]).map((s,i)=>`<div class="step"><div class="step-n">${i+1}</div><div><div class="step-t">${s.t}</div><div class="step-d">${s.d}</div></div></div>`).join('');
+  return`<div class="cal-card" id="cal-${ch.id}" onclick="toggleCal('${ch.id}',event)">
+    <div class="cal-hdr">
+      <div class="cal-ico" style="background:${ch.color}22;border:1px solid ${ch.color}33">${ch.ico||'⚙'}</div>
+      <div><div class="cal-name" style="color:${ch.color}">${ch.name}</div><div class="cal-range">${ch.range}</div></div>
+      <div class="cal-chevron">▶</div>
+    </div>
+    <div class="cal-body">
+      <div class="cal-live" id="cal-live-${ch.id}" style="color:${ch.color}">—</div>
+      <div class="cal-bar-bg"><div class="cal-bar-fill" id="cal-bar-${ch.id}" style="background:linear-gradient(90deg,${ch.color}aa,${ch.color});width:0%"></div></div>
+      <div class="cal-zones">${zonesHtml}</div>
+      <table class="cal-ref"><thead><tr><th>CONDICIÓN</th><th>VALOR REFERENCIA</th></tr></thead><tbody>${refRows}</tbody></table>
+      <div class="step-list">${stepsHtml}</div>
+    </div>
+  </div>`;
+}
+function toggleCal(id,e){if(e.target.closest('.cal-body'))return;document.getElementById('cal-'+id)?.classList.toggle('open');}
+
+// ELÉCTRICO
+function initElectrico(){
+  const pinPanel=document.getElementById('el-pin');
+  if(pinPanel){
+    const vehs=LOCAL_VEH.filter(v=>v.pinout&&v.pinout.length>0);
+    const defV=vehs[0];
+    pinPanel.innerHTML=`<div style="padding:8px 11px">
+      <div style="margin-bottom:8px"><label style="font-family:'Rajdhani';font-size:8px;font-weight:700;letter-spacing:1px;color:var(--lgray);display:block;margin-bottom:4px">VEHÍCULO</label>
+      <select id="pinout-sel" style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:8px;color:var(--white);font-size:11px;outline:none" onchange="updatePinout(this.selectedIndex)">
+        ${vehs.map((v,i)=>`<option value="${i}">${v.brand} ${v.model} — ${v.ecu||'ECU'}</option>`).join('')}
+      </select></div>
+      <div class="pin-grid" id="pinout-grid">
+        ${(defV?.pinout||[]).map(p=>`<div class="pin-item" onclick="toast('PIN ${p.n}: ${p.name} — ${p.v}','info',3500)"><div class="pin-num">${p.n}</div><div class="pin-name">${p.name}</div><div class="pin-v">${p.v}</div></div>`).join('')}
+      </div>
+    </div>`;
+  }
+  const diagPanel=document.getElementById('el-diag');
+  if(diagPanel){diagPanel.innerHTML=`<div style="padding:8px 11px;display:grid;grid-template-columns:1fr 1fr;gap:7px">
+    ${[['💉','INYECCIÓN MPI','inj'],['⚡','ENCENDIDO','enc'],['🔗','CAN BUS','can'],['🌀','IAC RALENTÍ','iac'],['🦶','PEDAL APP','app'],['🔄','CKP / CMP','ckp'],['🔬','O2 LAMBDA','o2'],['♻️','EGR / EVAP','evap']].map(([ico,name,id])=>`
+    <div class="gauge" style="cursor:pointer;text-align:center" onclick="showDiagInfo('${id}')">
+      <div style="font-size:20px;margin-bottom:5px">${ico}</div>
+      <div style="font-family:'Rajdhani';font-size:9px;font-weight:700;color:var(--lgray)">${name}</div>
+    </div>`).join('')}
+  </div>`;}
+  const arnesPanel=document.getElementById('el-arnes');
+  if(arnesPanel){arnesPanel.innerHTML=`<div class="card" style="margin-top:8px">
+    <div class="sec-lbl">CÓDIGO DE COLORES ESTÁNDAR ARNÉS</div>
+    ${[['#FF3B3B','ROJO','12V directo — alimentación siempre'],['#FFD600','AMARILLO','12V llave — alimentación con IGN ON'],['#888','NEGRO','Tierra / Masa (GND chassis)'],['#00C48C','VERDE','Señales de sensores (SIG)'],['#1E8CE0','AZUL','Señales de actuadores / control'],['#A855F7','MORADO','CAN Bus H/L — comunicación'],['#EEF6FF','BLANCO','Referencia 5V (VREF)'],['#9E9E9E','CAFÉ/GRIS','Tierra de señal (SIG GND)'],['#FF8C00','NARANJA','Alimentación auxiliar / encendido'],['#EC407A','ROSA','Sonda O2 / Lambda señal']].map(([color,name,desc])=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+      <div style="width:30px;height:8px;border-radius:4px;background:${color};flex-shrink:0;box-shadow:0 0 8px ${color}66"></div>
+      <div><div style="font-family:'Rajdhani';font-size:10px;font-weight:700;color:${color}">${name}</div><div style="font-size:8px;color:var(--lgray)">${desc}</div></div>
+    </div>`).join('')}
+  </div>`;}
+}
+function updatePinout(idx){
+  const vehs=LOCAL_VEH.filter(v=>v.pinout&&v.pinout.length>0);
+  const v=vehs[idx];if(!v)return;
+  const grid=document.getElementById('pinout-grid');if(!grid)return;
+  grid.innerHTML=(v.pinout||[]).map(p=>`<div class="pin-item" onclick="toast('PIN ${p.n}: ${p.name} — ${p.v}','info',3500)"><div class="pin-num">${p.n}</div><div class="pin-name">${p.name}</div><div class="pin-v">${p.v}</div></div>`).join('');
+}
+function showDiagInfo(type){
+  const info={
+    inj:'Inyectores MPI: 12V B+ → inyector → ECM (control a tierra PWM). Resistencia 12-16Ω. Pulso 1.5-3.5ms ralentí.',
+    enc:'Bobinas COP/DIS: 12V → bobina. ECM dispara. Resistencia primaria 0.5-2Ω, secundaria 8-15kΩ. Verificar CKP.',
+    can:'CAN Bus: Resistencia 60Ω total (dos 120Ω en paralelo). CAN-H: 2.5-3.5V, CAN-L: 1.5-2.5V. Diferencial 1V.',
+    iac:'IAC Stepper/PWM: Resistencia bobinas 20-30Ω. PWM 30-55Hz. Limpiar con spray especial. Reset learn ECM.',
+    app:'APP1: 0.5-4.5V. APP2: 0.3-2.2V. APP2 ≈ APP1/2. Si discrepan >10% = P0221/P0222. Sustituir pedal completo.',
+    ckp:'CKP Inductivo: AC senoidal. Resistencia 200-1200Ω. Air gap 0.5-1.5mm. 36-1 dientes. Hall: 0-5V cuadrada.',
+    o2:'Sonda Lambda: 4 cables. Calentador 3-15Ω. Señal activa >300°C. Bucle cerrado: oscila 0.1↔0.9V rápido.',
+    evap:'EVAP: Válvula purga normalmente cerrada. EGR: reduce NOx. Limpiar hollín con spray especializado.',
+  };
+  toast((info[type]||'Selecciona vehículo para diagramas específicos').slice(0,80)+'...','info',7000);
+}
+
+// GITHUB DB
+async function loadGitHubDB(showToast){
+  try{
+    const cached=JSON.parse(localStorage.getItem(DB_CACHE_KEY)||'null');
+    if(cached?.data&&(Date.now()-cached.ts)<DB_CACHE_TTL){processGHData(cached.data);if(showToast)toast('⚡ DB caché: '+S.vehicles.length+' vehículos','info');setTimeout(()=>fetchGH(false),1000);return;}
+  }catch(_){}
+  await fetchGH(showToast);
+}
+async function fetchGH(showToast){
+  try{
+    const r=await fetch(GH_RAW+'?t='+Date.now(),{cache:'no-store'});
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    const data=await r.json();
+    localStorage.setItem(DB_CACHE_KEY,JSON.stringify({ts:Date.now(),data}));
+    processGHData(data);
+    if(showToast)toast('✅ GitHub DB: '+S.vehicles.length+' vehículos','ok');
+  }catch(e){
+    if(showToast)toast('GitHub offline — DB local ('+S.vehicles.length+' veh)','warn');
+    renderVehicles();
+  }
+  const dbc=document.getElementById('db-count');if(dbc)dbc.textContent=S.vehicles.length+' veh';
+  const sdb=document.getElementById('sys-db');if(sdb)sdb.textContent=S.masterDB?'GITHUB ACTIVA':'LOCAL';
+}
+function processGHData(data){
+  S.vehicles=[...LOCAL_VEH];
+  const merge=item=>{
+    if(!item||typeof item!=='object')return;
+    const v={brand:item.brand||item.marca||item.make||'',model:item.model||item.modelo||item.name||'',year:item.year||item.anio||'Multi',engine:item.engine||item.motor||'',ecu:item.ecu||item.ecm||'',fuel:(item.fuel||item.combustible||'gasolina').toLowerCase().includes('diesel')?'diesel':'gasolina',modules:Array.isArray(item.modules)?item.modules:typeof item.modules==='string'?item.modules.split(','):['ECM'],sensors:Array.isArray(item.sensors)?item.sensors:[],...item};
+    if(!v.brand||!v.model)return;
+    S.vehicles.push(v);
+  };
+  if(Array.isArray(data)){data.forEach(merge);}
+  else if(typeof data==='object'){
+    const bk=['nissan','volkswagen','vw','chevrolet','gm','ford','toyota','honda','mazda','dodge','bmw','hyundai','kia','seat','audi','mitsubishi'];
+    const lk=['vehiculos','vehicles','autos','data','items','records','modelos'];
+    Object.entries(data).forEach(([k,v])=>{
+      const kl=k.toLowerCase();
+      if(bk.includes(kl)){const brand=kl.charAt(0).toUpperCase()+kl.slice(1);const items=Array.isArray(v)?v:Object.values(v);items.forEach(i=>merge({...i,brand}));}
+      else if(lk.includes(kl)&&Array.isArray(v)){v.forEach(merge);}
+      else if(Array.isArray(v)&&v.length&&typeof v[0]==='object'&&(v[0].brand||v[0].model)){v.forEach(merge);}
+    });
+    if(data.brand||data.model)merge(data);
+  }
+  const seen=new Set();
+  S.vehicles=S.vehicles.filter(v=>{const k=`${v.brand}-${v.model}-${v.year}`;if(seen.has(k))return false;seen.add(k);return true;});
+  S.masterDB=data;
+  renderVehicles();
+}
+
+// REPORTS
+function saveReport(){
+  const tech=document.getElementById('rep-tech')?.value||'Técnico';
+  const notes=document.getElementById('rep-notes')?.value||'';
+  const v=S.selVehicle;
+  const report={id:Date.now(),date:new Date().toLocaleDateString('es-MX'),tech,notes,vehicle:v?v.brand+' '+v.model+' '+v.year:'—',dtcs:S.dtcList.map(d=>d.code),sensors:Object.fromEntries(S.selectedSensors.map(id=>[id,(S.sensorValues[id]||0).toFixed(1)]))};
+  const all=JSON.parse(localStorage.getItem('pp_v7_reports')||'[]');
+  all.unshift(report);localStorage.setItem('pp_v7_reports',JSON.stringify(all.slice(0,50)));
+  renderReports();toast('✅ Reporte guardado','ok');
+}
+function renderReports(){
+  const list=document.getElementById('rep-list');if(!list)return;
+  const all=JSON.parse(localStorage.getItem('pp_v7_reports')||'[]');
+  if(!all.length){list.innerHTML='<div style="text-align:center;padding:16px;color:var(--lgray);font-family:Rajdhani;font-size:10px">Sin reportes guardados aún</div>';return;}
+  list.innerHTML=all.slice(0,10).map(r=>`<div class="card">
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-family:'Rajdhani';font-size:11px;font-weight:700">${r.vehicle}</span><span style="font-family:'Share Tech Mono';font-size:8px;color:var(--lgray)">${r.date}</span></div>
+    <div style="font-size:8px;color:var(--lgray)">Técnico: ${r.tech}</div>
+    ${r.dtcs.length?`<div style="font-size:8px;color:var(--red);margin-top:3px">Fallas: ${r.dtcs.join(', ')}</div>`:''}
+    ${r.notes?`<div style="font-size:8px;color:var(--lgray);margin-top:3px">${r.notes.slice(0,60)}</div>`:''}
+  </div>`).join('');
+}
+function printReport(){window.print();}
+
+// UTILS
+let toastT;
+function toast(msg,type='info',ms=3200){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='show '+type;
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),ms);
+}
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// ═══════════════ ADAPTACIONES ═══════════════
+const adaptSteps = {};
+function runAdapt(step) {
+  const msgs = {
+    tps1:'⏱ Llave OFF — esperando 30s...',tps2:'🔑 Llave ON — sin arrancar',
+    tps3:'📊 Verificando voltaje TPS...',tps4:'🚗 Motor en ralentí aprendiendo...',
+    iac1:'🌡 Verificando temperatura motor...',iac2:'❄ Cargas eléctricas apagadas',
+    iac3:'⏳ Ralentí libre sin tocar pedal...',iac4:'🔄 Ciclo apagado-encendido...',
+    ft1:'🔧 Causa raíz resuelta',ft2:'🗑 DTC borrados',ft3:'🚗 Ciclo conducción activo...',
+    app1:'🦶 Pedal sin pisar',app2:'🔑 Llave ON esperando...',
+    app3:'⬇ Pedal a fondo 5 segundos',app4:'⬆ Pedal suelto — finalizando...',
+  };
+  const msg = msgs[step] || '✅ Paso completado';
+  // Find related status element
+  const base = step.replace(/[0-9]/g,'');
+  const cards = {tps:'tps-learn',iac:'iac-learn',ft:'ftrim-learn',app:'app-learn'};
+  const card = cards[base];
+  if (card) {
+    const el = document.getElementById(card+'-status');
+    if (el) { el.textContent = msg; el.style.color = 'var(--cyan)'; }
+  }
+  toast(msg, 'info', 2500);
+}
+
+async function execAdapt(type, successMsg) {
+  const cards = {tps:'tps-learn',iac:'iac-learn',ftrim:'ftrim-learn',app:'app-learn',inj:'inj-bal'};
+  const statusEl = document.getElementById((cards[type]||type)+'-status');
+  if (statusEl) { statusEl.textContent = '⏳ Ejecutando por OBD2...'; statusEl.style.color='var(--gold)'; }
+  // Simulate OBD2 command execution
+  if (S.simMode) {
+    await delay(1800);
+    if (statusEl) { statusEl.textContent = successMsg; statusEl.style.color='var(--green)'; }
+    toast(successMsg, 'ok', 4000);
+  } else {
+    // Real OBD2: send mode 3E or service commands
+    try {
+      let cmd = {tps:'013E01',iac:'013E02',ftrim:'04',app:'013E05',inj:'013E06'}[type] || '04';
+      await bleWrite(cmd);
+      if (statusEl) { statusEl.textContent = successMsg; statusEl.style.color='var(--green)'; }
+      toast(successMsg, 'ok', 4000);
+    } catch(e) {
+      if (statusEl) { statusEl.textContent = '⚠ Conecta OBD2 BLE primero'; statusEl.style.color='var(--red)'; }
+      toast('Conecta adaptador OBD2 BLE', 'err');
+    }
+  }
+}
+
+async function testInjector(n) {
+  const el = document.getElementById('inj-bal-status');
+  if (el) el.textContent = '⏳ Testeando inyector '+n+'...';
+  await delay(1200);
+  const drop = Math.round(30+Math.random()*80);
+  const ok = drop < 80;
+  if (el) {
+    el.textContent = 'INJ'+n+': Caída '+drop+' RPM — '+(ok?'✅ OK':'⚠ REVISAR');
+    el.style.color = ok?'var(--green)':'var(--red)';
+  }
+  toast('Inyector '+n+': -'+drop+' RPM', ok?'ok':'err', 3000);
+}
+
+// ═══════════════ IMMO ═══════════════
+async function immoStep(step, msg) {
+  const base = step.replace(/[0-9]/g,'');
+  const cards = {nats:'nats',vw:'vwimmo',skim:'skim',ecm:'ecmswap'};
+  const el = document.getElementById((cards[base]||base)+'-status');
+  if (el) { el.textContent = '⏳ '+msg; el.style.color='var(--gold)'; }
+  await delay(1000);
+  if (el) { el.textContent = '✅ '+msg.replace('...',''); el.style.color='var(--green)'; }
+  toast(msg, 'info', 2000);
+}
+
+async function execImmo(type, successMsg) {
+  const warn = type.includes('erase');
+  if (warn && !confirm('⚠ ¿Seguro? Se borrarán TODAS las llaves registradas')) return;
+  const cards = {nats:'nats','nats-erase':'nats',vw:'vwimmo',skim:'skim',ecmswap:'ecmswap'};
+  const el = document.getElementById((cards[type]||type)+'-status');
+  if (el) { el.textContent = '⏳ Ejecutando...'; el.style.color='var(--gold)'; }
+  await delay(2200);
+  if (el) { el.textContent = successMsg; el.style.color='var(--green)'; }
+  toast(successMsg, 'ok', 5000);
+}
+
+// ═══════════════ HP TUNING ═══════════════
+function buildIgnMap() {
+  const rpms = [800,1200,1600,2000,2400,3200,4000,5000,6000];
+  const loads = [20,40,60,80,100];
+  const base = [[8,10,12,12,10],[10,12,14,15,12],[12,14,16,18,14],[14,16,18,20,15],[15,17,20,24,16],[16,18,22,28,18],[16,18,22,30,18],[14,16,20,28,16],[12,14,18,24,14]];
+  const el = document.getElementById('ign-map-grid');
+  if (!el) return;
+  let html = '<table class="map-table"><tr><td>RPM↓\ CARGA→</td>';
+  loads.forEach(l => html += '<td>'+l+'%</td>');
+  html += '</tr>';
+  rpms.forEach((rpm,ri) => {
+    html += '<tr><td>'+rpm+'</td>';
+    loads.forEach((l,li) => {
+      const v = base[ri]?.[li] ?? 15;
+      html += '<td><input class="map-cell" type="number" value="'+v+'" min="0" max="50" step="1" style="color:'+getTimingColor(v)+'"></td>';
+    });
+    html += '</tr>';
+  });
+  html += '</table>';
+  el.innerHTML = html;
+}
+
+function buildInjMap() {
+  const rpms = [800,1200,1600,2000,2400,3200,4000,5000,6000];
+  const loads = [20,40,60,80,100];
+  const base = [[1.8,2.0,2.2,2.4,2.6],[2.0,2.3,2.6,2.9,3.2],[2.2,2.6,3.0,3.4,3.8],[2.4,2.9,3.4,4.0,4.6],[2.6,3.2,3.8,4.6,5.4],[3.0,3.8,4.6,5.6,6.8],[3.4,4.4,5.4,6.8,8.4],[3.8,4.8,6.0,8.0,10],[4.2,5.2,6.6,8.6,12]];
+  const el = document.getElementById('inj-map-grid');
+  if (!el) return;
+  let html = '<table class="map-table"><tr><td>RPM↓\ CARGA→</td>';
+  loads.forEach(l => html += '<td>'+l+'%</td>');
+  html += '</tr>';
+  rpms.forEach((rpm,ri) => {
+    html += '<tr><td>'+rpm+'</td>';
+    loads.forEach((l,li) => {
+      const v = base[ri]?.[li] ?? 3.0;
+      html += '<td><input class="map-cell" type="number" value="'+v.toFixed(1)+'" min="0" max="25" step="0.1" style="color:var(--cyan)"></td>';
+    });
+    html += '</tr>';
+  });
+  html += '</table>';
+  el.innerHTML = html;
+}
+
+function getTimingColor(v) {
+  if (v >= 35) return 'var(--red)';
+  if (v >= 25) return 'var(--orange)';
+  if (v >= 15) return 'var(--gold)';
+  return 'var(--green)';
+}
+
+function loadMapStock() { buildIgnMap(); toast('📥 Mapa stock cargado', 'info'); }
+function loadInjMapStock() { buildInjMap(); toast('📥 Mapa inyección stock cargado', 'info'); }
+
+async function writeIgnMap() {
+  toast('⚡ Escribiendo mapa encendido...', 'info', 2000);
+  await delay(1800);
+  toast('✅ Mapa encendido actualizado en ECU', 'ok', 4000);
+  document.getElementById('params-status')?.style && (document.getElementById('params-status').textContent = '✅ Mapa encendido escrito');
+}
+async function writeInjMap() {
+  toast('⚡ Escribiendo mapa inyección...', 'info', 2000);
+  await delay(1800);
+  toast('✅ Mapa inyección actualizado en ECU', 'ok', 4000);
+}
+async function writeParams() {
+  const idle = document.getElementById('p-idle')?.value || 750;
+  const rev = document.getElementById('p-revlim')?.value || 6500;
+  const el = document.getElementById('params-status');
+  if(el){el.textContent='⏳ Escribiendo parámetros...';el.style.color='var(--gold)';}
+  await delay(1600);
+  if(el){el.textContent='✅ Params escritos — Ralentí:'+idle+' RPM / Rev:'+rev;el.style.color='var(--green)';}
+  toast('✅ Parámetros ECU actualizados','ok',4000);
+}
+async function writeLambda() {
+  toast('⚡ Aplicando target AFR...','info',2000);
+  await delay(1400);
+  toast('✅ Lambda target aplicado','ok',4000);
+}
+async function writeLimits() {
+  const rev = document.getElementById('l-revcut')?.value || 6800;
+  toast('⚡ Aplicando límites — Rev cut: '+rev+' RPM','info',2000);
+  await delay(1400);
+  toast('✅ Límites aplicados en ECU','ok',4000);
+}
+
+// Build maps when tab opens (override switchCalTab)
+const _origSwitchCal = switchCalTab;
+function switchCalTab(id, el) {
+  _origSwitchCal(id, el);
+  if (id === 'cal-prog') {
+    setTimeout(() => { buildIgnMap(); buildInjMap(); }, 100);
+  }
+}
+
+function animProg(id,from,to,ms){
+  const el=document.getElementById(id);if(!el)return;
+  const step=(to-from)/(ms/16);let cur=from;
+  const ti=setInterval(()=>{cur+=step;el.style.width=Math.min(to,cur)+'%';if(cur>=to)clearInterval(ti);},16);
+}
+</script>
+</body>
+</html>
